@@ -11,7 +11,7 @@ Developed/tested on:
 - For enhancments and TODOs see repo's issues
 - Pull requests and enhancements are welcome
 
-# TLDR; What this role will do:
+# TLDR; What this repository's playbooks/roles will do:
 
 - deploy amanda backup server **with SSH auth not bsdtcp**
 - deploy amanda clients **with SSH auth not bsdtcp**
@@ -20,7 +20,7 @@ Developed/tested on:
 - work with both RHEL/Centos (>7) and Debian OS (>10)
 - **it will disable xinetd** and avoid installing it where possible
 
-# TLDR; What this role won't do:
+# TLDR; What this repository's playbooks/roles won't do:
 
 - implement all of your security for your backup system - you are responsable for that
 - bsdtcp auth or other non SSH auth methods
