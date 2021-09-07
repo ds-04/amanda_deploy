@@ -23,6 +23,7 @@ Future:<br>
 
 # TLDR; What this repository's playbooks/roles won't do:
 
+- edit any firewall settings
 - implement all of your security for your backup system - you are responsable for that
 - bsdtcp auth or other non SSH auth methods
 -- dormant bsdtcp systemd files are included though
