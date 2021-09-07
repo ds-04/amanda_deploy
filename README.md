@@ -27,6 +27,7 @@ Future:<br>
 - implement all of your security for your backup system - operators are responsable for their own security
 - bsdtcp auth or other non SSH auth methods
 -- dormant bsdtcp systemd files are included though
+- edit/setup any cron jobs for backup invocation
 - run Amcheck, though a dormant task is included
 
 # TLDR; Amanda backup, tapes, vtapes
