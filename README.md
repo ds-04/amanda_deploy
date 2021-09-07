@@ -57,6 +57,7 @@ This role relies upon the existence of two inventory groups, eithin in your main
 
 It is advised you clone to another location or use a git submodule. The structure of what is provided by this repository is seen below. Note the relative symlinks. For defaults and certain task yml files.
 
+```
 amanda_client.yml
 amanda_copy_keys.yml
 amanda_server_cfg.yml
@@ -108,7 +109,7 @@ roles/amanda_server_cfg
 │   │   └── test_vtape_holding_disk.conf.j2
 │   └── test_vtape_disklist.j2
 └── vars
-
+```
 
 
 
