@@ -59,7 +59,7 @@ This role relies upon the existence of two inventory groups, eithin in your main
 
 # Structure as seen from playbook dir
 
-It is advised you clone to another location or use a git submodule. The structure of what is provided by this repository is seen below. Note the relative symlinks. For defaults and certain task yml files. This is to avoid duplication where a client role task can be performed by something which is the same in a server role or vice versa.
+It is advised you clone to another location or use a git submodule. The structure of what is provided by this repository is seen below. Note the relative symlinks for defaults and certain task yml files. This is to avoid duplication where a client role task can be performed by something which is the same in a server role or vice versa.
 
 ```
 amanda_client.yml
