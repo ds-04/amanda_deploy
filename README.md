@@ -26,7 +26,7 @@ Developed/tested on:
 
 # TLDR; Amanda backup, tapes, vtapes
 
-- tapes are very much alive, lots of sites use them for active-archive, backup, vaulting etc.
+- physical [LTO] tapes are very much alive, lots of sites use them for active-archive, backup, vaulting etc.
 - vtapes are virtual tapes (a tape is a file) on a filesystem that Amanda can work with
 - Amanda backup has been around a long time, you can read about here https://en.wikipedia.org/wiki/Amanda_(software)
 - Amanda's documentation is somewhat fragmented and in various states, a motivation of this role was to aid understanding and simplify deployment
