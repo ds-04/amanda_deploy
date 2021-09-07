@@ -8,6 +8,7 @@ The motivation is to be able to reproduce an Amanda setup quickly and deploy cli
 Developed/tested on:
 - Centos 7.9 and Debian 11 hosts
 - Focus on server developement has been Debian and with vtapes
+Future:
 - For enhancments and TODOs see repo's issues
 - Pull requests and enhancements are welcome
 
