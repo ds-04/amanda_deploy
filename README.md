@@ -59,7 +59,7 @@ This role relies upon the existence of two inventory groups, eithin in your main
 
 # Structure as seen from playbook dir
 
-It is advised you clone to another location or use a git submodule. The structure of what is provided by this repository is seen below. Note the relative symlinks. For defaults and certain task yml files.
+It is advised you clone to another location or use a git submodule. The structure of what is provided by this repository is seen below. Note the relative symlinks. For defaults and certain task yml files. This is to avoid duplication where a client role task can be performed by something which is the same in a server role or vice versa.
 
 ```
 amanda_client.yml
@@ -78,9 +78,9 @@ roles/amanda_client
 │   └── main.yml
 ├── templates
 │   ├── amanda-security.conf.j2
-│   └── systemd -> ../../amanda_server/templates/systemd
+│   └── systemd -> ../../amanda_server/templates/systemd ** link to DORMANT templates, avoid duplication **
 └── vars
-    └── main.yml -> ../../amanda_server/vars/main.yml
+    └── main.yml -> ../../amanda_server/vars/main.yml ** Provided to link client to server vars, which operator will override defaults with **
 roles/amanda_server
 ├── defaults
 │   └── main.yml
