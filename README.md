@@ -23,6 +23,8 @@ Developed/tested on:
 
 - implement all of your security for your backup system - you are responsable for that
 - bsdtcp auth or other non SSH auth methods
+-- dormant bsdtcp systemd files are included though
+- run Amcheck, though a dormant task is included
 
 # TLDR; Amanda backup, tapes, vtapes
 
@@ -88,17 +90,17 @@ roles/amanda_server
 │   ├── rhel_centos_server.yml
 │   ├── server_sshd_user.yml
 │   ├── server_ssh_keys.yml
-│   └── systemd.yml
+│   └── systemd.yml ** DORMANT **
 └── templates
     ├── amanda-security.conf.j2 -> ../../amanda_client/templates/amanda-security.conf.j2
-    └── systemd
+    └── systemd  ** DORMANT **
         ├── amanda@.service
         └── amanda.socket
 roles/amanda_server_cfg
 ├── defaults
 │   └── main.yml
 ├── tasks
-│   ├── amcheck.yml
+│   ├── amcheck.yml ** DORMANT **
 │   ├── main.yml
 │   └── server_config.yml
 ├── templates
