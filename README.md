@@ -12,22 +12,24 @@ Developed/tested on:
 
 # TLDR; What this role will do:
 
-- deploy amanda backup server
-- deploy amanda clients
+- deploy amanda backup server **with SSH auth not bsdtcp**
+- deploy amanda clients **with SSH auth not bsdtcp**
 - copy ssh key from server to client
 - install known hosts entries on server for clients
 - work with both RHEL/Centos and Debian OS
+- **it will disable xinetd** and avoid installing it where possible
 
 # TLDR; What this role won't do:
 
 - implement all of your security for your backup system - you are responsable for that
+- bsdtcp auth or other non SSH auth methods
 
 # TLDR; Amanda backup, tapes, vtapes
 
 - tapes are very much alive, lots of sites use them for active-archive, backup, vaulting etc.
 - vtapes are virtual tapes (a tape is a file) on a filesystem that Amanda can work with
 - Amanda backup has been around a long time, you can read about here https://en.wikipedia.org/wiki/Amanda_(software)
-- Though Amanda's documentation is somewhat fragmented and in various states, a motivation of this role was to aid understanding and simply deployment
+- Amanda's documentation is somewhat fragmented and in various states, a motivation of this role was to aid understanding and simplify deployment
 
 
 # Background
