@@ -3,7 +3,7 @@ Ansible roles to deploy Amanda backup, server and clients
 
 The motivation is to be able to reproduce an Amanda setup quickly and deploy clients quickly with idempotence.
 
-**THIS ROLE SHOULD BE USED AT OWN RISK, AUTHOR HAS DONE TESTING WHILST IN DEVELOPMENT**<br>
+**THIS CONTENT SHOULD BE USED AT OWN RISK, AUTHOR HAS DONE TESTING WHILST IN DEVELOPMENT**<br>
 
 Developed/tested on:
 - Centos 7.9 and Debian 11 hosts
