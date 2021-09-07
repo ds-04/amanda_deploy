@@ -1,5 +1,5 @@
 # amanda_deploy
-Ansible playbooks and roles to deploy Amanda backup, server and clients
+Ansible playbooks and roles to deploy Amanda backup: server and clients
 
 The motivation is to be able to reproduce an Amanda setup quickly and deploy clients quickly with idempotence.
 
