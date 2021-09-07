@@ -116,7 +116,7 @@ roles/amanda_server_cfg
 
 
 
-# Overrirding config
+# Overriding config
 
 You should use vars/main.yml within the relevant roles. E.g. server configuration role.
 
