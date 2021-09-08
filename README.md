@@ -149,6 +149,13 @@ To avoid mishaps by default test/example vtape config is not set to be deployed 
 
 It is expected that you can create a role named amanda_server_prod_cfg (or similar) using what is here as a basis. That role could simply template out the configuration files, up to you.
 
+# FAQ
+
+*How do I run commands as the Amanda user*
+
+That's up to you, but you can switch to it or use ```sudo -u amanda_user```
+
+
 # Future work
 
 - The server configuration implementation could be improved to create multiple vtape testing configurations on the same server.
