@@ -1,7 +1,7 @@
 # amanda_deploy
 Ansible playbooks and roles to deploy Amanda backup server and clients
 
-The motivation is to be able to reproduce an Amanda setup quickly and deploy clients quickly with idempotence.
+The motivation is to be able to reproduce an Amanda backup setup quickly and deploy both clients and server quickly with idempotence.
 
 **THIS CONTENT SHOULD BE USED AT OWN RISK, AUTHOR HAS DONE TESTING WHILST IN DEVELOPMENT**<br>
 
@@ -125,8 +125,15 @@ roles/amanda_server_cfg
 
 You should use vars/main.yml within the relevant roles. E.g. server configuration role.
 
-
 # Running tasks
 
 Certain tasks can be run with tags. Please look inside the roles to identify these tags.
 
+# Running in a production environment or using Physical tapes
+
+It is expected that you can create a role named amanda_server_prod_cfg (or similar) using what is here as a basis. That role could simply template out the configuration files, up to you.
+
+# Future work
+
+- The server configuration implementation could be improved to create multiple vtape testing configurations on the same server.
+- Probably other stuff too...
