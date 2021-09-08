@@ -126,9 +126,18 @@ roles/amanda_server_cfg
 
 You should use vars/main.yml within the relevant roles. E.g. server configuration role.
 
-# Running tasks
+# Getting started and running playbooks/tasks
 
-Certain tasks can be run with tags. Please look inside the roles to identify these tags.
+The expected order (on first setup) is:
+
+- amanda_server.yml
+- amanda_client.yml
+- amanda_copy_keys.yml
+- amanda_server_cfg.yml (remember by default the test vtape config won't be deployed)
+
+- *your amanda_production_server_cfg.yml* (you need to create this playbook and corresponding role)
+
+Specific certain tasks can be run with tags. Please look inside the roles to identify these tags.
 
 # Deploying the test/example vtape configuration
 
