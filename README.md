@@ -31,6 +31,7 @@ Future:<br>
 - dormant bsdtcp systemd files are included though
 - edit/setup any cron jobs for backup invocation
 - run Amcheck, though a dormant task is included
+- deploy your production server config or physical tape config - see section below
 
 # TLDR; Amanda backup, tapes, vtapes
 
@@ -128,6 +129,10 @@ You should use vars/main.yml within the relevant roles. E.g. server configuratio
 # Running tasks
 
 Certain tasks can be run with tags. Please look inside the roles to identify these tags.
+
+# Deploying the test/example vtape configuration
+
+
 
 # Running in a production environment or using Physical tapes
 
