@@ -1,7 +1,7 @@
 # amanda_deploy
 Ansible playbooks and roles to deploy Amanda backup server and clients
 
-The motivation is to be able to reproduce an Amanda backup setup quickly and deploy both clients and server quickly with idempotence.
+The motivation is to be able to reproduce an Amanda backup setup quickly, deploying both clients and server with idempotence.
 
 **THIS CONTENT SHOULD BE USED AT OWN RISK, AUTHOR HAS DONE TESTING WHILST IN DEVELOPMENT**<br>
 
@@ -58,7 +58,7 @@ Playbooks:
 
 # Inventory
 
-This role relies upon the existence of two inventory groups, eithin in your main inventory or one you call when running the playbooks/tasks.
+This role relies upon the existence of two inventory groups, within your main inventory or one you call when running the playbooks/tasks.
 - amanda_server
 - amanda_client
 
