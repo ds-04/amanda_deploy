@@ -1,5 +1,5 @@
 # amanda_deploy
-Ansible playbooks and roles to deploy Amanda backup: server and clients
+Ansible playbooks and roles to deploy Amanda backup server and clients
 
 The motivation is to be able to reproduce an Amanda setup quickly and deploy clients quickly with idempotence.
 
@@ -14,19 +14,21 @@ Future:<br>
 
 # TLDR; What this repository's playbooks/roles will do:
 
-- deploy amanda backup server **with SSH auth not bsdtcp**
-- deploy amanda clients **with SSH auth not bsdtcp**
+- install RPM/Deb for Amanda backup v3.5.1
+- deploy Amanda backup server **with SSH auth not bsdtcp**
+- deploy Amanda clients **with SSH auth not bsdtcp**
 - generate (if needed) and copy ssh pub key from server to client
 - install known hosts entries on server for clients
 - work with both RHEL/Centos (>7) and Debian OS (>10)
 - **it will disable xinetd** and avoid installing it where possible
+- it will deploy a test vtape setup should you choose to do so
 
 # TLDR; What this repository's playbooks/roles won't do:
 
 - edit any firewall settings
 - implement all of your security for your backup system - operators are responsable for their own security
-- bsdtcp auth or other non SSH auth methods
--- dormant bsdtcp systemd files are included though
+- bsdtcp auth or other non SSH auth methods 
+- dormant bsdtcp systemd files are included though
 - edit/setup any cron jobs for backup invocation
 - run Amcheck, though a dormant task is included
 
@@ -61,7 +63,7 @@ This role relies upon the existence of two inventory groups, eithin in your main
 
 # Structure as seen from playbook dir
 
-It is advised you clone to another location or use a git submodule. The structure of what is provided by this repository is seen below. Note the relative symlinks for defaults and certain task yml files. This is to avoid duplication where a client role task can be performed by something which is the same in a server role or vice versa.
+It is advised that you clone to another location or use a git submodule within your ansible configuration. The structure of what is provided by this repository is seen below. Note the relative symlinks for defaults and certain task yml files. This is to avoid duplication where a client role task can be performed by something which is the same in a server role or vice versa.
 
 ```
 amanda_client.yml
@@ -126,5 +128,5 @@ You should use vars/main.yml within the relevant roles. E.g. server configuratio
 
 # Running tasks
 
-Certain tasks can be run with tags. Please look inside the roles.
+Certain tasks can be run with tags. Please look inside the roles to identify these tags.
 
