@@ -132,7 +132,9 @@ Certain tasks can be run with tags. Please look inside the roles to identify the
 
 # Deploying the test/example vtape configuration
 
+To avoid mishaps and to provide certainly, if you want to deploy the example test vtape config do:
 
+```ansible-playbook amanda_server_cfg.yml -e deploy_test_vtape_cfg=True```
 
 # Running in a production environment or using Physical tapes
 
