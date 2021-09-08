@@ -14,7 +14,7 @@ Future:<br>
 
 # TLDR; What this repository's playbooks/roles will do:
 
-- install RPM/Deb for Amanda backup v3.5.1
+- install RPM/Deb for Amanda backup v3.5.1 (version defined in defaults)
 - deploy Amanda backup server **with SSH auth not bsdtcp**
 - deploy Amanda clients **with SSH auth not bsdtcp**
 - generate (if needed) and copy ssh pub key from server to client
