@@ -153,7 +153,7 @@ It is expected that you can create a role named amanda_server_prod_cfg (or simil
 
 *How do I run commands as the Amanda user*
 
-That's up to you, but you can switch to it or use ```sudo -u amanda_user```
+That's up to you, but you can switch to it or use ```sudo -u amanda_user COMMAND```
 
 
 # Future work
