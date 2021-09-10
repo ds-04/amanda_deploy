@@ -53,7 +53,7 @@ Playbooks:
 - amanda_server.yml (calls its namesake role to: install server packages<sup>1</sup>, disable xinetd, setup server ssh user, setup server ssh user keys, copy amanda-security.conf<sup>2</sup>)
 
 <sup>1</sup> Debian is direct from repo, RHEL/Centos via Zmanda RPM url/download<br>
-<sup>2</sup> it is assumed the server will also be a client of itself
+<sup>2</sup> it is assumed the server will also be a client of itself, this can be disabled/overriden if desired
 
 
 # Inventory
