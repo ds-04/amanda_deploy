@@ -138,10 +138,10 @@ You should use vars/main.yml within the relevant roles. E.g. server configuratio
 
 The expected order (on first setup) is:
 
-- amanda_server.yml
-- amanda_client.yml
-- amanda_copy_keys.yml (N.B. you will also need to run this, to enable the server to access itself as a client)
-- amanda_server_cfg.yml (remember by default the test vtape config won't be deployed, you need to enable that to avoid mistakes)
+- ```ansible-playbook amanda_server.yml```
+- ```ansible-playbook amanda_client.yml```
+- ```ansible-playbook amanda_copy_keys.yml``` (N.B. you will also need to run this, to enable the server to access itself as a client)
+- ```ansible-playbook amanda_server_cfg.yml``` (remember by default the test vtape config won't be deployed, you need to enable that to avoid mistakes)
 
 - *your amanda_production_server_cfg.yml* (you need to create this playbook and corresponding role)
 
