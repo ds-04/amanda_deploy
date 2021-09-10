@@ -165,6 +165,32 @@ It is expected that you can create a role named amanda_server_prod_cfg (or simil
 
 That's up to you, but you can switch to it or use ```sudo -u amanda_user COMMAND```
 
+*How do I do a test restore using the local auth, of the /etc example (where the server is a client too)?*
+
+- As the root user (on the server): ```amrecover DailySet1 -o auth=local -s localhost```
+- then, sethost, check dles, set a dle... from there you should manage to restore (can use *help* command or see https://wiki.zmanda.com/index.php/How_To:Recover_Data)
+
+```
+root@MYHOST~# amrecover DailySet1 -o auth=local -s localhost
+AMRECOVER Version 3.5.1. Contacting server on localhost ...
+220 MYHOST AMANDA index server (3.5.1) ready.
+Setting restore date to today (2021-09-10)
+200 Working date set to 2021-09-10.
+200 Config set to DailySet1.
+200 Dump host set to MYHOST.
+Use the setdisk command to choose dump disk to recover
+amrecover> sethost localhost
+200 Dump host set to localhost.
+amrecover> listdisk
+200- List of disk for host localhost
+201- /etc/
+200 List of disk for host localhost
+```
+```amrecover> setdisk /etc/
+200 Disk set to /etc/.
+```
+
+
 
 # Future work
 
