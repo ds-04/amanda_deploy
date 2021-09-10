@@ -145,7 +145,7 @@ The expected order (on first setup) is:
 Then<br>
 - ***your amanda_production_server_cfg.yml (you need to create this playbook and corresponding role)***
 
-Specific certain tasks can be run with tags. Please look inside the roles to identify these tags.
+Specific/certain tasks can be run with tags. Please look inside the roles to identify these tags.
 
 # Deploying the test/example vtape configuration
 
