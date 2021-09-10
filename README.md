@@ -163,11 +163,11 @@ It is expected that you can create a role named amanda_server_prod_cfg (or simil
 
 # FAQ
 
-*How do I run commands as the Amanda user*
+*How do I run commands as the Amanda user?*
 
 That's up to you, but you can switch to it or use ```sudo -u amanda_user COMMAND```
 
-*How do I do a test restore using the local auth, of the /etc example (where the server is a client too)?*
+*Test vtape configuration - How do I do a test restore using the local auth, of the */etc* disk list entry example (where the server is a client too)?*
 
 - As the root user (on the server): ```amrecover DailySet1 -o auth=local -s localhost```
 - then, sethost, check dles, set a dle... from there you should manage to restore (can use *help* command or see https://wiki.zmanda.com/index.php/How_To:Recover_Data)
