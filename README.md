@@ -48,7 +48,7 @@ This repo is comprised of multiple playbooks and roles.
 Playbooks:
 
 - amanda_client.yml (calls its namesake role to: install packages for client, disable xinetd, setup local user security/ssh, copy amanda-security.conf)
-- amanda_copy_keys.yml (playbook; append public key from server to clients, use ssh-keyscan to add host-keys of clients to server)
+- amanda_copy_keys.yml (playbook; append public key from server to clients (server is also a client by default), use ssh-keyscan to add host-keys of clients to server)
 - amanda_server_cfg.yml (calls its namesake role to: create/copy/update configuration files, directories and create vtapes for a test vtape environ)
 - amanda_server.yml (calls its namesake role to: install server packages<sup>1</sup>, disable xinetd, setup server ssh user, setup server ssh user keys, copy amanda-security.conf<sup>2</sup>)
 
@@ -61,6 +61,14 @@ Playbooks:
 This role relies upon the existence of two inventory groups, within your main inventory or one you call when running the playbooks/tasks.
 - amanda_server
 - amanda_client
+
+A mimimal setup to simply test would be to have the server and client on the same system:
+
+[amanda_server]
+myhost.xx.yy
+
+[amanda_client]
+myhost.xx.yy
 
 # Structure as seen from playbook dir
 
@@ -132,8 +140,8 @@ The expected order (on first setup) is:
 
 - amanda_server.yml
 - amanda_client.yml
-- amanda_copy_keys.yml
-- amanda_server_cfg.yml (remember by default the test vtape config won't be deployed)
+- amanda_copy_keys.yml (N.B. you will also need to run this, to enable the server to access itself as a client)
+- amanda_server_cfg.yml (remember by default the test vtape config won't be deployed, you need to enable that to avoid mistakes)
 
 - *your amanda_production_server_cfg.yml* (you need to create this playbook and corresponding role)
 
