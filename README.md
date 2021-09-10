@@ -34,6 +34,7 @@ Future:<br>
 - edit/setup any cron jobs for backup invocation
 - run Amcheck, though a dormant task is included
 - deploy your production server config or physical tape config - see section below
+- it will not setup an ssh route from the client back to the server - this would be needed for amrecover invocation on the client itself
 
 # TLDR; Amanda backup, tapes, vtapes
 
