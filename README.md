@@ -18,7 +18,7 @@ Future:<br>
 - deploy Amanda backup server **with SSH auth not bsdtcp**
 - deploy Amanda clients **with SSH auth not bsdtcp**
 - generate (if needed) and copy ssh pub key from server to client
-- install known hosts entries on server for clients
+- install known hosts entries on server for clients (you can change the options for this, sensible defaults are provided)
 - work with both RHEL/Centos (>7) and Debian OS (>10)
 - **it will disable xinetd** and avoid installing it where possible
 - it will deploy a test vtape setup should you choose to do so
