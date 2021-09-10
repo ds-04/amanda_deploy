@@ -1,3 +1,5 @@
+## NOTE Documentation in progress before upload/release of code
+
 # amanda_deploy
 Ansible playbooks and roles to deploy Amanda backup server and clients
 
@@ -185,8 +187,7 @@ amrecover> listdisk
 200- List of disk for host localhost
 201- /etc/
 200 List of disk for host localhost
-```
-```amrecover> setdisk /etc/
+amrecover> setdisk /etc/
 200 Disk set to /etc/.
 ```
 
