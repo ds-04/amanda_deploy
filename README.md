@@ -139,6 +139,8 @@ You should use vars/main.yml within the relevant roles. E.g. server configuratio
 
 # Getting started and running playbooks/tasks
 
+Firstly, decide if you are deploying the test vtape setup. If so, you probably want to override some settings (e.g. email) with use of the file *amanda_server_cfg/vars/main.yml* which you will create. Also pay attention to the holding directory defined. Then...
+
 The expected order (on first setup) is:
 
 - ```ansible-playbook amanda_server.yml```
