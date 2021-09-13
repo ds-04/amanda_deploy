@@ -5,7 +5,9 @@ Ansible playbooks and roles to deploy Amanda backup server and clients
 
 The motivation is to be able to reproduce an Amanda backup setup quickly, deploying both clients and server with idempotence.
 
-**THIS CONTENT SHOULD BE USED AT OWN RISK, AUTHOR HAS DONE TESTING WHILST IN DEVELOPMENT**<br>
+**THIS CONTENT SHOULD BE USED AT OWN RISK:**<br><br>
+**- AUTHOR HAS DONE TESTING WHILST IN DEVELOPMENT**<br>
+**- YOUR SECURITY IN PRODUCTION IS YOUR RESPONSABILITY!**<br><br>
 
 Developed/tested on:
 - Centos 7.9 and Debian 11 hosts
@@ -72,6 +74,12 @@ myhost.xx.yy
 
 [amanda_client]<br>
 myhost.xx.yy
+
+# Amanda Debian and RHEL/Centos differences
+
+- On RHEL/Centos the server RPM also provides the client functionality
+- Users and groups provided by the packages are slightly different
+- This code accounts for such differences
 
 # Structure as seen from playbook dir
 
