@@ -78,6 +78,7 @@ myhost.xx.yy
 It is advised that you clone to another location or use a git submodule within your ansible configuration. The structure of what is provided by this repository is seen below. Note the relative symlinks for defaults and certain task yml files. This is to avoid duplication where a client role task can be performed by something which is the same in a server role or vice versa.
 
 ```
+amanda_client_restore.yml
 amanda_client.yml
 amanda_copy_keys.yml
 amanda_server_cfg.yml
@@ -94,9 +95,9 @@ roles/amanda_client
 │   └── main.yml
 ├── templates
 │   ├── amanda-security.conf.j2
-│   └── systemd -> ../../amanda_server/templates/systemd ** link to DORMANT templates, avoid duplication **
+│   └── systemd -> ../../amanda_server/templates/systemd
 └── vars
-    └── main.yml -> ../../amanda_server/vars/main.yml ** Provided to link client to server vars, which operator will override defaults with **
+    └── main.yml -> ../../amanda_server/vars/main.yml
 roles/amanda_server
 ├── defaults
 │   └── main.yml
@@ -108,17 +109,17 @@ roles/amanda_server
 │   ├── rhel_centos_server.yml
 │   ├── server_sshd_user.yml
 │   ├── server_ssh_keys.yml
-│   └── systemd.yml ** DORMANT **
+│   └── systemd.yml
 └── templates
     ├── amanda-security.conf.j2 -> ../../amanda_client/templates/amanda-security.conf.j2
-    └── systemd  ** DORMANT **
+    └── systemd
         ├── amanda@.service
         └── amanda.socket
 roles/amanda_server_cfg
 ├── defaults
 │   └── main.yml
 ├── tasks
-│   ├── amcheck.yml ** DORMANT **
+│   ├── amcheck.yml
 │   ├── main.yml
 │   └── server_config.yml
 ├── templates
@@ -129,6 +130,9 @@ roles/amanda_server_cfg
 │   │   └── test_vtape_holding_disk.conf.j2
 │   └── test_vtape_disklist.j2
 └── vars
+
+14 directories, 29 files
+
 ```
 
 
