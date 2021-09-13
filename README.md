@@ -21,6 +21,7 @@ Future:<br>
 - deploy Amanda clients **with SSH auth not bsdtcp**
 - generate (if needed) and copy ssh pub key from server to client
 - install known hosts entries on server for clients (you can change the options for this, sensible defaults are provided)
+- it will setup an ssh authentication route/method from the client back to the server - this is needed for amrecover invocation on the client itself
 - work with both RHEL/Centos (>7) and Debian OS (>10)
 - **it will disable xinetd** and avoid installing it where possible
 - it will deploy a test vtape setup should you choose to do so
@@ -34,7 +35,6 @@ Future:<br>
 - edit/setup any cron jobs for backup invocation
 - run Amcheck, though a dormant task is included
 - deploy your production server config or physical tape config - see section below
-- it will not setup an ssh authentication route/method from the client back to the server - this would be needed for amrecover invocation on the client itself
 
 # TLDR; Amanda backup, tapes, vtapes
 
