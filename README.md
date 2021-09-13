@@ -95,9 +95,9 @@ roles/amanda_client
 │   └── main.yml
 ├── templates
 │   ├── amanda-security.conf.j2
-│   └── systemd -> ../../amanda_server/templates/systemd
+│   └── systemd -> ../../amanda_server/templates/systemd ** link to DORMANT templates, avoid duplication **
 └── vars
-    └── main.yml -> ../../amanda_server/vars/main.yml
+    └── main.yml -> ../../amanda_server/vars/main.yml ** Provided to link client to server vars, which operator will override defaults with **
 roles/amanda_server
 ├── defaults
 │   └── main.yml
@@ -109,17 +109,17 @@ roles/amanda_server
 │   ├── rhel_centos_server.yml
 │   ├── server_sshd_user.yml
 │   ├── server_ssh_keys.yml
-│   └── systemd.yml
+│   └── systemd.yml ** DORMANT **
 └── templates
     ├── amanda-security.conf.j2 -> ../../amanda_client/templates/amanda-security.conf.j2
-    └── systemd
+    └── systemd ** DORMANT **
         ├── amanda@.service
         └── amanda.socket
 roles/amanda_server_cfg
 ├── defaults
 │   └── main.yml
 ├── tasks
-│   ├── amcheck.yml
+│   ├── amcheck.yml ** DORMANT **
 │   ├── main.yml
 │   └── server_config.yml
 ├── templates
