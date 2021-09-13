@@ -171,6 +171,10 @@ It is expected that you can create a role named amanda_server_prod_cfg (or simil
 
 # FAQ
 
+*Could other auth methods be provided e.g. bsdtcp auth?*
+
+Yes contributions are welcome to develope/test/integrate bsdtcp auth into this ansible code.
+
 *How do I run commands as the Amanda user?*
 
 That's up to you, but you can switch to it or use ```sudo -u amanda_user COMMAND```
