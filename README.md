@@ -165,6 +165,14 @@ Then<br>
 
 Specific/certain tasks can be run with tags. Please look inside the roles to identify these tags.
 
+## Alternatively, run the provided master playbook:
+
+You can run everything in one go like this:
+```ansible-playbook amanda_master_playbook.yml -e deploy_test_vtape_cfg=True```          (N.B. this is enabling deployment of the test vtape config too)<br><br>
+
+Then<br>
+- ***your amanda_production_server_cfg.yml***
+
 # Deploying the test/example vtape configuration
 
 To avoid mishaps by default test/example vtape config is not set to be deployed (and to provide certainly), if you want to deploy the example test vtape config do:
