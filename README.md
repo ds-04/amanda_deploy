@@ -16,14 +16,14 @@ Future:<br>
 
 # TLDR; What this repository's playbooks/roles will do:
 
+- work with both RHEL/Centos (>7) and Debian OS (>10)
 - install RPM/Deb for Amanda backup v3.5.1 (version defined in defaults)
 - deploy Amanda backup server **with SSH auth not bsdtcp**
 - deploy Amanda clients **with SSH auth not bsdtcp**
-- generate (if needed) and copy ssh pub key from server to client
-- install known hosts entries on server for clients (you can change the options for this, sensible defaults are provided)
-- it will setup an ssh authentication route/method from the client back to the server - this is needed for amrecover invocation on the client itself
-- work with both RHEL/Centos (>7) and Debian OS (>10)
-- **it will disable xinetd** and avoid installing it where possible
+- generate (if needed) and copy ssh pub key from server to client fo **SSH auth**
+- install known hosts entries on server for clients (you can change the options for this, sensible defaults are provided) for **SSH auth**
+- it will setup an ssh authentication route/method from the client back to the server - this is needed for amrecover invocation on the client itself (for **SSH auth**)
+- **it will disable xinetd for now as bsdtcp auth isn't being used here** and avoid installing it where possible
 - it will deploy a test vtape setup should you choose to do so
 
 # TLDR; What this repository's playbooks/roles won't do:
