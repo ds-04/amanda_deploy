@@ -70,14 +70,14 @@ This role relies primarily upon the existence of two inventory groups, within yo
 
 A mimimal setup to simply test would be to have the server and client on the same system:
 ```
-[amanda_server]<br>
+[amanda_server]
 myhost.xx.yy
 
-[amanda_client]<br>
+[amanda_client]
 myhost.xx.yy
 
-#make all clients restore clients<br>
-[amanda_client_restore:children]<br>
+#make all clients restore clients
+[amanda_client_restore:children]
 amanda_client
 ```
 # Amanda Debian and RHEL/Centos differences
