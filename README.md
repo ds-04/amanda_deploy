@@ -63,7 +63,7 @@ Playbooks:
 
 # Inventory
 
-This role relies primarily upon the existence of two inventory groups, within your main inventory or one you call when running the playbooks/tasks. A third group is recommended to enable restore (amrecover) from the client.
+This role relies primarily upon the existence of two inventory groups, within your main inventory or an inventory file you call when running the playbooks/tasks. A third group is recommended to enable restore (amrecover) from the client.
 - amanda_server
 - amanda_client
 - amanda_client_restore
