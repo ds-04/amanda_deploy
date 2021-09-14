@@ -63,9 +63,10 @@ Playbooks:
 
 # Inventory
 
-This role relies upon the existence of two inventory groups, within your main inventory or one you call when running the playbooks/tasks.
+This role relies primarily upon the existence of two inventory groups, within your main inventory or one you call when running the playbooks/tasks. A third group is recommended to enable restore (amrecover) from the client.
 - amanda_server
 - amanda_client
+- amanda_client_restore
 
 A mimimal setup to simply test would be to have the server and client on the same system:
 
@@ -74,6 +75,10 @@ myhost.xx.yy
 
 [amanda_client]<br>
 myhost.xx.yy
+
+#make all clients restore clients
+[amanda_client_restore:children]
+amanda_client
 
 # Amanda Debian and RHEL/Centos differences
 
