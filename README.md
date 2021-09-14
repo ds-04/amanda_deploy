@@ -69,17 +69,17 @@ This role relies primarily upon the existence of two inventory groups, within yo
 - amanda_client_restore
 
 A mimimal setup to simply test would be to have the server and client on the same system:
-
+```
 [amanda_server]<br>
 myhost.xx.yy
 
 [amanda_client]<br>
 myhost.xx.yy
 
-#make all clients restore clients
-[amanda_client_restore:children]
+#make all clients restore clients<br>
+[amanda_client_restore:children]<br>
 amanda_client
-
+```
 # Amanda Debian and RHEL/Centos differences
 
 - On RHEL/Centos the server RPM also provides the client functionality
