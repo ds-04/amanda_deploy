@@ -169,7 +169,7 @@ The expected order (on first setup) is:
 - ```ansible-playbook amanda_client.yml```
 - ```ansible-playbook amanda_copy_keys.yml``` (N.B. you will also need to run this, to enable the server to access itself as a client)
 - ```ansible-playbook amanda_server_cfg.yml``` (remember by default the test vtape config won't be deployed, you need to enable that if/when you want it)
-- ```ansible-playbook amanda_client_restore.yml```<br><br>
+- ```ansible-playbook amanda_client_restore.yml``` (if you want to do restores from client *amrecover*<br><br>
 Then<br>
 - ***your amanda_production_server_cfg.yml (you need to create this playbook and corresponding role)***
 
