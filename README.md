@@ -96,11 +96,12 @@ It is advised that you clone to another location or use a git submodule within y
 amanda_client_restore.yml
 amanda_client.yml
 amanda_copy_keys.yml
-amanda_copy_keys.yml-old
 amanda_master_playbook.yml
 amanda_server_cfg.yml
 amanda_server.yml
-
+```
+...
+```
 roles/amanda_client
 ├── defaults
 │   └── main.yml -> ../../amanda_server/defaults/main.yml
@@ -131,14 +132,14 @@ roles/amanda_server
 └── templates
     ├── amanda-client.conf.j2 -> ../../amanda_client/templates/amanda-client.conf.j2
     ├── amanda-security.conf.j2 -> ../../amanda_client/templates/amanda-security.conf.j2
-    └── systemd
+    └── systemd *DORMANT*
         ├── amanda@.service
         └── amanda.socket
 roles/amanda_server_cfg
 ├── defaults
 │   └── main.yml
 ├── tasks
-│   ├── amcheck.yml
+│   ├── amcheck.yml *DORMANT*
 │   ├── main.yml
 │   └── server_config.yml
 ├── templates
@@ -156,7 +157,7 @@ roles/amanda_server_cfg
 
 # Overriding config
 
-You should use vars/main.yml within the relevant roles. E.g. server configuration role.
+You should use vars/main.yml within the server roles. The client role vars/main.yml is a link back to the server role vars/main.yml to ease management.
 
 # Getting started and running playbooks/tasks
 
