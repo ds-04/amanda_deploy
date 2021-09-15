@@ -6,8 +6,9 @@ Ansible playbooks and roles to deploy Amanda backup server and clients
 The motivation is to be able to reproduce an Amanda backup setup quickly, deploying both clients and server with idempotence.
 
 **THIS CONTENT SHOULD BE USED AT OWN RISK:**<br><br>
-**- AUTHOR HAS DONE TESTING WHILST IN DEVELOPMENT**<br>
-**- YOUR SECURITY IN PRODUCTION/AT YOUR SITE IS YOUR RESPONSABILITY!**<br><br>
+- AUTHOR HAS DONE TESTING WHILST IN DEVELOPMENT<br>
+- **YOUR SECURITY IN PRODUCTION/AT YOUR SITE IS YOUR RESPONSABILITY!!**<br>
+- IT IS ASSUMED YOU HAVE ANSIBLE CONTROL OF ALL HOSTS, BOTH FROM A SECURITY PERSPECTIVE AND DEPLOYMENT USING THIS CODE<br><br>
 
 Developed/tested on:
 - Centos 7.9 and Debian 11 hosts
@@ -56,8 +57,9 @@ Playbooks:
 - amanda_copy_keys.yml (playbook; append public key from server to clients (server is also a client by default), use ansible to add host-keys of clients to the amanda server)
 - amanda_server_cfg.yml (calls its namesake role to: create/copy/update configuration files, directories and create vtapes for a test vtape environ)
 - amanda_server.yml (calls its namesake role to: install server packages<sup>1</sup>, disable xinetd, setup server ssh user, setup server ssh user keys, copy amanda-security.conf<sup>2</sup>)
+- amanda_client_restore.yml (playbook; append root public key from client restore systems to server, use ansible to add host-key of server to the client restore systemts - these tasks enable *amrecover* to work)
 
-<sup>1</sup> Debian is direct from repo, RHEL/Centos via Zmanda RPM url/download<br>
+<sup>1</sup> Debian is direct from repo, RHEL/Centos via Zmanda RPM url/download. RHEL server package also provides client capability.<br>
 <sup>2</sup> it is assumed the server will also be a client of itself, this can be disabled/overriden if desired
 
 
