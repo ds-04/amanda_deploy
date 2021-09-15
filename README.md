@@ -24,8 +24,8 @@ Future:<br>
 - deploy Amanda backup server **with SSH auth not bsdtcp**
 - deploy Amanda clients **with SSH auth not bsdtcp**
 - generate (if needed) and copy ssh pub key from server to client for **SSH auth**
-- install known hosts entries on server for clients and also for client restoration (amrecover) both via **SSH auth**
-- it will setup an ssh authentication route/method from the client back to the server - this is needed for amrecover invocation on the client itself (for **SSH auth**)
+- install known hosts entries on server for clients and also for client restoration (*amrecover*) both via **SSH auth**
+- it will setup an ssh authentication route/method from the client back to the server - this is needed for *amrecover* invocation on the client itself (for **SSH auth**)
 - **it will disable xinetd for now as bsdtcp auth isn't being used here** and avoid installing it where possible
 - it will deploy a test vtape setup should you choose to do so
 
