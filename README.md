@@ -7,7 +7,7 @@ The motivation is to be able to reproduce an Amanda backup setup quickly, deploy
 
 **THIS CONTENT SHOULD BE USED AT OWN RISK:**<br><br>
 **- AUTHOR HAS DONE TESTING WHILST IN DEVELOPMENT**<br>
-**- YOUR SECURITY IN PRODUCTION IS YOUR RESPONSABILITY!**<br><br>
+**- YOUR SECURITY IN PRODUCTION/AT YOUR SITE IS YOUR RESPONSABILITY!**<br><br>
 
 Developed/tested on:
 - Centos 7.9 and Debian 11 hosts
@@ -23,7 +23,7 @@ Future:<br>
 - deploy Amanda backup server **with SSH auth not bsdtcp**
 - deploy Amanda clients **with SSH auth not bsdtcp**
 - generate (if needed) and copy ssh pub key from server to client for **SSH auth**
-- install known hosts entries on server for clients (you can change the options for this, sensible defaults are provided) for **SSH auth**
+- install known hosts entries on server for clients and also for client restoration (amrecover) both via **SSH auth**
 - it will setup an ssh authentication route/method from the client back to the server - this is needed for amrecover invocation on the client itself (for **SSH auth**)
 - **it will disable xinetd for now as bsdtcp auth isn't being used here** and avoid installing it where possible
 - it will deploy a test vtape setup should you choose to do so
@@ -53,7 +53,7 @@ This repo is comprised of multiple playbooks and roles.
 Playbooks:
 
 - amanda_client.yml (calls its namesake role to: install packages for client, disable xinetd, setup local user security/ssh, copy amanda-security.conf)
-- amanda_copy_keys.yml (playbook; append public key from server to clients (server is also a client by default), use ssh-keyscan to add host-keys of clients to server)
+- amanda_copy_keys.yml (playbook; append public key from server to clients (server is also a client by default), use ansible to add host-keys of clients to the amanda server)
 - amanda_server_cfg.yml (calls its namesake role to: create/copy/update configuration files, directories and create vtapes for a test vtape environ)
 - amanda_server.yml (calls its namesake role to: install server packages<sup>1</sup>, disable xinetd, setup server ssh user, setup server ssh user keys, copy amanda-security.conf<sup>2</sup>)
 
