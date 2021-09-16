@@ -202,35 +202,35 @@ It is expected that you can create a role named amanda_server_prod_cfg (or simil
 
 # FAQ
 
-- *Could other auth methods be provided e.g. bsdtcp auth?*
+### *Could other auth methods be provided e.g. bsdtcp auth?*
 
 Yes contributions are welcome to develope/test/integrate bsdtcp auth into this ansible code.
 
-- *Are Ubuntu/SUSE or other OS hosts working?*
+### *Are Ubuntu/SUSE or other OS hosts working?*
 
 These have not been included. Have not been tested with this code. Pull requests and testing effort welcomed.
 
 Whilst Ubuntu should be similar to Debian it has not been tested here and hence not included.
 
-- *How do I run commands as the Amanda user?*
+### *How do I run commands as the Amanda user?*
 
 That's up to you, but you can switch to it or use ```sudo -u amanda_user COMMAND```
 
-- *How would I increase the number of test vtapes?*
+### *How would I increase the number of test vtapes?*
 
 Override the defaults and increase the max vtapes for the configuration e.g. (for the example config): ```vtape_server_cfg1_max_vtape```
 
 Then run the role again, more *slot* directories will be created, which Amanda will see and create vtapes.
 
 
-- *How would I have multiple instances? (multiple "Backup Server Hosts")*
+### *How would I have multiple instances? (multiple "Backup Server Hosts")*
 
 Use mulitple ansible inventory files and call these, e.g.:
 
 ```amanda_inv1```<br>
 ```amanda_inv2```
 
-- *Test vtape configuration - How do I do a test restore using the local auth, of the */etc* disk list entry example (where the server is a client too)?*
+### *Test vtape configuration - How do I do a test restore using the local auth, of the */etc* disk list entry example (where the server is a client too)?*
 
 - As the root user (on the server): ```amrecover DailySet1 -o auth=local -s localhost```
 - then, sethost, check dles, set a dle... from there you should manage to restore (can use *help* command or see https://wiki.zmanda.com/index.php/How_To:Recover_Data)
