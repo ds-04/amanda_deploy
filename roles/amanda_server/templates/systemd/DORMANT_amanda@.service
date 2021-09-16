@@ -1,0 +1,15 @@
+# amanda@.service 
+[Unit]
+Description=Amanda Backup System
+After=local-fs.target
+
+[Service]
+{% if (ansible_distribution == "Debian") %}
+User={{ debian_user }}
+Group={{ debian_group }}
+{% elif (ansible_os_family == "RedHat") %}
+User={{ redhat_user }}
+Group={{ redhat_group }}
+{% endif %}
+ExecStart=/usr/lib/amanda/amandad -auth=bsdtcp amdump amindexd amidxtaped
+StandardInput=socket

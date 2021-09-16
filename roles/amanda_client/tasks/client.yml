@@ -1,0 +1,55 @@
+---
+
+#D Simpson 2021, ds-04
+
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+- block:
+
+  - name: (RHEL/Centos) Get/download amanda-client (community) from Zmanda (URL)
+    get_url:
+     url: "{{ item.url }}"
+     dest: "{{ item.dest }}"
+     mode: '0700'
+     owner: root
+     group: root
+     checksum: "{{ item.checksum }}"
+    with_items: "{{ client_rpm }}"
+    when:
+     - ansible_os_family == "RedHat"
+     - ansible_distribution_major_version|int >= 7
+
+  # package will do yum/dnf
+  - name: (RHEL/Centos) install amanda-client (community) from Zmanda, local saved RPM
+    package:
+     name: "{{ item.dest }}{{ item.url | basename }}"
+     state: present
+    with_items: "{{ client_rpm }}"
+    when:
+     - ansible_os_family == "RedHat"
+     - ansible_distribution_major_version|int >= 7
+     - "'amanda_server' not in group_names" # server RPM provides client functionality too
+
+  - name: (Debian) install amanda-client from repos
+    apt:
+     name:
+      - amanda-client
+     state: present
+    when:
+     - ansible_distribution == "Debian"
+     - ansible_distribution_major_version|int >= 10
+
+  become: "True"
+...

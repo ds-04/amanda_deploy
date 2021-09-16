@@ -1,0 +1,58 @@
+---
+#please override config in ../vars/main.yml
+
+#by default, don't actually deploy test cfg... override on cli with -e deploy_test_vtape_cfg=True
+deploy_test_vtape_cfg: 'False'
+
+#----------------------------------------------------
+#TEST SETUP CAN OVERRIDE IN ../vars/main.yml
+#initialise only, don't touch this!
+cfg_initial_vtapes: []
+#
+#vtape_number - define how many vtapes, this will be the last one - therefore defines range 1-X
+#----------------------------------------------------
+
+#DEFAULTS OVERRIDE vtape_server_cfg in ../vars/main.yml
+vtape_server_cfg1:
+    cfg_name: 'DailySet1'
+    cfg_email: 'notreal1'
+    cfg_org: 'test ORG'
+    cfg_label: 'MyData'
+    cfg_holdingd: '/holding'
+    cfg_vtaped: '/amanda/vtapes/slots'
+    cfg_tapecycle: '4'
+    cfg_dumpcycle: '3 days'
+vtape_server_cfg1_max_vtape: 9 #string not int
+vtape_server_cfg1_dirs:
+    - "/holding"
+    - "/etc/amanda/DailySet1" # config area
+    - "/amanda/DailySet1/state/curinfo" #state
+    - "/amanda/DailySet1/state/index" #state
+    - "/amanda/DailySet1/state/log" #state
+    - '/amanda/vtapes/slots'
+vtape_server_cfg1_tape: |
+  #tape hardware
+  tapetype "TEST-TAPE"
+
+  #define tape hardware
+  define tapetype TEST-TAPE {
+  length 100 mbytes
+  filemark 4 kbytes
+  }
+
+#EXAMPLE2 deactivated
+#vtape_server_cfg2:
+#  - name: 'DailySet2'
+#    cfg_email: 'notreal2'
+#    cfg_vtape_number: '2'
+#    cfg_vtape_dir: '/amanda/vtapes/slots'
+#    cfg_holdingd: '/holding2'
+#    cfg_dirs:
+#      - "/holding2"
+#      - "/etc/amanda/DailySet2" # config area
+#      - "/amanda/DailySet2/state/curinfo" #state
+#      - "/amanda/DailySet2/state/index" #state
+#      - "/amanda/DailySet2/state/log" #state
+
+
+...

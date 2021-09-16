@@ -1,0 +1,192 @@
+---
+
+#D Simpson 2021, ds-04
+
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+# We import defaults from the server role
+- hosts: amanda_server, amanda_client
+  gather_facts: 'no'
+  tasks:
+   - name: include roles/amanda_server/defaults
+     include_vars:
+      file: roles/amanda_server/defaults/main.yml
+      name: amanda_include_vars
+
+- hosts: amanda_server, amanda_client
+  tasks:
+   - name: Set fact for Debian
+     set_fact:
+      server_user_var: "{{ amanda_include_vars.debian_user }}"
+      server_user_home: "{{ amanda_include_vars.debian_user_home }}"
+      server_group: "{{ amanda_include_vars.debian_group }}"
+      local_ssh_key_opts: "{{ amanda_include_vars.debian_key_opts }}"
+      local_ssh_key_algo: "{{ amanda_include_vars.ssh_key_algo }}" # needed to determine tidy
+     when: ansible_distribution == "Debian"
+
+   - name: Set fact for RedHat/Centos
+     set_fact:
+      server_user_var: "{{ amanda_include_vars.redhat_user }}"
+      server_user_home: "{{ amanda_include_vars.redhat_user_home }}"
+      server_group: "{{ amanda_include_vars.redhat_group }}"
+      local_ssh_key_opts: "{{ amanda_include_vars.redhat_key_opts }}"
+      local_ssh_key_algo: "{{ amanda_include_vars.ssh_key_algo }}" # needed to determine tidy
+     when: ansible_os_family == "RedHat"
+
+#Assigned for clarity more than anything else...
+- hosts: amanda_server
+  tasks:
+   - name: assign various server vars from defaults
+     set_fact:
+      local_server_ip: "{{ ansible_default_ipv4.address }}"
+      local_update_server_known_hosts: "{{ amanda_include_vars.update_server_known_hosts }}"
+      local_server_also_client: "{{ amanda_include_vars.server_also_client }}"
+
+- hosts: amanda_client
+  gather_facts: 'no'
+  tasks:
+   - name: assign var for known_hosts type to use
+     set_fact:
+      local_known_hosts_key_type: "{{ amanda_include_vars.known_hosts_key_type }}"
+
+- hosts: amanda_server, amanda_client
+  gather_facts: 'no'
+  tasks:
+   - name: Tidy (find) id_rsa keys from client and server
+     find:
+      paths: "{{ server_user_home }}/.ssh"
+      patterns: "*id*rsa*"
+      recurse: 'no'
+      use_regex: 'no'
+     register: files_to_delete
+     become: 'True'
+
+   - name: Tidy (remove) id_rsa keys from client and server
+     file:
+      path: "{{ item.path }}"
+      state: absent
+     with_items: "{{ files_to_delete.files }}"
+     when: local_ssh_key_algo != 'rsa'
+     become: 'True'
+
+#Get the server's public key
+- hosts: amanda_server
+  gather_facts: 'no'
+  tasks:
+   - name: Get ssh keys on server
+     slurp:
+      src: "{{ server_user_home }}/.ssh/{{ amanda_include_vars.server_ssh_keypair }}.pub"
+     register: amanda_server_pub
+     become: 'True'
+
+# kept for debug
+#- hosts: amanda_client
+#  tasks:
+#   - name: debug
+#     debug:
+#      msg: "{{ local_ssh_key_opts }}"
+
+# Delegate and apply server's public key to the clients
+- hosts: amanda_server
+  gather_facts: 'no'
+  tasks:
+   - name: add server public key to amanda_client group hosts
+     authorized_key:
+      user: "{{ hostvars[item]['server_user_var'] }}"
+      key: "{{ amanda_server_pub.content | b64decode }}"
+      key_options: "from=\"{{ local_server_ip }}\",{{ hostvars[item]['local_ssh_key_opts'] }}"
+     delegate_to: "{{ item }}"
+     loop: "{{ groups['amanda_client'] }}"
+     become: 'True'
+
+# server connection to itself as a client
+- hosts: amanda_server
+  gather_facts: 'no'
+  tasks:
+   - name: Ensure server can ssh to itself for testing puposes (server_also_client var)
+     authorized_key:
+      user: "{{ server_user_var }}"
+      state: present
+      key: "{{ amanda_server_pub.content | b64decode }}"
+      key_options: "from=\"127.0.0.1,{{ local_server_ip }}\",{{ local_ssh_key_opts }}"
+     become: 'True'
+     when: local_server_also_client|bool
+
+- hosts: amanda_client
+  gather_facts: 'no'
+  tasks:
+   - name: "slurp the ssh_host_{{ local_known_hosts_key_type }}_key.pub"
+     slurp:
+      src: "/etc/ssh/ssh_host_{{ local_known_hosts_key_type }}_key.pub"
+     register: client_host_pub
+     become: 'True'
+
+- hosts: amanda_client
+  gather_facts: 'no'
+  tasks:
+   - name: Split and assign the content of "ssh_host_{{ local_known_hosts_key_type }}_key.pub"
+     set_fact:
+      client_host_pub2: "{{ (client_host_pub.content|b64decode).split() }}"
+
+- hosts: amanda_client
+  gather_facts: 'no'
+  tasks:
+   - name: debug - print the client host pub keys
+     debug:
+      msg: "{{ client_host_pub2 }}" # this is a list and we don't want the 3rd item to be used
+
+- hosts: amanda_server
+  gather_facts: 'no'
+  tasks:
+   - name: "touch {{ server_user_home }}/.ssh/known_hosts"
+     file:
+      state: touch
+      path: "{{ server_user_home }}/.ssh/known_hosts"
+      modification_time: preserve
+      access_time: preserve
+      owner: "{{ server_user_var }}"
+      group: "{{ server_group }}"
+      mode: '0644'
+     become: 'True'
+
+- hosts: amanda_server
+  gather_facts: 'no'
+  tasks:
+   - name: "Update ssh {{ server_user_home }}/.ssh/known_hosts file on server (i)"
+     known_hosts:
+      path: "{{ server_user_home }}/.ssh/known_hosts"
+      name: "{{ item }}"
+      key: "{{ item }} {{ hostvars[item].client_host_pub2[0] }} {{ hostvars[item].client_host_pub2[1] }}" # dns name line
+      state: present
+      hash_host: 'yes'
+     loop: "{{ groups['amanda_client'] }}"
+     become: 'True'
+     when: local_update_server_known_hosts|bool
+
+- hosts: amanda_server
+  gather_facts: 'no'
+  tasks:
+   - name: "Update ssh {{ server_user_home }}/.ssh/known_hosts file on server (ii)"
+     known_hosts:
+      path: "{{ server_user_home }}/.ssh/known_hosts"
+      name: "{{ hostvars[item].ansible_default_ipv4.address }}"
+      key: "{{ hostvars[item].ansible_default_ipv4.address }} {{ hostvars[item].client_host_pub2[0] }} {{ hostvars[item].client_host_pub2[1] }}" # ip line
+      state: present
+      hash_host: 'yes'
+     loop: "{{ groups['amanda_client'] }}"
+     become: 'True'
+     when: local_update_server_known_hosts|bool
+
+...

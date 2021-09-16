@@ -1,0 +1,42 @@
+#################################
+# VIRTUAL TAPE CONFIG (TESTING) #
+#################################
+
+#report and contact
+mailto "{{ vtape_server_cfg1.cfg_email }}"
+org "{{ vtape_server_cfg1.cfg_org }}"
+
+#state
+infofile "/amanda/{{ vtape_server_cfg1.cfg_name }}/state/curinfo"
+logdir "/amanda/{{ vtape_server_cfg1.cfg_name }}/state/log"
+indexdir "/amanda/{{ vtape_server_cfg1.cfg_name }}/state/index"
+
+#server user
+{% if (ansible_os_family == "RedHat") %}
+dumpuser "{{ redhat_user }}"
+{% elif (ansible_distribution == "Debian") %}
+dumpuser "{{ debian_user }}"
+{% endif %}
+
+#cycle
+tapecycle {{ vtape_server_cfg1.cfg_tapecycle }}
+dumpcycle {{ vtape_server_cfg1.cfg_dumpcycle }}
+
+#hardware
+
+tpchanger "chg-disk:{{ vtape_server_cfg1.cfg_vtaped }}"
+labelstr "{{ vtape_server_cfg1.cfg_label }}[0-9][0-9]"
+autolabel "{{ vtape_server_cfg1.cfg_label }}%%" EMPTY VOLUME_ERROR
+amrecover_changer "changer"
+
+#tape type to use
+{{ vtape_server_cfg1_tape }}
+
+#define global dump params
+includefile "test_vtape_global.conf"
+
+#deine dumps
+includefile "test_vtape_dumps.conf"
+
+#define holding disk
+includefile "test_vtape_holding_disk.conf"

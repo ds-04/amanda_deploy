@@ -1,0 +1,10 @@
+# amanda.socket 
+[Unit]
+Description=Amanda Activation Socket
+
+[Socket]
+ListenStream=10080
+Accept=true
+
+[Install]
+WantedBy=sockets.target

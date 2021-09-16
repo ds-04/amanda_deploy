@@ -1,0 +1,25 @@
+---
+
+# DORMANT
+
+#- name: Set fact for Debian
+#  set_fact:
+#   server_user_var: "{{ debian_user }}"
+#  when: ansible_distribution == "Debian"
+
+#- name: Set fact for RedHat/Centos
+#  set_fact:
+#   server_user_var: "{{ redhat_user }}"
+#  when: ansible_os_family == "RedHat"
+
+#- name: Run amcheck on config -  {{ test_vtape_cfg_name }}
+#  command: "/sbin/amcheck  {{ test_vtape_cfg_name }}"
+#  become: 'yes'
+#  become_user: "{{ server_user_var }}" #requires "acl" package
+#  register: amcheck_res
+#  ignore_errors: 'yes'
+#
+#- debug:
+#    var: amcheck_res
+
+...

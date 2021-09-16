@@ -1,0 +1,123 @@
+---
+
+#D Simpson 2021, ds-04
+
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+- block:
+
+   - name: Include vars from amanda_server (OS defs, ssh-key name)
+     include_vars:
+      dir: ../../amanda_server/defaults/
+      files_matching: main.yml
+
+   - name: Set fact for Debian
+     set_fact:
+      server_user_var: "{{ debian_user }}"
+      server_user_home: "{{ debian_user_home }}"
+      server_group: "{{ debian_group }}"
+     when: ansible_distribution == "Debian"
+
+   - name: Set fact for RedHat/Centos
+     set_fact:
+      server_user_var: "{{ redhat_user }}"
+      server_user_home: "{{ redhat_user_home }}"
+      server_group: "{{ redhat_group }}"
+     when: ansible_os_family == "RedHat"
+
+   - name: Create directories for vtape configuration
+     file:
+      state: directory
+      owner: "{{ server_user_var }}"
+      group: "{{ server_group }}"
+      mode: '0750'
+      path: "{{ item }}"
+     loop: "{{ vtape_server_cfg1_dirs }}"
+
+   # This is only 1 config, if you have a 2nd.. this is not copying it.... needed in future enhancement
+   - name: Template out amanda conf files for vtape configuration
+     template:
+      backup: 'yes'
+      src: "{{ item.src }}"
+      dest: "/etc/amanda/{{ vtape_server_cfg1.cfg_name }}/{{ item.dest }}"
+      mode: 0644
+      owner: "{{ server_user_var }}"
+      group: "{{ server_group }}"
+     loop:
+      - { src: '../templates/test_vtape_confs/test_vtape_amanda.conf.j2', dest: 'amanda.conf' }
+      - { src: '../templates/test_vtape_confs/test_vtape_dumps.conf.j2', dest: 'test_vtape_dumps.conf' }
+      - { src: '../templates/test_vtape_confs/test_vtape_global.conf.j2', dest: 'test_vtape_global.conf' }
+      - { src: '../templates/test_vtape_confs/test_vtape_holding_disk.conf.j2', dest: 'test_vtape_holding_disk.conf' }
+
+   - name: Set fact to initialse localvar_vtapes for next task
+     set_fact:
+      # empty list is from defaults
+      localvar_vtapes: "{{ cfg_initial_vtapes }}"
+
+   # append to a list, local variable
+   - name: Set fact for VTAPE slots
+     set_fact:
+      localvar_vtapes: "{{ localvar_vtapes }} + [ '{{ 'slot%x' | format(item) }}' ]"
+     loop: "{{ range(1, vtape_server_cfg1_max_vtape + 1, 1) | list }}"
+
+   - name: Debug
+     debug:
+      msg: "{{ item }}"
+     with_items: "{{ localvar_vtapes }}"
+
+   - name: Create "{{ vtape_server_cfg1_max_vtape }}" VTAPE slots as specified
+     file:
+      state: directory
+      owner: "{{ server_user_var }}"
+      group: "{{ server_group }}"
+      mode: '0750'
+      path: "{{ vtape_server_cfg1.cfg_vtaped}}/{{ item }}"
+     loop: "{{ localvar_vtapes }}"
+
+   - name: Check tape changer initialised
+     stat:
+      path: "{{ vtape_server_cfg1.cfg_vtaped}}/data"
+     register: sym
+
+   - name: Print a debug message if /amanda/vtapes/slots/data NOT a link
+     debug:
+      msg: "islnk: {{ vtape_server_cfg1.cfg_vtaped}}/data - MAY REQUIRE ATTENTION path doesn't exist)"
+     when:
+      - sym.stat.islnk is not defined
+
+   - name: Print a debug message if /amanda/vtapes/slots/data IS a link
+     debug:
+      msg: "islnk: {{ vtape_server_cfg1.cfg_vtaped}}/data is present"
+     when:
+      - sym.stat.islnk is defined
+
+   - name: "Copy /etc/amanda/{{ vtape_server_cfg1.cfg_name }}/disklist"
+     template:
+      backup: 'yes'
+      dest: "/etc/amanda/{{ vtape_server_cfg1.cfg_name }}/disklist"
+      src: test_vtape_disklist.j2
+      owner: "{{ server_user_var }}"
+      group: "{{ server_group }}"
+      mode: '0644'
+
+   - name: Config completed, note the following actions
+     debug:
+      msg:
+       - Run amcheck {{ vtape_server_cfg1.cfg_name }} as the {{ server_user_var }} user to check the configuration
+       - you may need to review your sshd or security settings to allow ssh - also refer to other roles
+
+  become: 'True'
+
+...

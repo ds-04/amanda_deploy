@@ -1,0 +1,20 @@
+define dumptype simple-gnutar-local {
+auth "local"
+program "GNUTAR"
+}
+
+#Debian
+define dumptype simple-gnutar-ssh-{{ debian_user }}-user {
+auth "ssh"
+ssh_keys "{{ server_user_home }}/.ssh/{{ server_ssh_keypair }}"
+client_username "{{ debian_user }}"
+program "GNUTAR"
+}
+
+#RHEL/CENTOS
+define dumptype simple-gnutar-ssh-{{ redhat_user}}-user {
+auth "ssh"
+ssh_keys "{{ server_user_home }}/.ssh/{{ server_ssh_keypair }}"
+client_username "{{ redhat_user }}"
+program "GNUTAR"
+}

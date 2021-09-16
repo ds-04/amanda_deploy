@@ -1,0 +1,9 @@
+---
+
+- include: server_config.yml
+  ignore_errors: "{{ ansible_check_mode }}"
+  tags:
+    - server_config
+  when: deploy_test_vtape_cfg != 'False'
+
+...

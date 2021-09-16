@@ -1,0 +1,89 @@
+---
+
+#D Simpson 2021, ds-04
+
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+- block:
+
+  - name: amanda server dependencies
+    yum:
+     name:
+      # needed for lto tapes
+      - mtx
+      # needed for default amanda server email /bin/Mail -> /bin/mailx
+      - mailx
+      - glib*
+      #- xinetd kept for reference
+      - perl-Data-Dumper
+      - perl-Encode-Locale
+      - perl-JSON
+      #- perl-URI-Escape use CPAN
+      - perl-XML-Simple
+      - perl
+      - perl-CPAN
+     state: installed
+
+  - name: download cpanm
+    get_url:
+     url: https://fastapi.metacpan.org/source/MIYAGAWA/App-cpanminus-1.7044/bin/cpanm
+     dest: /tmp/cpanm.pl
+     mode: '0755'
+
+  - name: install cpanm for ansible module
+    command: perl cpanm.pl App::cpanminus
+    args:
+     chdir: /tmp/
+     creates: /usr/local/bin/cpanm
+
+  - name: add cpanm symlink to /usr/bin
+    file:
+     src: /usr/local/bin/cpanm
+     dest: /usr/bin/cpanm
+     state: link
+
+  - name: install perl modules
+    cpanm:
+     name: "{{ item }}"
+    with_items:
+     - URI-Escape
+
+  - name: (RHEL/Centos) Get/download amanda-server (community) from Zmanda (URL)
+    get_url:
+     url: "{{ item.url }}"
+     dest: "{{ item.dest }}"
+     mode: '0700'
+     owner: root
+     group: root
+     checksum: "{{ item.checksum }}"
+    with_items:
+     - "{{ server_rpm }}"
+    when:
+     - ansible_os_family == "RedHat"
+     - ansible_distribution_major_version|int >= 7
+
+  # package will do yum/dnf
+  - name: (RHEL/Centos) install amanda-server (community) from Zmanda, local saved RPM
+    package:
+     name: "{{ item.dest }}{{ item.url | basename }}"
+     state: present
+    with_items:
+     - "{{ server_rpm }}"
+    when:
+     - ansible_os_family == "RedHat"
+     - ansible_distribution_major_version|int >= 7
+
+  become: "True"
+...

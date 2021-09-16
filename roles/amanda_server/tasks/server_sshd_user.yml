@@ -1,0 +1,68 @@
+---
+
+#D Simpson 2021, ds-04
+
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+- block:
+
+   - name: Set fact for Debian
+     set_fact:
+      server_user_var: "{{ debian_user }}"
+      server_user_home: "{{ debian_user_home }}"
+     when: ansible_distribution == "Debian"
+
+   - name: Set fact for RedHat/Centos
+     set_fact:
+      server_user_var: "{{ redhat_user }}"
+      server_user_home: "{{ redhat_user_home }}"
+     when: ansible_os_family == "RedHat"
+
+   - name: add sshd block to disable password ssh for "{{ server_user_var }}"
+     blockinfile:
+      backup: 'yes'
+      dest: /etc/ssh/sshd_config
+      state: present
+      block: "Match User {{ server_user_var }}
+             \nPasswordAuthentication no
+             \nAuthenticationMethods publickey"
+      marker: "# {mark} ANSIBLE MANAGED BLOCK user {{ server_user_var }}"
+     register: sshd_changed
+
+   - name: add pam.d sshd line to allow "{{ server_user_var }}"
+     lineinfile:
+      backup: 'yes'
+      dest: /etc/pam.d/sshd
+      state: present
+      insertbefore: "^account.*required.*pam_nologin.so"
+      line: "account    optional     pam_localuser.so"
+     register: sshd_changed
+
+   - name: reload sshd service
+     service:
+      name: sshd
+      state: reloaded
+      enabled: "yes"
+     when: sshd_changed|bool
+
+   - name: set "{{ server_user_var }}" shell and password lock
+     user:
+      name: "{{ server_user_var }}"
+      # using instead of ansible module's password_lock
+      password: '!'
+      shell: /bin/bash
+
+  become: 'True'
+...

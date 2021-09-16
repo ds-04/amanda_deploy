@@ -1,0 +1,28 @@
+#
+# amanda-client.conf - sample Amanda client configuration file.
+#
+# This file normally goes in /etc/amanda/amanda-client.conf.
+#
+
+# ANSIBLE !!! Not templated override on CLI !!!
+#
+#conf "DailySet1"               # your config name
+
+# ANSIBLE !!! Not templated override on CLI !!!
+#
+index_server "localhost"        # your amindexd server
+tape_server  "localhost"        # your amidxtaped server
+tapedev ""
+#tapedev      "tape:/dev/YOUR-TAPE-DEVICE-HERE"  # your tape device
+                        # if not set, Use configure or ask server.
+                        # if set to empty string "", ask server
+                        # amrecover will use the changer if set to the value
+                        # of 'amrecover_changer' in the server amanda.conf.
+
+#   auth        - authentication scheme to use between server and client.
+#                 Valid values are "bsd", "bsdudp", "bsdtcp", "krb5", "local",
+#                 "rsh" and "ssh".  
+#                 Default: [auth "bsdtcp"]
+auth "ssh"
+
+ssh_keys "/root/.ssh/{{ client_restore_ssh_keypair }}"                     # your ssh keys file if you use ssh auth

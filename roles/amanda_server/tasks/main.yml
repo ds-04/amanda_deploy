@@ -1,0 +1,41 @@
+---
+
+- include: debian_server.yml
+  ignore_errors: "{{ ansible_check_mode }}"
+  when:
+    - ansible_distribution == "Debian"
+    - ansible_distribution_major_version|int >= 10
+  tags:
+    - debian_server
+
+- include: rhel_centos_server.yml
+  ignore_errors: "{{ ansible_check_mode }}"
+  when:
+    - ansible_os_family == "RedHat"
+    - ansible_distribution_major_version|int >= 7
+  tags:
+    - rhel_centos_server
+
+- include: disable_xinetd.yml
+  ignore_errors: "{{ ansible_check_mode }}"
+  tags:
+    - disable_xinetd
+
+- include: server_sshd_user.yml
+  ignore_errors: "{{ ansible_check_mode }}"
+  tags:
+    - server_auth
+
+- include: server_ssh_keys.yml
+  ignore_errors: "{{ ansible_check_mode }}"
+  tags:
+    - server_ssh_keys
+
+# run if server_also_client set, default is True
+- include: client_security.yml
+  ignore_errors: "{{ ansible_check_mode }}"
+  when: server_also_client|bool
+  tags:
+    - client_security
+
+...

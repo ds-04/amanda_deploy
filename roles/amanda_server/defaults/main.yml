@@ -1,0 +1,58 @@
+---
+# Amanda version - used in package string
+deb_amanda_version: '1:3.5.1-7'
+rhel_centos_amanda_version: '3.5.1-1'
+
+# should the server be able to backup itself etc.
+server_also_client: 'True'
+# can the client connect to the server for restore
+client_can_restore: 'True'
+
+#-----------SSH--------------
+# enable the update of known hosts on the server, using the following vars
+update_server_known_hosts: 'True'
+update_client_restore_known_hosts: 'True'
+known_hosts_key_type: 'ed25519'
+ssh_key_algo: 'ed25519' # prefer ed25519 to rsa, also see NOTES bottom
+
+# the name of the server and client_restore keypair
+server_ssh_keypair: amdump_id_{{ ssh_key_algo|default('ed25519') }} # default name from RPM is id_rsa_amdump
+client_restore_ssh_keypair: amrecover_id_{{ ssh_key_algo|default('ed25519') }} # default name from RPM is id_rsa_amrecover
+#--------END-SSH-------------
+
+#----------PACKAGES----------
+# RHEL pacakges, main repos are older
+client_rpm:
+ - { url: "https://cdn.zmanda.com/downloads/community/Amanda/3.5.1/Redhat_Enterprise_7.0/amanda-backup_client-3.5.1-1.rhel7.x86_64.rpm", checksum: "sha256:fe427cc81195b6d3817aff145c14b46ffed56748c648ed202b3ccdec08d348e0", dest: "/root/" }
+server_rpm:
+ - { url: "https://cdn.zmanda.com/downloads/community/Amanda/3.5.1/Redhat_Enterprise_7.0/amanda-backup_server-3.5.1-1.rhel7.x86_64.rpm", checksum: "sha256:9b80d2b166a431e9daed437250a50b0d9abc5ff2172c1e6ac35a0afe9e1f7a69", dest: "/root/" }
+
+# Debian packages
+# come from debian repo
+#-----END--PACKAGES---------
+
+#-----OS--VARS--------------
+debian_user: 'backup'
+debian_group: 'backup'
+debian_user_home: '/var/backups'
+# from="amanda_server.your.domain.com",ssh_key_opts(below) - If you don't want this override with empty var
+debian_key_opts: 'no-port-forwarding,no-X11-forwarding,no-agent-forwarding,command="/usr/lib/amanda/amandad -auth=ssh amdump"'
+# from="amanda_client.your.domain.com",ssh_key_opts(below) - If you don't want this override with empty var
+debian_client_key_opts: 'no-port-forwarding,no-X11-forwarding,no-agent-forwarding,command="/usr/lib/amanda/amandad -auth=ssh amindexd amidxtaped"'
+
+redhat_user: 'amandabackup'
+redhat_group: 'disk'
+redhat_user_home: '/var/lib/amanda'
+# from="amanda_server.your.domain.com",ssh_key_opts(below) - If you don't want this override with empty var
+redhat_key_opts: 'no-port-forwarding,no-X11-forwarding,no-agent-forwarding,command="/usr/libexec/amanda/amandad -auth=ssh amdump"'
+# from="amanda_client.your.domain.com",ssh_key_opts(below) - If you don't want this override with empty var
+redhat_client_key_opts: 'no-port-forwarding,no-X11-forwarding,no-agent-forwarding,command="/usr/libexec/amanda/amandad -auth=ssh amindexd amidxtaped"'
+#-END-OS--VARS-------------
+
+#--------------------------------------------------------------------------------
+# NOTES
+# standard rsa keys will be removed if rsa is not chosen as ssh_key_algo
+# on a RHEL Centos host these come from the RPM:
+# id_rsa_amdump,id_rsa_amdump.pub,id_rsa_amrecover,id_rsa_amrecover.pub
+
+...

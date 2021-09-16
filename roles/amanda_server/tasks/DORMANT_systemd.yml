@@ -1,0 +1,38 @@
+---
+
+#- block:
+#
+# DORMANT
+#  - name: Template out Amanda systemd files to /etc/systemd/system
+#    template:
+#     backup: 'yes'
+#     src: "{{ item.src }}"
+#     dest: "/etc/systemd/system/{{ item.dest }}"
+#     mode: 0644
+#     owner: backup
+#     group: root
+#    loop:
+#     - { src: '../templates/systemd/amanda@.service', dest: 'amanda@.service' }
+#     - { src: '../templates/systemd/amanda.socket', dest: 'amanda.socket' }
+#    register: new_systemd
+#    when: use_systemd
+
+#  - name: systemctl daemon-reload
+#    command: systemctl daemon-reload
+#    when:
+#     - new_systemd|bool
+#     - use_systemd
+
+#  - name: Ensure Amanda systemd Enabled/Started
+#    systemd:
+#     name: "{{ item }}"
+#     enabled: 'yes'
+#     state: 'started'
+#    loop:
+#     - amanda@.service
+#     - amanda.socket
+#    when: use_systemd
+#
+#  become: 'True'
+
+...
