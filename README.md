@@ -137,14 +137,14 @@ roles/amanda_server
 └── templates
     ├── amanda-client.conf.j2 -> ../../amanda_client/templates/amanda-client.conf.j2
     ├── amanda-security.conf.j2 -> ../../amanda_client/templates/amanda-security.conf.j2
-    └── systemd *DORMANT*
-        ├── amanda@.service
-        └── amanda.socket
+    └── systemd
+        ├── DORMANT_amanda@.service
+        └── DORMANT_amanda.socket
 roles/amanda_server_cfg
 ├── defaults
 │   └── main.yml
 ├── tasks
-│   ├── amcheck.yml *DORMANT*
+│   ├── DORMANT_amcheck.yml
 │   ├── main.yml
 │   └── server_config.yml
 ├── templates
