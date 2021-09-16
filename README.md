@@ -74,9 +74,11 @@ This role relies primarily upon the existence of two inventory groups, within yo
 
 A mimimal setup to simply test would be to have the server and client on the same system:
 ```
+#Backup Server Host
 [amanda_server]
 myhost.xx.yy
 
+#Backup Client Hosts
 [amanda_client]
 myhost.xx.yy
 
