@@ -185,7 +185,7 @@ Specific/certain tasks can be run with tags. Please look inside the roles to ide
 You can run everything in one go like this:
 ```ansible-playbook amanda_master_playbook.yml -e deploy_test_vtape_cfg=True```          (N.B. this is enabling deployment of the test vtape config too)<br><br>
 
-Then<br>
+Then (if not deploying the test vtape configuration):<br>
 - ***your amanda_production_server_cfg.yml***
 
 # Deploying the test/example vtape configuration
