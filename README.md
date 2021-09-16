@@ -1,9 +1,11 @@
 ## NOTE Documentation in progress before upload/release of code
 
 # amanda_deploy
-Ansible playbooks and roles to deploy Amanda backup server and clients
+Ansible playbooks and roles to deploy AMANDA backup (Advanced Maryland Automatic Network Disk Archiver) server and clients.
 
 The motivation is to be able to reproduce an Amanda backup setup quickly, deploying both clients and server with idempotence.
+
+See https://en.wikipedia.org/wiki/Amanda_(software) for some information on Amanda.
 
 **THIS CONTENT SHOULD BE USED AT OWN RISK:**<br><br>
 - AUTHOR HAS DONE TESTING WHILST IN DEVELOPMENT<br>
@@ -201,9 +203,22 @@ It is expected that you can create a role named amanda_server_prod_cfg (or simil
 
 Yes contributions are welcome to develope/test/integrate bsdtcp auth into this ansible code.
 
+*Are Ubuntu/SUSE or other OS hosts working?*
+
+These have not been included. Have not been tested with this code. Pull requests and testing effort welcomed.
+
+Whilst Ubuntu should be similar to Debian it has not been tested here and hence not included.
+
 *How do I run commands as the Amanda user?*
 
 That's up to you, but you can switch to it or use ```sudo -u amanda_user COMMAND```
+
+*How would I have multiple instances? (multiple servers)*
+
+Use mulitple ansible inventory files and call these, e.g.:
+
+```amanda_inv1```
+```amanda_inv2```
 
 *Test vtape configuration - How do I do a test restore using the local auth, of the */etc* disk list entry example (where the server is a client too)?*
 
