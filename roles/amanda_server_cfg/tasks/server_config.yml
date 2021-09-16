@@ -20,8 +20,8 @@
 
    - name: Include vars from amanda_server (OS defs, ssh-key name)
      include_vars:
-      dir: ../amanda_server/defaults/
-      files_matching: main.yml
+      dir: vars/
+      files_matching: server_role_defaults.yml # this target is a symbolic link
 
    - name: Set fact for Debian
      set_fact:
