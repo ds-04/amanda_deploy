@@ -35,6 +35,7 @@ Future:<br>
 
 - edit any firewall settings
 - implement all of your security for your backup system - operators are responsable for their own security
+- do any DNS configuration (e.g. /etc/hosts) you need to ensure lookups work
 - bsdtcp auth or other non SSH auth methods - bsdtcp auth could be implemented if a pull request is submitted etc.
 - dormant bsdtcp systemd files are included though
 - edit/setup any cron jobs for backup invocation
