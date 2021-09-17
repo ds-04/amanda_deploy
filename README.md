@@ -129,11 +129,11 @@ roles/amanda_server
 │   ├── client_security.yml -> ../../amanda_client/tasks/client_security.yml
 │   ├── debian_server.yml
 │   ├── disable_xinetd.yml
+│   ├── DORMANT_systemd.yml
 │   ├── main.yml
 │   ├── rhel_centos_server.yml
 │   ├── server_sshd_user.yml
-│   ├── server_ssh_keys.yml
-│   └── systemd.yml
+│   └── server_ssh_keys.yml
 └── templates
     ├── amanda-client.conf.j2 -> ../../amanda_client/templates/amanda-client.conf.j2
     ├── amanda-security.conf.j2 -> ../../amanda_client/templates/amanda-security.conf.j2
@@ -155,8 +155,9 @@ roles/amanda_server_cfg
 │   │   └── test_vtape_holding_disk.conf.j2
 │   └── test_vtape_disklist.j2
 └── vars
+    └── server_role_defaults.yml -> ../../amanda_server/defaults/main.yml
 
-14 directories, 31 files
+14 directories, 32 files
 ```
 
 
