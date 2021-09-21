@@ -6,10 +6,9 @@ deploy_test_vtape_cfg: 'False'
 
 #----------------------------------------------------
 #TEST SETUP CAN OVERRIDE IN ../vars/main.yml
-#initialise only, don't touch this!
+#----------------------------------------------------
+#initialise only, DON'T touch this!
 cfg_initial_vtapes: []
-#
-#vtape_number - define how many vtapes, this will be the last one - therefore defines range 1-X
 #----------------------------------------------------
 
 #DEFAULTS OVERRIDE vtape_server_cfg in ../vars/main.yml
@@ -22,7 +21,7 @@ vtape_server_cfg1:
     cfg_vtaped: '/amanda/vtapes/slots'
     cfg_tapecycle: '4'
     cfg_dumpcycle: '3 days'
-vtape_server_cfg1_max_vtape: 9 #string not int
+vtape_server_cfg1_max_vtape: 9 #string not int - defines range 1-X
 vtape_server_cfg1_dirs:
     - "/holding"
     - "/etc/amanda/DailySet1" # config area
