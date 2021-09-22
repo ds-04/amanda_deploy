@@ -204,6 +204,10 @@ To avoid mishaps by default test/example vtape config is not set to be deployed 
 
 The test vtape config will deploy 9 vtapes of 100 megabytes each - as defined in the defaults file in *amanda_server_cfg/defaults/main.yml*.
 
+## Multiple configs
+
+Multiple configs can be deployed to the same server see the defaults file within the `amanda_server_cfg` role and the variables within. cfg1-cfgX can be created, following the outlined structure. In reality you may only need a couple so just cfg1 and cfg2.
+
 # Running in a production environment or using Physical tapes
 
 It is expected that you can create a role named amanda_server_prod_cfg (or similar) using what is here as a basis. That role could simply template out the configuration files, up to you.
