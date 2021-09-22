@@ -37,86 +37,102 @@
       server_group: "{{ redhat_group }}"
      when: ansible_os_family == "RedHat"
 
-   - name: Create directories for vtape configuration
+   - name: Debug Loop - cfg_dirs
+     debug:
+      msg: "{{ item.1 }}"
+     loop: "{{ tape_configs|subelements('cfg_dirs') }}"
+
+#   - name: Debug Loop - cfg_templates
+#     debug:
+#      msg: "{{ item.1 }}"
+#     loop: "{{ tape_configs|subelements('cfg_templates') }}"
+
+   - name: Create directories for the configuration
      file:
       state: directory
       owner: "{{ server_user_var }}"
       group: "{{ server_group }}"
       mode: '0750'
-      path: "{{ item }}"
-     loop: "{{ vtape_server_cfg1_dirs }}"
+      path: "{{ item.1 }}"
+     loop: "{{ tape_configs|subelements('cfg_dirs') }}"
 
-   # This is only 1 config, if you have a 2nd.. this is not copying it.... needed in future enhancement
-   - name: Template out amanda conf files for vtape configuration
+   - name: Set fact to initialse localvar_templates for next task
+     set_fact:
+      # initialise
+      localvar_templates: []
+
+   # append to a list, local variable of template files
+   - name: Set fact for templates
+     set_fact:
+      localvar_templates: "{{ localvar_templates + (item['cfg_templates']) }}"
+     loop: "{{ tape_configs }}"
+
+   - name: Template out amanda conf files for the configuration
      template:
       backup: 'yes'
-      src: "{{ item.src }}"
-      dest: "/etc/amanda/{{ vtape_server_cfg1.cfg_name }}/{{ item.dest }}"
+      src: "{{ item[1] }}"
+      dest: "{{ item[0].cfg_area }}/{{ item[1] | basename |regex_replace('.j2', '') }}"
       mode: 0644
       owner: "{{ server_user_var }}"
       group: "{{ server_group }}"
-     loop:
-      - { src: '../templates/test_vtape_confs/test_vtape_amanda.conf.j2', dest: 'amanda.conf' }
-      - { src: '../templates/test_vtape_confs/test_vtape_dumps.conf.j2', dest: 'test_vtape_dumps.conf' }
-      - { src: '../templates/test_vtape_confs/test_vtape_global.conf.j2', dest: 'test_vtape_global.conf' }
-      - { src: '../templates/test_vtape_confs/test_vtape_holding_disk.conf.j2', dest: 'test_vtape_holding_disk.conf' }
+     with_nested:
+       - "{{ tape_configs }}"
+       - "{{ localvar_templates }}"
 
-   - name: Set fact to initialse localvar_vtapes for next task
-     set_fact:
-      # empty list is from defaults
-      localvar_vtapes: "{{ cfg_initial_vtapes }}"
+   #ideally this would not be shell... but currently easiest way to do multi-config
+   - name: Create VTAPE slots as specified by the configuration (errors likely mean slotX dir exists, nothing to worry about)
+     shell: "for vslot in `seq 1 {{ item.cfg_max_vtape }}`; do mkdir {{ item.cfg_vtaped }}/slot$vslot; done"
+     with_items: "{{ tape_configs }}"
+     ignore_errors: 'yes' #dirs may already exist
 
-   # append to a list, local variable
-   - name: Set fact for VTAPE slots
-     set_fact:
-      localvar_vtapes: "{{ localvar_vtapes }} + [ '{{ 'slot%x' | format(item) }}' ]"
-     loop: "{{ range(1, vtape_server_cfg1_max_vtape + 1, 1) | list }}"
-
-   - name: Debug
-     debug:
-      msg: "{{ item }}"
-     with_items: "{{ localvar_vtapes }}"
-
-   - name: Create "{{ vtape_server_cfg1_max_vtape }}" VTAPE slots as specified
+   #here becuase we used shell above
+   - name: Ensure config vtape dir permissions set (recursive)
      file:
       state: directory
       owner: "{{ server_user_var }}"
       group: "{{ server_group }}"
       mode: '0750'
-      path: "{{ vtape_server_cfg1.cfg_vtaped}}/{{ item }}"
-     loop: "{{ localvar_vtapes }}"
+      recurse: 'yes'
+      path: "{{ item.cfg_vtaped }}"
+     with_items: "{{ tape_configs }}"
 
    - name: Check tape changer initialised
      stat:
-      path: "{{ vtape_server_cfg1.cfg_vtaped}}/data"
+      path: "{{ item.cfg_vtaped }}/data"
      register: sym
+     with_items: "{{ tape_configs }}"
 
    - name: Print a debug message if /amanda/vtapes/slots/data NOT a link
      debug:
-      msg: "islnk: {{ vtape_server_cfg1.cfg_vtaped}}/data - MAY REQUIRE ATTENTION path doesn't exist)"
+      msg: "islnk: {{ item.cfg_vtaped }}/data - MAY REQUIRE ATTENTION path doesn't exist)"
+     with_items: "{{ tape_configs }}"
      when:
       - sym.stat.islnk is not defined
 
    - name: Print a debug message if /amanda/vtapes/slots/data IS a link
      debug:
-      msg: "islnk: {{ vtape_server_cfg1.cfg_vtaped}}/data is present"
+      msg: "islnk: {{ item.cfg_vtaped }}/data is present"
+     with_items: "{{ tape_configs }}"
      when:
       - sym.stat.islnk is defined
 
-   - name: "Copy /etc/amanda/{{ vtape_server_cfg1.cfg_name }}/disklist"
+   - name: "Copy disklist for each configuration"
      template:
       backup: 'yes'
-      dest: "/etc/amanda/{{ vtape_server_cfg1.cfg_name }}/disklist"
-      src: test_vtape_disklist.j2
+      dest: "{{ item.cfg_area }}/disklist"
+      src: "{{ item.name }}_disklist.j2" #./cfgX_disklist.j2 in templates dir
       owner: "{{ server_user_var }}"
       group: "{{ server_group }}"
       mode: '0644'
+     with_items: "{{ tape_configs }}"
 
    - name: Config completed, note the following actions
      debug:
       msg:
-       - Run amcheck {{ vtape_server_cfg1.cfg_name }} as the {{ server_user_var }} user to check the configuration
+       - If no actions were performed, did you mean this (check if you set deploy_test_vtape_cfg='True')
+       - Otherwise, run amcheck CONFIGNAME as the {{ server_user_var }} user to check a configuration
        - you may need to review your sshd or security settings to allow ssh - also refer to other roles
+     with_items: "{{ tape_configs }}"
 
   become: 'True'
 

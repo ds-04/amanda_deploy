@@ -1,5 +1,5 @@
 holdingdisk hd1 {
-directory "/holding"
+directory "{{ item[0].cfg_holdingd }}"
 use 2 gbytes
 chunksize 1 gbytes
 }

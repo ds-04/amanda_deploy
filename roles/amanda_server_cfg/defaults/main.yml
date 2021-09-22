@@ -7,51 +7,71 @@ deploy_test_vtape_cfg: 'False'
 #----------------------------------------------------
 #TEST SETUP CAN OVERRIDE IN ../vars/main.yml
 #----------------------------------------------------
-#initialise only, DON'T touch this!
+#initialise only, DON'T touch this! Needed for any vtape config
 cfg_initial_vtapes: []
 #----------------------------------------------------
 
-#DEFAULTS OVERRIDE vtape_server_cfg in ../vars/main.yml
-vtape_server_cfg1:
-    cfg_name: 'DailySet1'
-    cfg_email: 'notreal1'
-    cfg_org: 'test ORG'
-    cfg_label: 'MyData'
-    cfg_holdingd: '/holding'
-    cfg_vtaped: '/amanda/vtapes/slots'
-    cfg_tapecycle: '4'
-    cfg_dumpcycle: '3 days'
-vtape_server_cfg1_max_vtape: 9 #string not int - defines range 1-X
-vtape_server_cfg1_dirs:
-    - "/holding"
-    - "/etc/amanda/DailySet1" # config area
-    - "/amanda/DailySet1/state/curinfo" #state
-    - "/amanda/DailySet1/state/index" #state
-    - "/amanda/DailySet1/state/log" #state
-    - '/amanda/vtapes/slots'
-vtape_server_cfg1_tape: |
+#Define a test tape... which will be incoprated into amanda.conf
+vtape_test_tape: |
   #tape hardware
   tapetype "TEST-TAPE"
-
   #define tape hardware
   define tapetype TEST-TAPE {
   length 100 mbytes
   filemark 4 kbytes
   }
 
-#EXAMPLE2 deactivated
-#vtape_server_cfg2:
-#  - name: 'DailySet2'
+#DEFAULTS OVERRIDE this data in ../vars/main.yml
+#This is caple of deploy multiple configs which ansible sees as cfg1,cfg2...
+#Advise overriding with cfg1-cfgX in ../vars/main.yml
+tape_configs:
+  - name: cfg1
+    cfg_name: 'DailySet1' # this name must also be used within cfg dir paths below
+    cfg_email: 'notreal1'
+    cfg_org: 'test ORG'
+    cfg_label: 'MyData'
+    cfg_holdingd: '/holding1' #numbered to keep distinct
+    cfg_vtaped: '/amanda/vtapes1/slots' #numbered to keep distinct and used in changer below
+    cfg_tapechanger: "chg-disk:/amanda/vtapes1/slots"
+    cfg_tapecycle: '4'
+    cfg_dumpcycle: '3 days'
+    cfg_max_vtape: 9 #string not int - defines range 1-X
+    cfg_area: "/etc/amanda/DailySet1"
+    cfg_dirs: #this is used to create and set perms
+      - "/holding1"
+      - "/etc/amanda/DailySet1" # config area
+      - "/amanda/DailySet1/state/curinfo" #state
+      - "/amanda/DailySet1/state/index" #state
+      - "/amanda/DailySet1/state/log" #state
+      - '/amanda/vtapes1/slots' #vtape dir
+    cfg_templates:
+      - "cfg1/amanda.conf.j2" #needs to include cfg1/ and full template name inc j2
+      - "cfg1/test_vtape_dumps.conf.j2" #needs to include cfg1/ and full template name inc j2
+      - "cfg1/test_vtape_global.conf.j2" #needs to include cfg1/ and full template name inc j2
+      - "cfg1/test_vtape_holding_disk.conf.j2" #needs to include cfg1/ and full template name inc j2
+#  - name: cfg2 #Provided for example, advise overriding in ../vars/main.yml
+#    cfg_name: 'DailySet2' # this name must also be used within cfg dir paths below
 #    cfg_email: 'notreal2'
-#    cfg_vtape_number: '2'
-#    cfg_vtape_dir: '/amanda/vtapes/slots'
-#    cfg_holdingd: '/holding2'
-#    cfg_dirs:
+#    cfg_org: 'test ORG'
+#    cfg_label: 'MyData'
+#    cfg_holdingd: '/holding2' #numbered to keep distinct
+#    cfg_vtaped: '/amanda/vtapes2/slots' #numbered to keep distinct and used in changer below
+#    cfg_tapechanger: "chg-disk:/amanda/vtapes2/slots"
+#    cfg_tapecycle: '4'
+#    cfg_dumpcycle: '3 days'
+#    cfg_max_vtape: 9 #string not int - defines range 1-X
+#    cfg_area: "/etc/amanda/DailySet2"
+#    cfg_dirs: #this is used to create and set perms
 #      - "/holding2"
 #      - "/etc/amanda/DailySet2" # config area
 #      - "/amanda/DailySet2/state/curinfo" #state
 #      - "/amanda/DailySet2/state/index" #state
 #      - "/amanda/DailySet2/state/log" #state
-
+#      - '/amanda/vtapes2/slots' #vtape dir
+#    cfg_templates:
+#      - "cfg2/amanda.conf.j2" #needs to include cfg1/ and full template name inc j2
+#      - "cfg2/test_vtape_dumps.conf.j2" #needs to include cfg1/ and full template name inc j2
+#      - "cfg2/test_vtape_global.conf.j2" #needs to include cfg1/ and full template name inc j2
+#      - "cfg2/test_vtape_holding_disk.conf.j2" #needs to include cfg1/ and full template name inc j2
 
 ...

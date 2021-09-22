@@ -1,0 +1,26 @@
+###########################################
+# DISKLIST ENTRY FILE #####################
+#                                         #
+# HOSTNAME ENTRY DUMPTYPE OTHER OPTIONS   #
+###########################################
+
+# 1. noauth localhost test definition
+localhost /etc/ simple-gnutar-local
+
+# 2. SSH testing - backup /etc/ on each amanda_client
+# For client server - choose dumptype based on distro that ansible template finds
+{% for server in groups['amanda_client'] %}
+{% if ansible_os_family == "Debian" %}
+{{ hostvars[server]['inventory_hostname'] }} /etc/ simple-gnutar-ssh-{{ debian_user }}-user
+{% elif ansible_os_family == "RedHat" %}
+{{ hostvars[server]['inventory_hostname'] }} /etc/ simple-gnutar-ssh-{{ redhat_user }}-user
+{% endif %}
+{% endfor %}
+
+#3.
+# Other manually defined examples
+# some centos client
+# hostname1 /etc/ simple-gnutar-ssh-{{ redhat_user }}-user
+# some debian client
+# hostname2 /etc/ simple-gnutar-ssh-{{ debian_user }}-user
+#
