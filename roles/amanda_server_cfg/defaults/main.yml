@@ -8,7 +8,7 @@ deploy_test_vtape_cfg: 'False'
 #TEST SETUP CAN OVERRIDE IN ../vars/main.yml
 #----------------------------------------------------
 #initialise only, DON'T touch this! Needed for any vtape config
-cfg_initial_vtapes: []
+#cfg_initial_vtapes: [] #CURRENTLY DORMANT WAS USED PREVIOUSLY FOR ANSIBLE TO CREATE VTAPES
 #----------------------------------------------------
 
 #Define a test tape... which will be incoprated into amanda.conf
