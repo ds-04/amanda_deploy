@@ -107,57 +107,64 @@ amanda_server.yml
 ```
 ...
 ```
-roles/amanda_client
-├── defaults
-│   └── main.yml -> ../../amanda_server/defaults/main.yml
-├── tasks
-│   ├── client_security.yml
-│   ├── client_sshd_user.yml -> ../../amanda_server/tasks/server_sshd_user.yml
-│   ├── client.yml
-│   ├── disable_xinetd.yml -> ../../amanda_server/tasks/disable_xinetd.yml
-│   └── main.yml
-├── templates
-│   ├── amanda-client.conf.j2
-│   ├── amanda-security.conf.j2
-│   └── systemd -> ../../amanda_server/templates/systemd
-└── vars
-    └── main.yml -> ../../amanda_server/vars/main.yml
-roles/amanda_server
-├── defaults
-│   └── main.yml
-├── tasks
-│   ├── client_security.yml -> ../../amanda_client/tasks/client_security.yml
-│   ├── debian_server.yml
-│   ├── disable_xinetd.yml
-│   ├── DORMANT_systemd.yml
-│   ├── main.yml
-│   ├── rhel_centos_server.yml
-│   ├── server_sshd_user.yml
-│   └── server_ssh_keys.yml
-└── templates
-    ├── amanda-client.conf.j2 -> ../../amanda_client/templates/amanda-client.conf.j2
-    ├── amanda-security.conf.j2 -> ../../amanda_client/templates/amanda-security.conf.j2
-    └── systemd
-        ├── DORMANT_amanda@.service
-        └── DORMANT_amanda.socket
-roles/amanda_server_cfg
-├── defaults
-│   └── main.yml
-├── tasks
-│   ├── DORMANT_amcheck.yml
-│   ├── main.yml
-│   └── server_config.yml
-├── templates
-│   ├── test_vtape_confs
-│   │   ├── test_vtape_amanda.conf.j2
-│   │   ├── test_vtape_dumps.conf.j2
-│   │   ├── test_vtape_global.conf.j2
-│   │   └── test_vtape_holding_disk.conf.j2
-│   └── test_vtape_disklist.j2
-└── vars
-    └── server_role_defaults.yml -> ../../amanda_server/defaults/main.yml
+roles
+├── amanda_client
+│   ├── defaults
+│   │   └── main.yml -> ../../amanda_server/defaults/main.yml
+│   ├── tasks
+│   │   ├── client_security.yml
+│   │   ├── client_sshd_user.yml -> ../../amanda_server/tasks/server_sshd_user.yml
+│   │   ├── client.yml
+│   │   ├── disable_xinetd.yml -> ../../amanda_server/tasks/disable_xinetd.yml
+│   │   └── main.yml
+│   ├── templates
+│   │   ├── amanda-client.conf.j2
+│   │   ├── amanda-security.conf.j2
+│   │   └── systemd -> ../../amanda_server/templates/systemd
+│   └── vars
+│       └── main.yml -> ../../amanda_server/vars/main.yml
+├── amanda_server
+│   ├── defaults
+│   │   └── main.yml
+│   ├── tasks
+│   │   ├── client_security.yml -> ../../amanda_client/tasks/client_security.yml
+│   │   ├── debian_server.yml
+│   │   ├── disable_xinetd.yml
+│   │   ├── DORMANT_systemd.yml
+│   │   ├── main.yml
+│   │   ├── rhel_centos_server.yml
+│   │   ├── server_sshd_user.yml
+│   │   └── server_ssh_keys.yml
+│   └── templates
+│       ├── amanda-client.conf.j2 -> ../../amanda_client/templates/amanda-client.conf.j2
+│       ├── amanda-security.conf.j2 -> ../../amanda_client/templates/amanda-security.conf.j2
+│       └── systemd
+│           ├── DORMANT_amanda@.service
+│           └── DORMANT_amanda.socket
+└── amanda_server_cfg
+    ├── defaults
+    │   └── main.yml
+    ├── tasks
+    │   ├── DORMANT_amcheck.yml
+    │   ├── main.yml
+    │   └── server_config.yml
+    ├── templates
+    │   ├── cfg1
+    │   │   ├── amanda.conf.j2
+    │   │   ├── test_vtape_dumps.conf.j2
+    │   │   ├── test_vtape_global.conf.j2
+    │   │   └── test_vtape_holding_disk.conf.j2
+    │   ├── cfg1_disklist.j2
+    │   ├── cfg2
+    │   │   ├── amanda.conf.j2
+    │   │   ├── test_vtape_dumps.conf.j2
+    │   │   ├── test_vtape_global.conf.j2
+    │   │   └── test_vtape_holding_disk.conf.j2
+    │   └── cfg2_disklist.j2
+    └── vars
+        └── server_role_defaults.yml -> ../../amanda_server/defaults/main.yml
 
-14 directories, 32 files
+18 directories, 37 files
 ```
 
 
