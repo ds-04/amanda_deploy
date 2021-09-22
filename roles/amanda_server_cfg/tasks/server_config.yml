@@ -85,7 +85,7 @@
      with_items: "{{ tape_configs }}"
      ignore_errors: 'yes' #dirs may already exist
 
-   #here becuase we used shell above
+   #here because we used shell above
    - name: Ensure config vtape dir permissions set (recursive)
      file:
       state: directory
