@@ -75,9 +75,7 @@
       mode: 0644
       owner: "{{ server_user_var }}"
       group: "{{ server_group }}"
-     with_nested:
-       - "{{ tape_configs }}"
-       - "{{ localvar_templates }}"
+     loop: "{{ lookup('subelements', tape_configs, 'cfg_templates') }}"
 
    #ideally this would not be shell... but currently easiest way to do multi-config
    - name: Create VTAPE slots as specified by the configuration (errors likely mean slotX dir exists, nothing to worry about)
@@ -132,7 +130,6 @@
        - If no actions were performed, did you mean this (check if you set deploy_test_vtape_cfg='True')
        - Otherwise, run amcheck CONFIGNAME as the {{ server_user_var }} user to check a configuration
        - you may need to review your sshd or security settings to allow ssh - also refer to other roles
-     with_items: "{{ tape_configs }}"
 
   become: 'True'
 
