@@ -34,6 +34,7 @@
       - perl-XML-Simple
       - perl
       - perl-CPAN
+      - lsscsi
      state: installed
 
   - name: download cpanm
