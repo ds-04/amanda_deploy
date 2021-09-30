@@ -21,11 +21,21 @@ client_restore_ssh_keypair: amrecover_id_{{ ssh_key_algo|default('ed25519') }} #
 #--------END-SSH-------------
 
 #----------PACKAGES----------
-# RHEL pacakges, main repos are older
+# RHEL7 pacakges, main repos are older, from zmanda
 client_rpm:
  - { url: "https://cdn.zmanda.com/downloads/community/Amanda/3.5.1/Redhat_Enterprise_7.0/amanda-backup_client-3.5.1-1.rhel7.x86_64.rpm", checksum: "sha256:fe427cc81195b6d3817aff145c14b46ffed56748c648ed202b3ccdec08d348e0", dest: "/root/" }
 server_rpm:
  - { url: "https://cdn.zmanda.com/downloads/community/Amanda/3.5.1/Redhat_Enterprise_7.0/amanda-backup_server-3.5.1-1.rhel7.x86_64.rpm", checksum: "sha256:9b80d2b166a431e9daed437250a50b0d9abc5ff2172c1e6ac35a0afe9e1f7a69", dest: "/root/" }
+# RHEL8/CENTOS8/ALMA8 etc ... N.B. FROM CENTOS 8 STREAM
+client8_rpm:
+ - { url: "http://mirror.centos.org/centos/8-stream/AppStream/x86_64/os/Packages/amanda-client-3.5.1-13.el8.x86_64.rpm", checksum: "sha256:c7593b18b304107c3f19e45e97131417b606045a6a77e014699426a82d73f897", dest: "/root/" }
+server8_rpm:
+ - { url: "http://mirror.centos.org/centos/8-stream/AppStream/x86_64/os/Packages/amanda-server-3.5.1-13.el8.x86_64.rpm", checksum: "sha256:b47f49c5018052d813dde53252bed0f3390f03621bf12c38ee0a0110548da1b6", dest: "/root/" }
+libs8_rpm:
+ - { url: "http://mirror.centos.org/centos/8-stream/AppStream/x86_64/os/Packages/amanda-libs-3.5.1-13.el8.x86_64.rpm", checksum: "sha256:2e8323bcdac64c687b825e89642ea5ddf25640122e9d3d6bf90dc574c5dbef61", dest: "/root/" }
+amanda8_rpm:
+ - { url: "http://mirror.centos.org/centos/8-stream/AppStream/x86_64/os/Packages/amanda-3.5.1-13.el8.x86_64.rpm", checksum: "sha256:d5b02dfe856613f474be14ff3f53b06fabdbc69da732b094d229b985dcde6c1f", dest: "/root/" }
+
 
 # Debian packages
 # come from debian repo
