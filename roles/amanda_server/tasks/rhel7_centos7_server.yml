@@ -22,6 +22,7 @@
     yum:
      name:
       # needed for lto tapes
+      - mt-st
       - mtx
       # needed for default amanda server email /bin/Mail -> /bin/mailx
       - mailx
