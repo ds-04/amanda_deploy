@@ -19,7 +19,7 @@
 - block:
 
    - name: apt install acl, amanda-{server,common}, mtx
-     package:
+     apt:
       name: "{{ item }}"
      loop:
       # acl needed by this role
@@ -34,7 +34,7 @@
       #- xinetd is kept for reference needed for bsdtcp auth, in this role we want to use SSH though
 
    - name: apt install amanda-client
-     package:
+     apt:
       name: "amanda-client={{ deb_amanda_version }}"
      when: server_also_client|bool
 
