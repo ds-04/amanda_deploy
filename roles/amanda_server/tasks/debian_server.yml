@@ -30,6 +30,7 @@
       - mt-st
       - mtx
       - lsscsi
+      - tar #just to be sure
       #- xinetd is kept for reference needed for bsdtcp auth, in this role we want to use SSH though
 
    - name: apt install amanda-client
