@@ -19,7 +19,7 @@
 - block:
 
   - name: amanda server dependencies
-    yum:
+    dnf:
      name:
       # needed for lto tapes
       - mtx
@@ -64,7 +64,7 @@
 
   # package will do yum/dnf
   - name: (RHEL/Centos 8x) install amanda-server from stream
-    package:
+    dnf:
      name: "{{ item }}"
      state: present
     with_items:
