@@ -27,6 +27,7 @@
       - "amanda-server={{ deb_amanda_version }}"
       - "amanda-common={{ deb_amanda_version }}"
       # needed for lto tapes
+      - mt-st
       - mtx
       - lsscsi
       #- xinetd is kept for reference needed for bsdtcp auth, in this role we want to use SSH though
