@@ -42,6 +42,17 @@
      - ansible_distribution_major_version|int == 7
      - "'amanda_server' not in group_names" # server RPM provides client functionality too
 
+  # package will do yum/dnf
+  - name: (RHEL/Centos 8x) install amanda-client from stream
+    package:
+     name: "{{ item }}"
+     state: present
+    with_items:
+     - amanda-client
+    when:
+     - ansible_os_family == "RedHat"
+     - ansible_distribution_major_version|int == 8
+
   - name: (Debian) install amanda-client from repos
     apt:
      name:
