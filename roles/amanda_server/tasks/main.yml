@@ -8,11 +8,11 @@
   tags:
     - debian_server
 
-- include: rhel_centos_server.yml
+- include: rhel7_centos7_server.yml
   ignore_errors: "{{ ansible_check_mode }}"
   when:
     - ansible_os_family == "RedHat"
-    - ansible_distribution_major_version|int >= 7
+    - ansible_distribution_major_version|int == 7
   tags:
     - rhel_centos_server
 
