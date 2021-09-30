@@ -42,36 +42,24 @@
      url: https://fastapi.metacpan.org/source/MIYAGAWA/App-cpanminus-1.7044/bin/cpanm
      dest: /tmp/cpanm.pl
      mode: '0755'
-    when:
-     - ansible_os_family == "RedHat"
-     - ansible_distribution_major_version|int == 7
 
   - name: install cpanm for ansible module
     command: perl cpanm.pl App::cpanminus
     args:
      chdir: /tmp/
      creates: /usr/local/bin/cpanm
-    when:
-     - ansible_os_family == "RedHat"
-     - ansible_distribution_major_version|int == 7
 
   - name: add cpanm symlink to /usr/bin
     file:
      src: /usr/local/bin/cpanm
      dest: /usr/bin/cpanm
      state: link
-    when:
-     - ansible_os_family == "RedHat"
-     - ansible_distribution_major_version|int == 7
 
   - name: install perl modules
     cpanm:
      name: "{{ item }}"
     with_items:
      - URI-Escape
-    when:
-     - ansible_os_family == "RedHat"
-     - ansible_distribution_major_version|int == 7
 
   - name: (RHEL/Centos 7x) Get/download amanda-server (community) from Zmanda (URL)
     get_url:
@@ -83,9 +71,6 @@
      checksum: "{{ item.checksum }}"
     with_items:
      - "{{ server_rpm }}"
-    when:
-     - ansible_os_family == "RedHat"
-     - ansible_distribution_major_version|int == 7
 
   # package will do yum/dnf
   - name: (RHEL/Centos 7x) install amanda-server (community) from Zmanda, local saved RPM
@@ -94,9 +79,6 @@
      state: present
     with_items:
      - "{{ server_rpm }}"
-    when:
-     - ansible_os_family == "RedHat"
-     - ansible_distribution_major_version|int == 7
 
   become: "True"
 ...
