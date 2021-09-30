@@ -74,9 +74,8 @@
     with_items:
      - "{{ server_rpm }}"
 
-  # package will do yum/dnf
   - name: (RHEL/Centos 7x) install amanda-server (community) from Zmanda, local saved RPM
-    package:
+    yum:
      name: "{{ item.dest }}{{ item.url | basename }}"
      state: present
     with_items:
