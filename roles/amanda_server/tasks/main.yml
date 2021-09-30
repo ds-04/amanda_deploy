@@ -14,7 +14,15 @@
     - ansible_os_family == "RedHat"
     - ansible_distribution_major_version|int == 7
   tags:
-    - rhel_centos_server
+    - rhel7_centos7_server
+
+- include: rhel8_centos8_server.yml
+  ignore_errors: "{{ ansible_check_mode }}"
+  when:
+    - ansible_os_family == "RedHat"
+    - ansible_distribution_major_version|int == 8
+  tags:
+    - rhel8_centos8_server
 
 - include: disable_xinetd.yml
   ignore_errors: "{{ ansible_check_mode }}"
