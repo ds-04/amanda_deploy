@@ -271,5 +271,4 @@ amrecover> setdisk /etc/
 
 # Future work
 
-- The server configuration implementation could be improved to create multiple vtape testing configurations on the same server.
-- Probably other stuff too...
+- See issues...
