@@ -132,7 +132,8 @@ roles
 │   │   ├── disable_xinetd.yml
 │   │   ├── DORMANT_systemd.yml
 │   │   ├── main.yml
-│   │   ├── rhel_centos_server.yml
+│   │   ├── rhel7_centos7_server.yml
+│   │   ├── rhel8_centos8_server.yml
 │   │   ├── server_sshd_user.yml
 │   │   └── server_ssh_keys.yml
 │   └── templates
@@ -164,7 +165,7 @@ roles
     └── vars
         └── server_role_defaults.yml -> ../../amanda_server/defaults/main.yml
 
-18 directories, 37 files
+18 directories, 38 files
 ```
 
 
