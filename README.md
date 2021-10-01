@@ -13,7 +13,7 @@ See https://en.wikipedia.org/wiki/Amanda_(software) for some information on Aman
 - IT IS ASSUMED YOU HAVE ANSIBLE CONTROL OF ALL HOSTS, BOTH FROM A SECURITY PERSPECTIVE AND DEPLOYMENT USING THIS CODE<br><br>
 
 Developed/tested on:
-- Centos 7.9 and Debian 11 hosts
+- Centos 7.9, Debian 11, Almalinux 8.4 hosts
 - Focus on server developement has been Debian and with vtapes<br><br>
 Future:<br>
 - For enhancments and TODOs see repo's issues
@@ -62,7 +62,7 @@ Playbooks:
 - amanda_server.yml (calls its namesake role to: install server packages<sup>1</sup>, disable xinetd, setup server ssh user, setup server ssh user keys, copy amanda-security.conf<sup>2</sup>)
 - amanda_client_restore.yml (playbook; append root public key from client restore systems to server, use ansible to add host-key of server to the client restore systemts - these tasks enable *amrecover* to work)
 
-<sup>1</sup> Debian is direct from repo, RHEL/Centos via Zmanda RPM url/download. RHEL server package also provides client capability.<br>
+<sup>1</sup> Debian is direct from repo, RHEL/Centos 7x via Zmanda RPM url/download this server package also provides client capability. Centos8 (Almalinux tested) will come from stream repo of OS<br>
 <sup>2</sup> it is assumed the server will also be a client of itself, this can be disabled/overriden if desired
 
 
