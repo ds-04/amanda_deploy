@@ -229,7 +229,7 @@ Whilst Ubuntu should be similar to Debian it has not been tested here and hence 
 
 That's up to you, but you can switch to it or use ```sudo -u amanda_user COMMAND```
 
-If you have problems with sudo (above) check sufficient access in access.conf (if in use). E.g. can root access tty or pty, depending on home you have come in.
+If you have problems with sudo (above) check sufficient access in access.conf (if in use). E.g. can root access tty or pty, depending on how you have come in.
 
 ### *How would I increase the number of test vtapes?*
 
