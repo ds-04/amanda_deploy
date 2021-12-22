@@ -32,8 +32,6 @@
       server_user_var: "{{ amanda_include_vars.debian_user }}"
       server_user_home: "{{ amanda_include_vars.debian_user_home }}"
       server_group: "{{ amanda_include_vars.debian_group }}"
-      local_ssh_key_opts: "{{ amanda_include_vars.debian_key_opts }}"
-      local_ssh_key_algo: "{{ amanda_include_vars.ssh_key_algo }}" # needed to determine tidy
      when: ansible_distribution == "Debian"
 
    - name: Set fact for RedHat/Centos
@@ -41,9 +39,13 @@
       server_user_var: "{{ amanda_include_vars.redhat_user }}"
       server_user_home: "{{ amanda_include_vars.redhat_user_home }}"
       server_group: "{{ amanda_include_vars.redhat_group }}"
-      local_ssh_key_opts: "{{ amanda_include_vars.redhat_key_opts }}"
-      local_ssh_key_algo: "{{ amanda_include_vars.ssh_key_algo }}" # needed to determine tidy
      when: ansible_os_family == "RedHat"
+
+   - name: Set fact for ssh_key_algo, std_ssh_key_opts, amandad_search_paths
+     set_fact:
+      local_ssh_key_algo: "{{ amanda_include_vars.ssh_key_algo }}" # needed to determine tidy
+      local_std_ssh_key_opts: "{{ amanda_include_vars.std_ssh_key_opts }}"
+      local_amandad_search_paths: "{{ amanda_include_vars.amandad_search_paths }}"
 
 #Assigned for clarity more than anything else...
 - hosts: amanda_server
@@ -57,9 +59,29 @@
 - hosts: amanda_client
   gather_facts: 'no'
   tasks:
-   - name: assign var for known_hosts type to use
+   - name: client assign var for known_hosts type to use and std_ssh_key_opts
      set_fact:
       local_known_hosts_key_type: "{{ amanda_include_vars.known_hosts_key_type }}"
+
+- hosts: amanda_server, amanda_client
+  gather_facts: 'no'
+  tasks:
+   - name: Find amandad binary (from known supplied paths)
+     stat:
+      path: "{{ item }}"
+     register: findres
+     with_items: "{{ local_amandad_search_paths }}"
+
+   - name:
+     set_fact:
+      amandad_path: "{{ item.item }}"
+     with_items: "{{ findres.results }}"
+     when: item.stat.exists
+
+#kept for debug
+#- name: show results
+#  debug:
+#    msg: "{{ amandad_path }}"
 
 - hosts: amanda_server, amanda_client
   gather_facts: 'no'
@@ -96,7 +118,7 @@
 #  tasks:
 #   - name: debug
 #     debug:
-#      msg: "{{ local_ssh_key_opts }}"
+#      msg: "{{ some_var }}"
 
 # Delegate and apply server's public key to the clients
 - hosts: amanda_server
@@ -106,7 +128,7 @@
      authorized_key:
       user: "{{ hostvars[item]['server_user_var'] }}"
       key: "{{ amanda_server_pub.content | b64decode }}"
-      key_options: "from=\"{{ local_server_ip }}\",{{ hostvars[item]['local_ssh_key_opts'] }}"
+      key_options: "from=\"{{ local_server_ip }}\",{{ local_std_ssh_key_opts }},command=\"{{ hostvars[item]['amandad_path'] }} -auth=ssh amdump\""
      delegate_to: "{{ item }}"
      loop: "{{ groups['amanda_client'] }}"
      become: 'True'
@@ -120,7 +142,7 @@
       user: "{{ server_user_var }}"
       state: present
       key: "{{ amanda_server_pub.content | b64decode }}"
-      key_options: "from=\"127.0.0.1,{{ local_server_ip }}\",{{ local_ssh_key_opts }}"
+      key_options: "from=\"127.0.0.1,{{ local_server_ip }}\",{{ local_std_ssh_key_opts }},command=\"{{ amandad_path }} -auth=ssh amdump\""
      become: 'True'
      when: local_server_also_client|bool
 
