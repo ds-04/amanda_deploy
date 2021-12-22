@@ -43,17 +43,27 @@
 
 - hosts: amanda_server
   tasks:
-   - name: Set fact for Debian - ssh_key_opts
+   - name: Set fact for amanda_server known_hosts_key_type, std_ssh_key_opts, amandad_search_paths #only needed for server as connection to server
      set_fact:
-      local_ssh_key_opts: "{{ amanda_include_vars.debian_client_key_opts }}"
-      local_known_hosts_key_type: "{{ amanda_include_vars.known_hosts_key_type }}" # this setting is not OS dependent, saves stanza
-     when: ansible_distribution == "Debian"
+      local_known_hosts_key_type: "{{ amanda_include_vars.known_hosts_key_type }}" # these settings are not OS dependent, for clarity made local here
+      local_amandad_search_paths: "{{ amanda_include_vars.amandad_search_paths }}"
 
-   - name: Set fact for RedHat/Centos - ssh_key_opts
+   - name: Find amandad binary (from known supplied paths)
+     stat:
+      path: "{{ item }}"
+     register: findres
+     with_items: "{{ local_amandad_search_paths }}" #comes from above
+
+   - name:
      set_fact:
-      local_ssh_key_opts: "{{ amanda_include_vars.redhat_client_key_opts }}"
-      local_known_hosts_key_type: "{{ amanda_include_vars.known_hosts_key_type }}" # this setting is not OS dependent, saves stanza
-     when: ansible_os_family == "RedHat"
+      amandad_path: "{{ item.item }}"
+     with_items: "{{ findres.results }}"
+     when: item.stat.exists
+
+#kept for debug
+#- name: show results
+#  debug:
+#    msg: "{{ amandad_path }}"
 
 #Assigned in this way for clarity more than anything else... (rather than direct)
 - hosts: amanda_client_restore
@@ -64,6 +74,7 @@
       local_update_server_known_hosts: "{{ amanda_include_vars.update_client_restore_known_hosts }}"
       local_client_restore_ssh_keypair: "{{ amanda_include_vars.client_restore_ssh_keypair }}"
       local_ssh_key_algo: "{{ amanda_include_vars.ssh_key_algo }}"
+      local_std_ssh_key_opts: "{{ amanda_include_vars.std_ssh_key_opts }}" #this is a global, but attach it amanda_client_restore
 
    - name: Create /root/.ssh on client restore system
      file:
@@ -108,7 +119,7 @@
      authorized_key:
       user: "{{ hostvars[item]['server_user_var'] }}"
       key: "{{ amanda_client_restore_pub.content | b64decode }}"
-      key_options: "from=\"{{ local_server_ip }}\",{{ hostvars[item]['local_ssh_key_opts'] }}" #N.B. these are the key_opts relating to the server
+      key_options: "from=\"{{ local_server_ip }}\",{{ local_std_ssh_key_opts }},command=\"{{ hostvars[item]['amandad_path'] }} -auth=ssh amindexd amidxtaped\"" #N.B. these are the key options relating to the amanda backup server
      delegate_to: "{{ item }}"
      loop: "{{ groups['amanda_server'] }}"
      become: 'True'

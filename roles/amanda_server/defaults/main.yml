@@ -43,21 +43,28 @@ server_rpm:
 #-----END--PACKAGES---------
 
 #-----OS--VARS--------------
+
+#security prefix - also note NO trailing comma here
+#N.B. server ending like command="/usr/lib/amanda/amandad -auth=ssh amdump"
+#N.B. client ending like command="/usr/lib/amanda/amandad -auth=ssh amindexd amidxtaped"
+std_ssh_key_opts: 'no-port-forwarding,no-X11-forwarding,no-agent-forwarding'
+
 debian_user: 'backup'
 debian_group: 'backup'
 debian_user_home: '/var/backups'
-# from="amanda_server.your.domain.com",ssh_key_opts(below) - If you don't want this override with empty var
-debian_key_opts: 'no-port-forwarding,no-X11-forwarding,no-agent-forwarding,command="/usr/lib/amanda/amandad -auth=ssh amdump"'
-# from="amanda_client.your.domain.com",ssh_key_opts(below) - If you don't want this override with empty var
-debian_client_key_opts: 'no-port-forwarding,no-X11-forwarding,no-agent-forwarding,command="/usr/lib/amanda/amandad -auth=ssh amindexd amidxtaped"'
 
 redhat_user: 'amandabackup'
 redhat_group: 'disk'
 redhat_user_home: '/var/lib/amanda'
-# from="amanda_server.your.domain.com",ssh_key_opts(below) - If you don't want this override with empty var
-redhat_key_opts: 'no-port-forwarding,no-X11-forwarding,no-agent-forwarding,command="/usr/libexec/amanda/amandad -auth=ssh amdump"'
-# from="amanda_client.your.domain.com",ssh_key_opts(below) - If you don't want this override with empty var
-redhat_client_key_opts: 'no-port-forwarding,no-X11-forwarding,no-agent-forwarding,command="/usr/libexec/amanda/amandad -auth=ssh amindexd amidxtaped"'
+
+# list of known locations to search for amandad (depending on distro/package etc.)
+amandad_search_paths:
+  - /usr/lib64/amanda/amandad
+  - /usr/libexec/amanda/amandad
+  - /usr/lib/amanda/amandad
+  - /usr/local/libexec/amanda/amandad
+  - /usr/local/libexec/amandad
+
 #-END-OS--VARS-------------
 
 #--------------------------------------------------------------------------------
