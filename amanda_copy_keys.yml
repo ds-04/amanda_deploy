@@ -1,93 +1,101 @@
 ---
 
-#D Simpson 2021, ds-04
+# D Simpson 2021,2023 ds-04
 
-#This program is free software; you can redistribute it and/or
-#modify it under the terms of the GNU General Public License
-#as published by the Free Software Foundation; either version 2
-#of the License, or (at your option) any later version.
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
 #
-#This program is distributed in the hope that it will be useful,
-#but WITHOUT ANY WARRANTY; without even the implied warranty of
-#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#GNU General Public License for more details.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 #
-#You should have received a copy of the GNU General Public License
-#along with this program; if not, write to the Free Software
-#Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 # We import defaults from the server role
 - hosts: amanda_server, amanda_client
   gather_facts: 'no'
   tasks:
    - name: include roles/amanda_server/defaults
-     include_vars:
+     ansible.builtin.include_vars:
       file: roles/amanda_server/defaults/main.yml
       name: amanda_include_vars
 
 - hosts: amanda_server, amanda_client
   tasks:
    - name: Set fact for Debian
-     set_fact:
+     ansible.builtin.set_fact:
       server_user_var: "{{ amanda_include_vars.debian_user }}"
       server_user_home: "{{ amanda_include_vars.debian_user_home }}"
       server_group: "{{ amanda_include_vars.debian_group }}"
      when: ansible_distribution == "Debian"
 
    - name: Set fact for RedHat/Centos
-     set_fact:
+     ansible.builtin.set_fact:
       server_user_var: "{{ amanda_include_vars.redhat_user }}"
       server_user_home: "{{ amanda_include_vars.redhat_user_home }}"
       server_group: "{{ amanda_include_vars.redhat_group }}"
      when: ansible_os_family == "RedHat"
 
    - name: Set fact for ssh_key_algo, std_ssh_key_opts, amandad_search_paths
-     set_fact:
+     ansible.builtin.set_fact:
       local_ssh_key_algo: "{{ amanda_include_vars.ssh_key_algo }}" # needed to determine tidy
       local_std_ssh_key_opts: "{{ amanda_include_vars.std_ssh_key_opts }}"
       local_amandad_search_paths: "{{ amanda_include_vars.amandad_search_paths }}"
 
-#Assigned for clarity more than anything else...
+# Assigned for clarity more than anything else...
 - hosts: amanda_server
   tasks:
    - name: assign various server vars from defaults
-     set_fact:
+     ansible.builtin.set_fact:
       local_server_ip: "{{ ansible_default_ipv4.address }}"
       local_update_server_known_hosts: "{{ amanda_include_vars.update_server_known_hosts }}"
       local_server_also_client: "{{ amanda_include_vars.server_also_client }}"
+
+# If vagrant test setup override
+- hosts: amanda_server
+  tasks:
+   - name: Vagrant - override the local_server_ip for amanda_server
+     ansible.builtin.set_fact:
+      local_server_ip: "{{ hostvars[groups['amanda_server'][0]]['ansible_all_ipv4_addresses']|regex_search('192.168.[0-9]*.[0-9]*')|default(ansible_default_ipv4.address) }}"
+     when: vagrant_hostname is defined and vagrant_hostname|bool
 
 - hosts: amanda_client
   gather_facts: 'no'
   tasks:
    - name: client assign var for known_hosts type to use and std_ssh_key_opts
-     set_fact:
+     ansible.builtin.set_fact:
       local_known_hosts_key_type: "{{ amanda_include_vars.known_hosts_key_type }}"
 
 - hosts: amanda_server, amanda_client
   gather_facts: 'no'
   tasks:
    - name: Find amandad binary (from known supplied paths)
-     stat:
+     ansible.builtin.stat:
       path: "{{ item }}"
      register: findres
      with_items: "{{ local_amandad_search_paths }}"
 
    - name:
-     set_fact:
+     ansible.builtin.set_fact:
       amandad_path: "{{ item.item }}"
      with_items: "{{ findres.results }}"
      when: item.stat.exists
 
-#kept for debug
+# kept for debug
 #- name: show results
-#  debug:
+#  ansible.builtin.debug:
 #    msg: "{{ amandad_path }}"
 
 - hosts: amanda_server, amanda_client
   gather_facts: 'no'
   tasks:
    - name: Tidy (find) id_rsa keys from client and server
-     find:
+     ansible.builtin.find:
       paths: "{{ server_user_home }}/.ssh"
       patterns: "*id*rsa*"
       recurse: 'no'
@@ -96,19 +104,19 @@
      become: 'True'
 
    - name: Tidy (remove) id_rsa keys from client and server
-     file:
+     ansible.builtin.file:
       path: "{{ item.path }}"
       state: absent
      with_items: "{{ files_to_delete.files }}"
      when: local_ssh_key_algo != 'rsa'
      become: 'True'
 
-#Get the server's public key
+# Get the server's public key
 - hosts: amanda_server
   gather_facts: 'no'
   tasks:
    - name: Get ssh keys on server
-     slurp:
+     ansible.builtin.slurp:
       src: "{{ server_user_home }}/.ssh/{{ amanda_include_vars.server_ssh_keypair }}.pub"
      register: amanda_server_pub
      become: 'True'
@@ -125,7 +133,7 @@
   gather_facts: 'no'
   tasks:
    - name: add server public key to amanda_client group hosts
-     authorized_key:
+     ansible.builtin.authorized_key:
       user: "{{ hostvars[item]['server_user_var'] }}"
       key: "{{ amanda_server_pub.content | b64decode }}"
       key_options: "from=\"{{ local_server_ip }}\",{{ local_std_ssh_key_opts }},command=\"{{ hostvars[item]['amandad_path'] }} -auth=ssh amdump\""
@@ -138,7 +146,7 @@
   gather_facts: 'no'
   tasks:
    - name: Ensure server can ssh to itself for testing puposes (server_also_client var)
-     authorized_key:
+     ansible.builtin.authorized_key:
       user: "{{ server_user_var }}"
       state: present
       key: "{{ amanda_server_pub.content | b64decode }}"
@@ -150,7 +158,7 @@
   gather_facts: 'no'
   tasks:
    - name: "slurp the ssh_host_{{ local_known_hosts_key_type }}_key.pub"
-     slurp:
+     ansible.builtin.slurp:
       src: "/etc/ssh/ssh_host_{{ local_known_hosts_key_type }}_key.pub"
      register: client_host_pub
      become: 'True'
@@ -159,21 +167,21 @@
   gather_facts: 'no'
   tasks:
    - name: Split and assign the content of "ssh_host_{{ local_known_hosts_key_type }}_key.pub"
-     set_fact:
+     ansible.builtin.set_fact:
       client_host_pub2: "{{ (client_host_pub.content|b64decode).split() }}"
 
 - hosts: amanda_client
   gather_facts: 'no'
   tasks:
    - name: debug - print the client host pub keys
-     debug:
+     ansible.builtin.debug:
       msg: "{{ client_host_pub2 }}" # this is a list and we don't want the 3rd item to be used
 
 - hosts: amanda_server
   gather_facts: 'no'
   tasks:
    - name: "touch {{ server_user_home }}/.ssh/known_hosts"
-     file:
+     ansible.builtin.file:
       state: touch
       path: "{{ server_user_home }}/.ssh/known_hosts"
       modification_time: preserve
@@ -187,7 +195,7 @@
   gather_facts: 'no'
   tasks:
    - name: "Update ssh {{ server_user_home }}/.ssh/known_hosts file on server (i)"
-     known_hosts:
+     ansible.builtin.known_hosts:
       path: "{{ server_user_home }}/.ssh/known_hosts"
       name: "{{ item }}"
       key: "{{ item }} {{ hostvars[item].client_host_pub2[0] }} {{ hostvars[item].client_host_pub2[1] }}" # dns name line
@@ -201,7 +209,7 @@
   gather_facts: 'no'
   tasks:
    - name: "Update ssh {{ server_user_home }}/.ssh/known_hosts file on server (ii)"
-     known_hosts:
+     ansible.builtin.known_hosts:
       path: "{{ server_user_home }}/.ssh/known_hosts"
       name: "{{ hostvars[item].ansible_default_ipv4.address }}"
       key: "{{ hostvars[item].ansible_default_ipv4.address }} {{ hostvars[item].client_host_pub2[0] }} {{ hostvars[item].client_host_pub2[1] }}" # ip line
