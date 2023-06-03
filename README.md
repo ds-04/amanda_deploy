@@ -1,4 +1,4 @@
-## Initial version please read content below
+## Initial version please read content below - documentation updates underway
 
 # amanda_deploy
 Ansible playbooks and roles to deploy AMANDA backup (Advanced Maryland Automatic Network Disk Archiver) server and clients.
@@ -102,12 +102,13 @@ amanda_client_restore.yml
 amanda_client.yml
 amanda_copy_keys.yml
 amanda_master_playbook.yml
+amanda_server_cfg_hostname.yml
 amanda_server_cfg.yml
 amanda_server.yml
 ```
 ...
 ```
-roles
+roles/
 ├── amanda_client
 │   ├── defaults
 │   │   └── main.yml -> ../../amanda_server/defaults/main.yml
@@ -142,30 +143,38 @@ roles
 │       └── systemd
 │           ├── DORMANT_amanda@.service
 │           └── DORMANT_amanda.socket
-└── amanda_server_cfg
-    ├── defaults
-    │   └── main.yml
+├── amanda_server_cfg
+│   ├── defaults
+│   │   └── main.yml
+│   ├── tasks
+│   │   ├── DORMANT_amcheck.yml
+│   │   ├── main.yml
+│   │   └── server_config.yml
+│   ├── templates
+│   │   ├── cfg1
+│   │   │   ├── amanda.conf.j2
+│   │   │   ├── test_vtape_dumps.conf.j2
+│   │   │   ├── test_vtape_global.conf.j2
+│   │   │   └── test_vtape_holding_disk.conf.j2
+│   │   ├── cfg1_disklist.j2
+│   │   ├── cfg2
+│   │   │   ├── amanda.conf.j2
+│   │   │   ├── test_vtape_dumps.conf.j2
+│   │   │   ├── test_vtape_global.conf.j2
+│   │   │   └── test_vtape_holding_disk.conf.j2
+│   │   ├── cfg2_disklist.j2
+│   │   └── vtape_tmp.j2
+│   └── vars
+│       └── server_role_defaults.yml -> ../../amanda_server/defaults/main.yml
+└── amanda_server_cfg_hostname
     ├── tasks
-    │   ├── DORMANT_amcheck.yml
     │   ├── main.yml
-    │   └── server_config.yml
-    ├── templates
-    │   ├── cfg1
-    │   │   ├── amanda.conf.j2
-    │   │   ├── test_vtape_dumps.conf.j2
-    │   │   ├── test_vtape_global.conf.j2
-    │   │   └── test_vtape_holding_disk.conf.j2
-    │   ├── cfg1_disklist.j2
-    │   ├── cfg2
-    │   │   ├── amanda.conf.j2
-    │   │   ├── test_vtape_dumps.conf.j2
-    │   │   ├── test_vtape_global.conf.j2
-    │   │   └── test_vtape_holding_disk.conf.j2
-    │   └── cfg2_disklist.j2
-    └── vars
-        └── server_role_defaults.yml -> ../../amanda_server/defaults/main.yml
+    │   └── vagrant_hostname.yml
+    └── templates
+        └── hosts.j2
 
-18 directories, 38 files
+21 directories, 42 files
+
 ```
 
 
