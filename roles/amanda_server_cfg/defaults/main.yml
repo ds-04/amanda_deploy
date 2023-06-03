@@ -49,29 +49,29 @@ tape_configs:
       - "cfg1/test_vtape_dumps.conf.j2" #needs to include cfg1/ and full template name inc j2
       - "cfg1/test_vtape_global.conf.j2" #needs to include cfg1/ and full template name inc j2
       - "cfg1/test_vtape_holding_disk.conf.j2" #needs to include cfg1/ and full template name inc j2
-#  - name: cfg2 #Provided for example, advise overriding in ../vars/main.yml
-#    cfg_name: 'DailySet2' # this name must also be used within cfg dir paths below
-#    cfg_email: 'notreal2'
-#    cfg_org: 'test ORG'
-#    cfg_label: 'MyData'
-#    cfg_holdingd: '/holding2' #numbered to keep distinct
-#    cfg_vtaped: '/amanda/vtapes2/slots' #numbered to keep distinct and used in changer below
-#    cfg_tapechanger: "chg-disk:/amanda/vtapes2/slots"
-#    cfg_tapecycle: '4'
-#    cfg_dumpcycle: '3 days'
-#    cfg_max_vtape: 9 #string not int - defines range 1-X
-#    cfg_area: "/etc/amanda/DailySet2"
-#    cfg_dirs: #this is used to create and set perms
-#      - "/holding2"
-#      - "/etc/amanda/DailySet2" # config area
-#      - "/amanda/DailySet2/state/curinfo" #state
-#      - "/amanda/DailySet2/state/index" #state
-#      - "/amanda/DailySet2/state/log" #state
-#      - '/amanda/vtapes2/slots' #vtape dir
-#    cfg_templates:
-#      - "cfg2/amanda.conf.j2" #needs to include cfg1/ and full template name inc j2
-#      - "cfg2/test_vtape_dumps.conf.j2" #needs to include cfg1/ and full template name inc j2
-#      - "cfg2/test_vtape_global.conf.j2" #needs to include cfg1/ and full template name inc j2
-#      - "cfg2/test_vtape_holding_disk.conf.j2" #needs to include cfg1/ and full template name inc j2
+  - name: cfg2 #Provided for example, advise overriding in ../vars/main.yml
+    cfg_name: 'DailySet2' # this name must also be used within cfg dir paths below
+    cfg_email: 'notreal2'
+    cfg_org: 'test ORG'
+    cfg_label: 'MyData'
+    cfg_holdingd: '/holding2' #numbered to keep distinct
+    cfg_vtaped: '/amanda/vtapes2/slots' #numbered to keep distinct and used in changer below
+    cfg_tapechanger: "chg-disk:/amanda/vtapes2/slots"
+    cfg_tapecycle: '4'
+    cfg_dumpcycle: '3 days'
+    cfg_max_vtape: 5 #string not int - defines range 1-X
+    cfg_area: "/etc/amanda/DailySet2"
+    cfg_dirs: #this is used to create and set perms
+      - "/holding2"
+      - "/etc/amanda/DailySet2" # config area
+      - "/amanda/DailySet2/state/curinfo" #state
+      - "/amanda/DailySet2/state/index" #state
+      - "/amanda/DailySet2/state/log" #state
+      - '/amanda/vtapes2/slots' #vtape dir
+    cfg_templates:
+      - "cfg2/amanda.conf.j2" #needs to include cfg1/ and full template name inc j2
+      - "cfg2/test_vtape_dumps.conf.j2" #needs to include cfg1/ and full template name inc j2
+      - "cfg2/test_vtape_global.conf.j2" #needs to include cfg1/ and full template name inc j2
+      - "cfg2/test_vtape_holding_disk.conf.j2" #needs to include cfg1/ and full template name inc j2
 
 ...

@@ -1,41 +1,41 @@
 ---
 
-#D Simpson 2021, ds-04
+# D Simpson 2021,2023 ds-04
 
-#This program is free software; you can redistribute it and/or
-#modify it under the terms of the GNU General Public License
-#as published by the Free Software Foundation; either version 2
-#of the License, or (at your option) any later version.
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
 #
-#This program is distributed in the hope that it will be useful,
-#but WITHOUT ANY WARRANTY; without even the implied warranty of
-#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#GNU General Public License for more details.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 #
-#You should have received a copy of the GNU General Public License
-#along with this program; if not, write to the Free Software
-#Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 # We import defaults from the server role
 - hosts: amanda_server, amanda_client_restore
   gather_facts: 'no'
   tasks:
    - name: include roles/amanda_server/defaults
-     include_vars:
+     ansible.builtin.include_vars:
       file: roles/amanda_server/defaults/main.yml
       name: amanda_include_vars
 
 - hosts: amanda_server, amanda_client_restore
   tasks:
    - name: Set fact for Debian user/home/group
-     set_fact:
+     ansible.builtin.set_fact:
       server_user_var: "{{ amanda_include_vars.debian_user }}"
       server_user_home: "{{ amanda_include_vars.debian_user_home }}"
       server_group: "{{ amanda_include_vars.debian_group }}"
      when: ansible_distribution == "Debian"
 
    - name: Set fact for RedHat/Centos user/home/group
-     set_fact:
+     ansible.builtin.set_fact:
       server_user_var: "{{ amanda_include_vars.redhat_user }}"
       server_user_home: "{{ amanda_include_vars.redhat_user_home }}"
       server_group: "{{ amanda_include_vars.redhat_group }}"
@@ -44,40 +44,46 @@
 - hosts: amanda_server
   tasks:
    - name: Set fact for amanda_server known_hosts_key_type, std_ssh_key_opts, amandad_search_paths #only needed for server as connection to server
-     set_fact:
+     ansible.builtin.set_fact:
       local_known_hosts_key_type: "{{ amanda_include_vars.known_hosts_key_type }}" # these settings are not OS dependent, for clarity made local here
       local_amandad_search_paths: "{{ amanda_include_vars.amandad_search_paths }}"
 
    - name: Find amandad binary (from known supplied paths)
-     stat:
+     ansible.builtin.stat:
       path: "{{ item }}"
      register: findres
      with_items: "{{ local_amandad_search_paths }}" #comes from above
 
    - name:
-     set_fact:
+     ansible.builtin.set_fact:
       amandad_path: "{{ item.item }}"
      with_items: "{{ findres.results }}"
      when: item.stat.exists
 
-#kept for debug
+# kept for debug
 #- name: show results
-#  debug:
+#  ansible.builtin.debug:
 #    msg: "{{ amandad_path }}"
 
-#Assigned in this way for clarity more than anything else... (rather than direct)
+# Assigned in this way for clarity more than anything else... (rather than direct)
 - hosts: amanda_client_restore
   tasks:
    - name: assign various server vars from defaults for client restore
-     set_fact:
+     ansible.builtin.set_fact:
       local_server_ip: "{{ ansible_default_ipv4.address }}"
       local_update_server_known_hosts: "{{ amanda_include_vars.update_client_restore_known_hosts }}"
       local_client_restore_ssh_keypair: "{{ amanda_include_vars.client_restore_ssh_keypair }}"
       local_ssh_key_algo: "{{ amanda_include_vars.ssh_key_algo }}"
       local_std_ssh_key_opts: "{{ amanda_include_vars.std_ssh_key_opts }}" #this is a global, but attach it amanda_client_restore
 
+# If vagrant test setup override
+   - name: Vagrant - override the local_server_ip for amanda_server
+     ansible.builtin.set_fact:
+      local_server_ip: "{{ ansible_all_ipv4_addresses|regex_search('{{ vagrant_net_regex }}')|default(ansible_default_ipv4.address) }}"
+     when: vagrant_hostname is defined and vagrant_hostname|bool
+
    - name: Create /root/.ssh on client restore system
-     file:
+     ansible.builtin.file:
       state: directory
       owner: root
       group: root
@@ -86,7 +92,7 @@
      become: 'True'
 
    - name: Generate ssh keys on client system "{{ local_client_restore_ssh_keypair }}"
-     openssh_keypair:
+     ansible.builtin.openssh_keypair:
       force: 'no'
       type: "{{ local_ssh_key_algo }}"
       owner: root
@@ -99,7 +105,7 @@
   gather_facts: 'no'
   tasks:
    - name: Get ssh keys on client restore systems
-     slurp:
+     ansible.builtin.slurp:
       src: "/root/.ssh/{{ local_client_restore_ssh_keypair }}.pub"
      register: amanda_client_restore_pub
      become: 'True'
@@ -108,7 +114,7 @@
 #- hosts: amanda_client_restore
 #  tasks:
 #   - name: debug
-#     debug:
+#     ansible.builtin.debug:
 #      msg: "{{ local_ssh_key_opts }}"
 
 # Delegate and apply amanda_client_restore public key to the server
@@ -116,7 +122,7 @@
   gather_facts: 'no'
   tasks:
    - name: add client public key to the server from client restore systems
-     authorized_key:
+     ansible.builtin.authorized_key:
       user: "{{ hostvars[item]['server_user_var'] }}"
       key: "{{ amanda_client_restore_pub.content | b64decode }}"
       key_options: "from=\"{{ local_server_ip }}\",{{ local_std_ssh_key_opts }},command=\"{{ hostvars[item]['amandad_path'] }} -auth=ssh amindexd amidxtaped\"" #N.B. these are the key options relating to the amanda backup server
@@ -128,7 +134,7 @@
   gather_facts: 'no'
   tasks:
    - name: "slurp the ssh_host_{{ local_known_hosts_key_type }}_key.pub"
-     slurp:
+     ansible.builtin.slurp:
       src: "/etc/ssh/ssh_host_{{ local_known_hosts_key_type }}_key.pub"
      register: client_restore_host_pub
      become: 'True'
@@ -137,21 +143,21 @@
   gather_facts: 'no'
   tasks:
    - name: Split and assign the content of "ssh_host_{{ local_known_hosts_key_type }}_key.pub"
-     set_fact:
+     ansible.builtin.set_fact:
       client_restore_host_pub2: "{{ (client_restore_host_pub.content|b64decode).split() }}"
 
 - hosts: amanda_server
   gather_facts: 'no'
   tasks:
    - name: debug - print the client target restore host pub keys
-     debug:
+     ansible.builtin.debug:
       msg: "{{ client_restore_host_pub2 }}" # this is a list and we don't want the 3rd item to be used
 
 - hosts: amanda_client_restore
   gather_facts: 'no'
   tasks:
    - name: touch /root/.ssh/known_hosts
-     file:
+     ansible.builtin.file:
       state: touch
       path: "/root/.ssh/known_hosts" # amrecover uses root
       modification_time: preserve
@@ -166,7 +172,7 @@
   gather_facts: 'no'
   tasks:
    - name: Update root's ssh known_hosts file on client restore hosts (i)
-     known_hosts:
+     ansible.builtin.known_hosts:
       path: "/root/.ssh/known_hosts" # amrecover uses root
       name: "{{ item }}"
       key: "{{ item }} {{ hostvars[item].client_restore_host_pub2[0] }} {{ hostvars[item].client_restore_host_pub2[1] }}" # dns name line
@@ -177,7 +183,7 @@
      when: local_update_server_known_hosts|bool
 
    - name: Update root's ssh known_hosts file on client restore hosts (ii)
-     known_hosts:
+     ansible.builtin.known_hosts:
       path: "/root/.ssh/known_hosts" # amrecover uses root
       name: "{{ hostvars[item].ansible_default_ipv4.address }}"
       key: "{{ hostvars[item].ansible_default_ipv4.address }} {{ hostvars[item].client_restore_host_pub2[0] }} {{ hostvars[item].client_restore_host_pub2[1] }}" # ip line

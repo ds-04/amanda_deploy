@@ -1,6 +1,6 @@
 ---
 
-- include: server_config.yml
+- ansible.builtin.include: server_config.yml
   ignore_errors: "{{ ansible_check_mode }}"
   tags:
     - server_config

@@ -1,0 +1,5 @@
+{% for cfgNum in tape_configs %}
+{% for i in range(cfgNum.cfg_max_vtape) %}
+{{ cfgNum.cfg_vtaped }}/slot{{i+1}}
+{% endfor %}
+{% endfor %}

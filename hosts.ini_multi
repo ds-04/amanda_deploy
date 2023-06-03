@@ -1,0 +1,19 @@
+#provide FQDNs for hosts!!!
+#hyphen for vagrant hostname
+[amanda_server]
+amanda-server1.localdomain.example.net ansible_host=192.168.56.56
+
+[amanda_server:vars]
+ansible_user=vagrant
+ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key
+
+[amanda_client]
+amanda-server2.localdomain.example.net ansible_host=192.168.56.57
+
+[amanda_client:vars]
+ansible_user=vagrant
+ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key
+
+#make all clients restore clients
+[amanda_client_restore:children]
+amanda_client

@@ -10,8 +10,8 @@
 
 # ANSIBLE !!! Not templated override on CLI !!!
 #
-index_server "localhost"        # your amindexd server
-tape_server  "localhost"        # your amidxtaped server
+index_server "{{ hostvars[groups['amanda_server'][0]]['ansible_fqdn'] }}"        # your amindexd server
+tape_server  "{{ hostvars[groups['amanda_server'][0]]['ansible_fqdn'] }}"        # your amidxtaped server
 tapedev ""
 #tapedev      "tape:/dev/YOUR-TAPE-DEVICE-HERE"  # your tape device
                         # if not set, Use configure or ask server.
