@@ -1,5 +1,10 @@
 ## Initial version please read content below - documentation updates underway
 
+```diff
+- now with Vagrant capability, documentation updates underway
+```
+
+
 # amanda_deploy
 Ansible playbooks and roles to deploy AMANDA backup (Advanced Maryland Automatic Network Disk Archiver) server and clients.
 
