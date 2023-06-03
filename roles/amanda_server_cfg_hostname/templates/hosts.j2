@@ -1,7 +1,7 @@
 # Managed by Ansible
 127.0.0.1 localhost
-{{ hostvars[groups['amanda_server'][0]].ansible_all_ipv4_addresses|regex_search('{{ vagrant_net_regex }}') }} {{ hostvars[groups['amanda_server'][0]]['ansible_fqdn'] }} {{ hostvars[groups['amanda_server'][0]]['inventory_hostname'] }}
+{{ hostvars[groups['amanda_server'][0]].ansible_all_ipv4_addresses|regex_search('192.168.[0-9]*.[0-9]*') }} {{ hostvars[groups['amanda_server'][0]]['ansible_fqdn'] }} {{ hostvars[groups['amanda_server'][0]]['inventory_hostname'] }}
 {% for clients in groups['amanda_client'] %}
-{{ hostvars[clients].ansible_all_ipv4_addresses|regex_search('{{ vagrant_net_regex }}') }} {{ hostvars[clients]['ansible_fqdn'] }} {{ hostvars[clients]['inventory_hostname'] }}
+{{ hostvars[clients].ansible_all_ipv4_addresses|regex_search('192.168.[0-9]*.[0-9]*') }} {{ hostvars[clients]['ansible_fqdn'] }} {{ hostvars[clients]['inventory_hostname'] }}
 {% endfor %}
 
