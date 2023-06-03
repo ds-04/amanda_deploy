@@ -1,27 +1,27 @@
 ---
 
-#D Simpson 2021, ds-04
+# D Simpson 2021,2023 ds-04
 
-#This program is free software; you can redistribute it and/or
-#modify it under the terms of the GNU General Public License
-#as published by the Free Software Foundation; either version 2
-#of the License, or (at your option) any later version.
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
 #
-#This program is distributed in the hope that it will be useful,
-#but WITHOUT ANY WARRANTY; without even the implied warranty of
-#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#GNU General Public License for more details.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 #
-#You should have received a copy of the GNU General Public License
-#along with this program; if not, write to the Free Software
-#Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 - block:
 
    # OS defs only needed for the copy of amanda-client.conf
 
    - name: Set fact for Debian
-     set_fact:
+     ansible.builtin.set_fact:
       server_user_var: "{{ debian_user }}"
       server_group: "{{ debian_group }}"
      when:
@@ -29,7 +29,7 @@
       - client_can_restore|bool
 
    - name: Set fact for RedHat/Centos
-     set_fact:
+     ansible.builtin.set_fact:
       server_user_var: "{{ redhat_user }}"
       server_group: "{{ redhat_group }}"
      when:
@@ -37,7 +37,7 @@
       - client_can_restore|bool
 
    - name: Ensure /etc/amanda exists
-     file:
+     ansible.builtin.file:
       state: directory
       path: /etc/amanda
       mode: '0770'
@@ -45,7 +45,7 @@
       group: "{{ server_group }}"
 
    - name: Copy amanda-security.conf (always)
-     template:
+     ansible.builtin.template:
       backup: 'yes'
       src: amanda-security.conf.j2
       dest: /etc/amanda-security.conf
@@ -54,7 +54,7 @@
       group: root # should be root
 
    - name: Copy amanda-client.conf
-     template:
+     ansible.builtin.template:
       backup: 'yes'
       src: amanda-client.conf.j2
       dest: /etc/amanda/amanda-client.conf

@@ -4,7 +4,7 @@
 #
 # DORMANT
 #  - name: Template out Amanda systemd files to /etc/systemd/system
-#    template:
+#    ansible.builtin.template:
 #     backup: 'yes'
 #     src: "{{ item.src }}"
 #     dest: "/etc/systemd/system/{{ item.dest }}"
@@ -18,13 +18,13 @@
 #    when: use_systemd
 
 #  - name: systemctl daemon-reload
-#    command: systemctl daemon-reload
+#    ansible.builtin.command: systemctl daemon-reload
 #    when:
 #     - new_systemd|bool
 #     - use_systemd
 
 #  - name: Ensure Amanda systemd Enabled/Started
-#    systemd:
+#    ansible.builtin.systemd:
 #     name: "{{ item }}"
 #     enabled: 'yes'
 #     state: 'started'

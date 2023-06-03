@@ -1,0 +1,33 @@
+---
+# This task sets the hostname and writes default IP+host entry to /etc/hosts
+- block:
+
+  - name: Set a hostname via ansible module (Debian family)
+    ansible.builtin.hostname:
+      name: "{{ inventory_hostname }}"
+      use: systemd
+    when:
+      - ansible_os_family == 'Debian'
+
+  - name: Set a hostname via ansible module (RHEL family)
+    ansible.builtin.hostname:
+      name: "{{ inventory_hostname }}"
+      use: systemd
+    when:
+      - ansible_os_family == 'RedHat'
+
+  - name: Set a hostname via ansible module (Other family)
+    ansible.builtin.hostname:
+      name: "{{ inventory_hostname }}"
+    when:
+      - ansible_os_family != 'Debian'
+      - ansible_os_family != 'RedHat'
+
+  - name: "Update /etc/hosts"
+    ansible.builtin.template:
+      backup: 'true'
+      src: hosts.j2
+      dest: /etc/hosts
+
+  become: 'True'
+...
