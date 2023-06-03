@@ -1,4 +1,4 @@
-## Initial release (September 2021) please read content below
+## Initial version please read content below
 
 # amanda_deploy
 Ansible playbooks and roles to deploy AMANDA backup (Advanced Maryland Automatic Network Disk Archiver) server and clients.
