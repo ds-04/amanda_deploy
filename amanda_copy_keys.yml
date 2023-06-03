@@ -61,7 +61,7 @@
   tasks:
    - name: Vagrant - override the local_server_ip for amanda_server
      ansible.builtin.set_fact:
-      local_server_ip: "{{ hostvars[groups['amanda_server'][0]]['ansible_all_ipv4_addresses']|regex_search('{{ vagrant_net_regex }}')|default(ansible_default_ipv4.address) }}"
+      local_server_ip: "{{ hostvars[groups['amanda_server'][0]]['ansible_all_ipv4_addresses']|regex_search('192.168.[0-9]*.[0-9]*')|default(ansible_default_ipv4.address) }}"
      when: vagrant_hostname is defined and vagrant_hostname|bool
 
 - hosts: amanda_client
