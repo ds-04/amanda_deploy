@@ -1,1 +1,7 @@
-../../amanda_server/vars/main.yml
+---
+ambind_fix_alias1: >
+ alias amdump='echo "amdump, refusing invocation - This is a client, but we had to install the server package to fix amrecover (this message is a .bash_profile alias)"'
+ambind_fix_alias2: >
+ alias amcheck='echo "amcheck, refusing invocation - This is a client, but we had to install the server package to fix amrecover (this message is a .bash_profile alias)"'
+ambind_bash_profile_dict: { 'alias amdump': "{{ ambind_fix_alias1 }}", 'alias amcheck': "{{ ambind_fix_alias2 }}" }
+...
