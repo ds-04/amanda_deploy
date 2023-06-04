@@ -16,7 +16,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-- ansible.builtin.import_playbook: amanda_server_cfg_hostname.yml
+- ansible.builtin.import_playbook: amanda_server_vagrant_hostname.yml
 - ansible.builtin.import_playbook: amanda_server.yml
 - ansible.builtin.import_playbook: amanda_client.yml
 - ansible.builtin.import_playbook: amanda_copy_keys.yml
