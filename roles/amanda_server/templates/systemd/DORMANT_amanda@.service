@@ -4,7 +4,7 @@ Description=Amanda Backup System
 After=local-fs.target
 
 [Service]
-{% if (ansible_distribution == "Debian") %}
+{% if (ansible_os_family == "Debian") %}
 User={{ debian_user }}
 Group={{ debian_group }}
 {% elif (ansible_os_family == "RedHat") %}

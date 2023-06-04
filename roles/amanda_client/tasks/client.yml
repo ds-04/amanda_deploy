@@ -26,7 +26,7 @@
      owner: root
      group: root
      checksum: "{{ item.checksum }}"
-    with_items: "{{ client_rpm }}"
+    loop: "{{ client_rpm }}"
     when:
      - ansible_os_family == "RedHat"
      - ansible_distribution_major_version|int == 7
@@ -35,7 +35,7 @@
     ansible.builtin.yum:
      name: "{{ item.dest }}{{ item.url | basename }}"
      state: present
-    with_items: "{{ client_rpm }}"
+    loop: "{{ client_rpm }}"
     when:
      - ansible_os_family == "RedHat"
      - ansible_distribution_major_version|int == 7
@@ -44,7 +44,7 @@
   - name: (RHEL/Centos 8x) install amanda-client from stream
     ansible.builtin.dnf:
      name: "{{ item }}"
-    with_items:
+    loop:
      - amanda-client
     when:
      - ansible_os_family == "RedHat"
@@ -55,8 +55,8 @@
      name: amanda-client
      update_cache: yes
     when:
-     - ansible_distribution == "Debian"
-     - ansible_distribution_major_version|int >= 10
+     - ansible_os_family == "Debian"
+     - (ansible_distribution == "Debian" and ansible_distribution_major_version|int >= 10) or (ansible_distribution == "Ubuntu")
 
   become: "True"
 ...

@@ -32,7 +32,7 @@
       server_user_var: "{{ amanda_include_vars.debian_user }}"
       server_user_home: "{{ amanda_include_vars.debian_user_home }}"
       server_group: "{{ amanda_include_vars.debian_group }}"
-     when: ansible_distribution == "Debian"
+     when: ansible_os_family == "Debian"
 
    - name: Set fact for RedHat/Centos user/home/group
      ansible.builtin.set_fact:
@@ -52,12 +52,12 @@
      ansible.builtin.stat:
       path: "{{ item }}"
      register: findres
-     with_items: "{{ local_amandad_search_paths }}" #comes from above
+     loop: "{{ local_amandad_search_paths }}" #comes from above
 
    - name:
      ansible.builtin.set_fact:
       amandad_path: "{{ item.item }}"
-     with_items: "{{ findres.results }}"
+     loop: "{{ findres.results }}"
      when: item.stat.exists
 
 # kept for debug

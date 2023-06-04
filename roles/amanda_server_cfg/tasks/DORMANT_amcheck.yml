@@ -5,7 +5,7 @@
 #- name: Set fact for Debian
 #  ansible.builtin.set_fact:
 #   server_user_var: "{{ debian_user }}"
-#  when: ansible_distribution == "Debian"
+#  when: ansible_os_family == "Debian"
 
 #- name: Set fact for RedHat/Centos
 #  ansible.builtin.set_fact:

@@ -14,7 +14,7 @@ indexdir "/amanda/{{ item[0].cfg_name }}/state/index"
 #server user
 {% if (ansible_os_family == "RedHat") %}
 dumpuser "{{ redhat_user }}"
-{% elif (ansible_distribution == "Debian") %}
+{% elif (ansible_os_family == "Debian") %}
 dumpuser "{{ debian_user }}"
 {% endif %}
 

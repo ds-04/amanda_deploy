@@ -25,7 +25,7 @@
       server_user_var: "{{ debian_user }}"
       server_group: "{{ debian_group }}"
      when:
-      - ansible_distribution == "Debian"
+      - ansible_os_family == "Debian"
       - client_can_restore|bool
 
    - name: Set fact for RedHat/Centos

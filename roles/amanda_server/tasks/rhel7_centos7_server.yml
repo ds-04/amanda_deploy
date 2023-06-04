@@ -60,7 +60,7 @@
   - name: install perl modules
     ansible.builtin.cpanm:
      name: "{{ item }}"
-    with_items:
+    loop:
      - URI-Escape
 
   - name: (RHEL/Centos 7x) Get/download amanda-server (community) from Zmanda (URL)
@@ -71,14 +71,14 @@
      owner: root
      group: root
      checksum: "{{ item.checksum }}"
-    with_items:
+    loop:
      - "{{ server_rpm }}"
 
   - name: (RHEL/Centos 7x) install amanda-server (community) from Zmanda, local saved RPM
     ansible.builtin.yum:
      name: "{{ item.dest }}{{ item.url | basename }}"
      state: present
-    with_items:
+    loop:
      - "{{ server_rpm }}"
 
   become: "True"

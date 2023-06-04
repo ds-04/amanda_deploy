@@ -28,7 +28,7 @@
       server_user_var: "{{ debian_user }}"
       server_user_home: "{{ debian_user_home }}"
       server_group: "{{ debian_group }}"
-     when: ansible_distribution == "Debian"
+     when: ansible_os_family == "Debian"
 
    - name: Set fact for RedHat/Centos
      ansible.builtin.set_fact:
@@ -114,19 +114,19 @@
      ansible.builtin.stat:
       path: "{{ item.cfg_vtaped }}/data"
      register: sym
-     with_items: "{{ tape_configs }}"
+     loop: "{{ tape_configs }}"
 
    - name: Print a debug message if /amanda/vtapes/slots/data NOT a link
      ansible.builtin.debug:
       msg: "islnk: {{ item.cfg_vtaped }}/data - MAY REQUIRE ATTENTION path doesn't exist)"
-     with_items: "{{ tape_configs }}"
+     loop: "{{ tape_configs }}"
      when:
       - sym.stat.islnk is not defined
 
    - name: Print a debug message if /amanda/vtapes/slots/data IS a link
      ansible.builtin.debug:
       msg: "islnk: {{ item.cfg_vtaped }}/data is present"
-     with_items: "{{ tape_configs }}"
+     loop: "{{ tape_configs }}"
      when:
       - sym.stat.islnk is defined
 
@@ -138,7 +138,7 @@
       owner: "{{ server_user_var }}"
       group: "{{ server_group }}"
       mode: '0644'
-     with_items: "{{ tape_configs }}"
+     loop: "{{ tape_configs }}"
 
    - name: Config completed, note the following actions
      ansible.builtin.debug:
