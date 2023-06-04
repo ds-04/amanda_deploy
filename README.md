@@ -2,6 +2,7 @@
 
 ```diff
 - now with Vagrant capability, documentation updates underway
+- Ubuntu 2204 now working
 ```
 
 
