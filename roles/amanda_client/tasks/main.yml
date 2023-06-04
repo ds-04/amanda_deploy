@@ -8,6 +8,14 @@
   tags:
    - client
 
+- ansible.builtin.include: amrecover_fix.yml
+  ignore_errors: "{{ ansible_check_mode }}"
+  when:
+   - (ansible_os_family == "RedHat" and ansible_distribution_major_version|int > 7) or (ansible_distribution == "Ubuntu")
+   - "'amanda_client' in group_names"
+  tags:
+   - amrecover_fix
+
 - ansible.builtin.include: disable_xinetd.yml
   ignore_errors: "{{ ansible_check_mode }}"
   tags:
