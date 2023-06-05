@@ -39,9 +39,9 @@ See https://en.wikipedia.org/wiki/Amanda_(software) for some information on Aman
 <li>For enhancments and TODOs see this repo's issues</li>
 <li>Pull requests and enhancements are welcome</li>
 
-# Expected usage
+# Expected usage - Vagrant testing OR run the ansible code against target host(s)
 
-1. Run using vagrant using the provided script to instantiate vagrant boxes - ```vagrant_initial_setup.sh```. This requires a working vagrant setup on your host.<br>
+1. Run using vagrant using the provided script to instantiate vagrant boxes - ```vagrant_initial_setup.sh```. This script will actually take care of everything and result in a working vtape test setup. It will bring up the vagrant boxes and run ansible provisioning, and of course you can still run ansible after either via ```vagrant provision``` or in the standard way via ```ansible-playbook```. This requires a working vagrant setup on your host.<br>
 **OR**
 2. Run the playbooks and roles. Either in entirety with the master playbook or individually. Roles are tagged.<br> Be aware that there is an ```ansible.cfg``` and ```hosts.ini``` setup here too - for vagrant.<br>
 
