@@ -7,7 +7,7 @@
 
 
 # amanda_deploy
-Ansible playbooks and roles to deploy AMANDA backup (Advanced Maryland Automatic Network Disk Archiver) server and clients.
+Ansible playbooks and roles to deploy ***AMANDA backup (Advanced Maryland Automatic Network Disk Archiver) server and clients***.
 
 The motivation is to be able to reproduce an Amanda backup setup quickly, deploying both clients and server with idempotence.
 
@@ -24,18 +24,18 @@ See https://en.wikipedia.org/wiki/Amanda_(software) for some information on Aman
 <li>Focus on server developement has been Alma/Debian and with vtapes</li>
 <br>
 <br>
-Future development:<br>
+## Future development:<br>
 <br>
 <li>For enhancments and TODOs see this repo's issues</li>
 <li>Pull requests and enhancements are welcome</li>
 
-## Expected usage
+# Expected usage
 
 <li>1) Either via vagrant using the provided script to instantiate vagrant boxes - ```vagrant_initial_setup.sh```</li><br><br>
 **OR**<br><br>
 <li>2) Just run the playbooks and roles. Either in entirety with the master playbook or individually. Roles are tagged.<br> Be aware that there is an ```ansible.cfg``` and ```hosts.ini``` setup here too - for vagrant.</li>
 
-# TLDR; What this repository's playbooks/roles will do:
+## TLDR; What this repository's playbooks/roles will do:
 
 - create a working amanda backup setup within minutes including amrecover capability
 - install RPM/Deb from repos
@@ -48,7 +48,7 @@ Future development:<br>
 - **it will disable xinetd for now as bsdtcp auth isn't being used here** and avoid installing it where possible
 - it will deploy a test vtape setup should you choose to do so
 
-# TLDR; What this repository's playbooks/roles won't do:
+## TLDR; What this repository's playbooks/roles won't do:
 
 - edit any firewall settings
 - implement all of your security for your backup system - admins/operators are responsible for their own security
@@ -59,7 +59,7 @@ Future development:<br>
 - run ```amcheck``` or ```amdump```, though a dormant task is included
 - **will not deploy** your **production server config** without your input (or physical tape config) - see section below
 
-# TLDR; Amanda backup, tapes, vtapes
+## TLDR; Amanda backup, tapes, vtapes
 
 - physical [LTO] tapes are very much alive, lots of sites use them for active-archive, backup, vaulting etc.
 - vtapes are virtual tapes (a tape is a file) on a filesystem that Amanda can work with
@@ -67,7 +67,7 @@ Future development:<br>
 - Amanda's documentation is somewhat fragmented and in various states, a motivation of this role was to aid understanding and simplify deployment
 
 
-# Background
+# Overview of ansible code
 
 This repo is comprised of multiple playbooks and roles.
 
@@ -84,7 +84,7 @@ Playbooks:
 <sup>2</sup> it is assumed the server will also be a client of itself, this can be disabled/overriden if desired
 
 
-# Inventory
+## Inventory
 
 This role relies primarily upon the existence of two inventory groups, within your main inventory or an inventory file you call when running the playbooks/tasks. A third group is recommended to enable restore (amrecover) from the client.
 - amanda_server
@@ -105,13 +105,13 @@ myhost.xx.yy
 [amanda_client_restore:children]
 amanda_client
 ```
-# Amanda Debian and RHEL/Centos differences
+## Amanda Debian and RHEL/Centos differences
 
 - On RHEL/Centos the server RPM also provides the client functionality
 - Users and groups provided by the packages are slightly different
 - This code accounts for such differences
 
-# Structure as seen from playbook dir
+## Structure as seen from playbook dir
 
 It is advised that you clone to another location or use a git submodule within your ansible configuration. The structure of what is provided by this repository is seen below. Note the relative symlinks for defaults and certain task yml files. This is to avoid duplication where a client role task can be performed by something which is the same in a server role or vice versa.
 
@@ -198,11 +198,11 @@ roles/
 ```
 
 
-# Overriding config
+## Overriding config
 
 You should use vars/main.yml within the server roles. The client role vars/main.yml is a link back to the server role vars/main.yml to ease management.
 
-# Getting started and running playbooks/tasks
+## Getting started and running playbooks/tasks
 
 Firstly, decide if you are deploying the test vtape setup. If so, you probably want to override some settings (e.g. email) with use of the file *amanda_server_cfg/vars/main.yml* which you will create. Also pay attention to the holding directory defined. Then...
 
@@ -226,7 +226,7 @@ You can run everything in one go like this:
 Then (if not deploying the test vtape configuration):<br>
 - ***your amanda_production_server_cfg.yml***
 
-# Deploying the test/example vtape configuration
+## Deploying the test/example vtape configuration
 
 To avoid mishaps by default test/example vtape config is not set to be deployed (and to provide certainly), if you want to deploy the example test vtape config do:
 
@@ -238,43 +238,43 @@ The test vtape config will deploy 9 vtapes of 100 megabytes each - as defined in
 
 Multiple configs can be deployed to the same server see the defaults file within the `amanda_server_cfg` role and the variables within. cfg1-cfgX can be created, following the outlined structure. In reality you may only need a couple so just cfg1 and cfg2. Though again this role is provided as an example. It suggested you create a production role by copying and adapting this content.
 
-# Running in a production environment or using Physical tapes
+## Running in a production environment or using Physical tapes
 
 It is expected that you can create a role named amanda_server_prod_cfg (or similar) using what is here as a basis. That role could simply template out the configuration files, up to you.
 
 # FAQ
 
-### *Could other auth methods be provided e.g. bsdtcp auth?*
+## *Could other auth methods be provided e.g. bsdtcp auth?*
 
 Yes contributions are welcome to develope/test/integrate bsdtcp auth into this ansible code.
 
-### *Are Ubuntu/SUSE or other OS hosts working?*
+## *Are Ubuntu/SUSE or other OS hosts working?*
 
 These have not been included. Have not been tested with this code. Pull requests and testing effort welcomed.
 
 Whilst Ubuntu should be similar to Debian it has not been tested here and hence not included.
 
-### *How do I run commands as the Amanda user?*
+## *How do I run commands as the Amanda user?*
 
 That's up to you, but you can switch to it or use ```sudo -u amanda_user COMMAND```
 
 If you have problems with sudo (above) check sufficient access in access.conf (if in use). E.g. can root access tty or pty, depending on how you have come in.
 
-### *How would I increase the number of test vtapes?*
+## *How would I increase the number of test vtapes?*
 
 Override the defaults and increase the max vtapes for the configuration e.g. (for the example config): ```vtape_server_cfg1_max_vtape```
 
 Then run the role again, more *slot* directories will be created, which Amanda will see and create vtapes.
 
 
-### *How would I have multiple instances? (multiple "Backup Server Hosts")*
+## *How would I have multiple instances? (multiple "Backup Server Hosts")*
 
 Use mulitple ansible inventory files and call these, e.g.:
 
 ```amanda_inv1```<br>
 ```amanda_inv2```
 
-### *Test vtape configuration - How do I do a test restore using the local auth, of the */etc* disk list entry example (where the server is a client too)?*
+## *Test vtape configuration - How do I do a test restore using the local auth, of the */etc* disk list entry example (where the server is a client too)?*
 
 - As the root user (on the server): ```amrecover DailySet1 -o auth=local -s localhost```
 - then, sethost, check dles, set a dle... from there you should manage to restore (can use *help* command or see https://wiki.zmanda.com/index.php/How_To:Recover_Data)
