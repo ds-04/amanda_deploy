@@ -5,8 +5,8 @@
 - Ubuntu 2204 now working
 ```
 
-
 # amanda_deploy
+
 Ansible playbooks and roles to deploy ***AMANDA backup (Advanced Maryland Automatic Network Disk Archiver) server and clients***.
 
 The motivation is to be able to reproduce an Amanda backup setup quickly, deploying both clients and server with idempotence.
@@ -20,20 +20,30 @@ See https://en.wikipedia.org/wiki/Amanda_(software) for some information on Aman
 
 ## Developed and tested on:
 <br>
-<li>Centos 7.9, Almalinux 8x, Debian 11x and Ubuntu 22.04 hosts - other distros may work also or be added in future</li>
+<li>See distros below</li>
 <li>Focus on server developement has been Alma/Debian and with vtapes</li>
 <br>
+
+|  Distro |  Tested |  Comment |
+|---	|---	|---	|
+|  Centos 7.9 | &check;  | direct install from zmanda URL
+|  Almalinux 8x | &check;  | OS repo install
+|  Debian 11x | &check;  | OS repo install
+|  Rocky 8x | | Not tested yet, should work
+|  Ubuntu 22.04 | &check;  | OS repo install
+|  SUSE distros | &cross; | no provision for SUSE right now
 <br>
-## Future development:<br>
+
+## Future development:
 <br>
 <li>For enhancments and TODOs see this repo's issues</li>
 <li>Pull requests and enhancements are welcome</li>
 
 # Expected usage
 
-<li>1) Either via vagrant using the provided script to instantiate vagrant boxes - ```vagrant_initial_setup.sh```</li><br><br>
-**OR**<br><br>
-<li>2) Just run the playbooks and roles. Either in entirety with the master playbook or individually. Roles are tagged.<br> Be aware that there is an ```ansible.cfg``` and ```hosts.ini``` setup here too - for vagrant.</li>
+1. Run using vagrant using the provided script to instantiate vagrant boxes - ```vagrant_initial_setup.sh```. This requires a working vagrant setup on your host.<br>
+**OR**
+2. Run the playbooks and roles. Either in entirety with the master playbook or individually. Roles are tagged.<br> Be aware that there is an ```ansible.cfg``` and ```hosts.ini``` setup here too - for vagrant.<br>
 
 ## TLDR; What this repository's playbooks/roles will do:
 
