@@ -1,8 +1,11 @@
-## Initial version please read content below - documentation updates underway
+## Latest
 
 ```diff
-- now with Vagrant capability, documentation updates underway
+- various syntax improvements
+- docs updated
+- now with Vagrant capability
 - Ubuntu 2204 now working
+- ambind fix/workaround
 ```
 
 # amanda_deploy
