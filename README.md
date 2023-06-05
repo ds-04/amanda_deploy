@@ -108,8 +108,8 @@ amanda_client_restore.yml
 amanda_client.yml
 amanda_copy_keys.yml
 amanda_master_playbook.yml
-amanda_server_cfg_hostname.yml
 amanda_server_cfg.yml
+amanda_server_vagrant_hostname.yml
 amanda_server.yml
 ```
 ...
