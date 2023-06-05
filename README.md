@@ -16,19 +16,30 @@ See https://en.wikipedia.org/wiki/Amanda_(software) for some information on Aman
 **THIS CONTENT SHOULD BE USED AT OWN RISK:**<br><br>
 - AUTHOR HAS DONE TESTING WHILST IN DEVELOPMENT<br>
 - **YOUR SECURITY IN PRODUCTION/AT YOUR SITE IS YOUR RESPONSABILITY!!**<br>
-- IT IS ASSUMED YOU HAVE ANSIBLE CONTROL OF ALL HOSTS, BOTH FROM A SECURITY PERSPECTIVE AND DEPLOYMENT USING THIS CODE<br><br>
+- IT IS ASSUMED YOU HAVE ANSIBLE CONTROL OF ALL HOSTS, BOTH FROM A SECURITY PERSPECTIVE AND DEPLOYMENT WHEN USING THIS CODE<br><br>
 
-Developed/tested on:
-- Centos 7.9, Debian 11, Almalinux 8.4 hosts
-- Focus on server developement has been Debian and with vtapes<br><br>
-Future:<br>
-- For enhancments and TODOs see repo's issues
-- Pull requests and enhancements are welcome
+## Developed and tested on:
+<br>
+<li>Centos 7.9, Almalinux 8x, Debian 11x and Ubuntu 22.04 hosts - other distros may work also or be added in future</li>
+<li>Focus on server developement has been Alma/Debian and with vtapes</li>
+<br>
+<br>
+Future development:<br>
+<br>
+<li>For enhancments and TODOs see this repo's issues</li>
+<li>Pull requests and enhancements are welcome</li>
+
+## Expected usage
+
+<li>1) Either via vagrant using the provided script to instantiate vagrant boxes - ```vagrant_initial_setup.sh```</li><br><br>
+**OR**<br><br>
+<li>2) Just run the playbooks and roles. Either in entirety with the master playbook or individually. Roles are tagged.<br> Be aware that there is an ```ansible.cfg``` and ```hosts.ini``` setup here too - for vagrant.</li>
 
 # TLDR; What this repository's playbooks/roles will do:
 
-- work with both RHEL/Centos (>7) and Debian OS (>10)
-- install RPM/Deb for Amanda backup v3.5.1 (version defined in defaults)
+- create a working amanda backup setup within minutes including amrecover capability
+- install RPM/Deb from repos
+- detect missing ambind and install amanda-server if necessary (as a workaround)
 - deploy Amanda backup server **with SSH auth not bsdtcp**
 - deploy Amanda clients **with SSH auth not bsdtcp**
 - generate (if needed) and copy ssh pub key from server to client for **SSH auth**
@@ -40,13 +51,13 @@ Future:<br>
 # TLDR; What this repository's playbooks/roles won't do:
 
 - edit any firewall settings
-- implement all of your security for your backup system - operators are responsable for their own security
-- do any DNS configuration (e.g. /etc/hosts) you need to ensure lookups work
+- implement all of your security for your backup system - admins/operators are responsible for their own security
+- do any DNS configuration (e.g. /etc/hosts) you need to ensure lookups work - although for vagrant testing purposes it will edit hostname and /etc/hosts
 - bsdtcp auth or other non SSH auth methods - bsdtcp auth could be implemented if a pull request is submitted etc.
 - dormant bsdtcp systemd files are included though
 - edit/setup any cron jobs for backup invocation
-- run Amcheck, though a dormant task is included
-- deploy your production server config or physical tape config - see section below
+- run ```amcheck``` or ```amdump```, though a dormant task is included
+- **will not deploy** your **production server config** without your input (or physical tape config) - see section below
 
 # TLDR; Amanda backup, tapes, vtapes
 
@@ -62,13 +73,14 @@ This repo is comprised of multiple playbooks and roles.
 
 Playbooks:
 
-- amanda_client.yml (calls its namesake role to: install packages for client, disable xinetd, setup local user security/ssh, copy amanda-security.conf)
-- amanda_copy_keys.yml (playbook; append public key from server to clients (server is also a client by default), use ansible to add host-keys of clients to the amanda server)
-- amanda_server_cfg.yml (calls its namesake role to: create/copy/update configuration files, directories and create vtapes for a test vtape environ)
-- amanda_server.yml (calls its namesake role to: install server packages<sup>1</sup>, disable xinetd, setup server ssh user, setup server ssh user keys, copy amanda-security.conf<sup>2</sup>)
-- amanda_client_restore.yml (playbook; append root public key from client restore systems to server, use ansible to add host-key of server to the client restore systemts - these tasks enable *amrecover* to work)
+- **amanda_client.yml** (calls its namesake role to: install packages for client, disable xinetd, setup local user security/ssh, copy amanda-security.conf)
+- **amanda_copy_keys.yml** (playbook; append public key from server to clients (server is also a client by default), use ansible to add host-keys of clients to the amanda server)
+- **amanda_server_cfg.yml** (calls its namesake role to: create/copy/update configuration files, directories and create vtapes for a test vtape environ)
+- **amanda_server.yml** (calls its namesake role to: install server packages<sup>1</sup>, disable xinetd, setup server ssh user, setup server ssh user keys, copy amanda-security.conf<sup>2</sup>)
+- **amanda_client_restore.yml** (playbook; append root public key from client restore systems to server, use ansible to add host-key of server to the client restore systemts - these tasks enable *amrecover* to work)
+- **amanda_server_vagrant_hostname.yml** (playbook: set hostname, edit /etc/hosts - intended for use with vagrant testing setup)
 
-<sup>1</sup> Debian is direct from repo, RHEL/Centos 7x via Zmanda RPM url/download this server package also provides client capability. Centos8 (Almalinux tested) will come from stream repo of OS<br>
+<sup>1</sup> Install is direct from OS repos, except RHEL/Centos 7x via Zmanda RPM url/download this server package also provides client capability. Centos8 (Almalinux tested) will come from stream repo of OS<br>
 <sup>2</sup> it is assumed the server will also be a client of itself, this can be disabled/overriden if desired
 
 
