@@ -218,6 +218,7 @@ Firstly, decide if you are deploying the test vtape setup. If so, you probably w
 
 The expected order (on first setup) is:
 
+- ```amanda_server_vagrant_hostname.yml``` In the case of vagrant we need to ensure host looks work, so this is run first
 - ```ansible-playbook amanda_server.yml```
 - ```ansible-playbook amanda_client.yml```
 - ```ansible-playbook amanda_copy_keys.yml``` (N.B. you will also need to run this, to enable the server to access itself as a client)
