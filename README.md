@@ -119,6 +119,7 @@ roles/
 │   ├── defaults
 │   │   └── main.yml -> ../../amanda_server/defaults/main.yml
 │   ├── tasks
+│   │   ├── amrecover_fix.yml
 │   │   ├── client_security.yml
 │   │   ├── client_sshd_user.yml -> ../../amanda_server/tasks/server_sshd_user.yml
 │   │   ├── client.yml
@@ -129,7 +130,7 @@ roles/
 │   │   ├── amanda-security.conf.j2
 │   │   └── systemd -> ../../amanda_server/templates/systemd
 │   └── vars
-│       └── main.yml -> ../../amanda_server/vars/main.yml
+│       └── main.yml
 ├── amanda_server
 │   ├── defaults
 │   │   └── main.yml
@@ -172,14 +173,15 @@ roles/
 │   │   └── vtape_tmp.j2
 │   └── vars
 │       └── server_role_defaults.yml -> ../../amanda_server/defaults/main.yml
-└── amanda_server_cfg_hostname
+└── amanda_server_vagrant_hostname
+    ├── defaults
     ├── tasks
     │   ├── main.yml
     │   └── vagrant_hostname.yml
     └── templates
         └── hosts.j2
 
-21 directories, 42 files
+22 directories, 43 files
 
 ```
 
