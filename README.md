@@ -244,6 +244,7 @@ To avoid mishaps by default test/example vtape config is not set to be deployed 
 ```ansible-playbook amanda_server_cfg.yml -e deploy_test_vtape_cfg=True```
 
 The test vtape config will deploy 9 vtapes of 100 megabytes each - as defined in the defaults file in *amanda_server_cfg/defaults/main.yml*.
+We'll also write out a second configuration of 5 vtapes. Proving a working multi-config setup.
 
 ## Multiple configs
 
