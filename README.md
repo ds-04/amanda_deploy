@@ -25,6 +25,7 @@ See https://en.wikipedia.org/wiki/Amanda_(software) for some information on Aman
 <br>
 <li>See distros below</li>
 <li>Focus on server developement has been Alma/Debian and with vtapes</li>
+<li>Tested with ansible 2.10.8</li>
 <br>
 
 |  Distro |  Tested |  Comment |
@@ -32,7 +33,7 @@ See https://en.wikipedia.org/wiki/Amanda_(software) for some information on Aman
 |  Centos 7.9 | &check;  | direct install from zmanda URL
 |  Almalinux 8x | &check;  | OS repo install
 |  Debian 11x | &check;  | OS repo install
-|  Rocky 8x | | Not tested yet, should work
+|  Rocky 8x | | Testing on ansible core 2.15.0
 |  Ubuntu 22.04 | &check;  | OS repo install
 |  SUSE distros | &cross; | no provision for SUSE right now
 <br>
