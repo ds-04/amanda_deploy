@@ -33,7 +33,7 @@ See https://en.wikipedia.org/wiki/Amanda_(software) for some information on Aman
 |  Centos 7.9 | &check;  | direct install from zmanda URL
 |  Almalinux 8x | &check;  | OS repo install
 |  Debian 11x | &check;  | OS repo install
-|  Rocky 8x | | Testing on ansible core 2.15.0
+|  Rocky 8x | &check; | Works with ansible core 2.15.0, older versions may not
 |  Ubuntu 22.04 | &check;  | OS repo install
 |  SUSE distros | &cross; | no provision for SUSE right now
 <br>
