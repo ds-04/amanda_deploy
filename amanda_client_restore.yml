@@ -54,7 +54,7 @@
      register: findres
      loop: "{{ local_amandad_search_paths }}" #comes from above
 
-   - name:
+   - name: Assign the dicovered amandad_path var
      ansible.builtin.set_fact:
       amandad_path: "{{ item.item }}"
      loop: "{{ findres.results }}"
