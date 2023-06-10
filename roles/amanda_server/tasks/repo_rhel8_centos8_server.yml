@@ -19,7 +19,7 @@
 - block:
 
   - name: amanda server dependencies
-    ansible.builtin.yum:
+    ansible.builtin.dnf:
      name:
       # needed for lto tapes
       - mt-st
@@ -36,50 +36,16 @@
       - perl
       - perl-CPAN
       - lsscsi
-      - tar # just to be sure
+      - tar #just to be sure
      state: installed
 
-  - name: download cpanm
-    ansible.builtin.get_url:
-     url: https://fastapi.metacpan.org/source/MIYAGAWA/App-cpanminus-1.7044/bin/cpanm
-     dest: /tmp/cpanm.pl
-     mode: '0755'
-
-  - name: install cpanm for ansible module
-    ansible.builtin.command: perl cpanm.pl App::cpanminus
-    args:
-     chdir: /tmp/
-     creates: /usr/local/bin/cpanm
-
-  - name: add cpanm symlink to /usr/bin
-    ansible.builtin.file:
-     src: /usr/local/bin/cpanm
-     dest: /usr/bin/cpanm
-     state: link
-
-  - name: install perl modules
-    ansible.builtin.cpanm:
-     name: "{{ item }}"
-    loop:
-     - URI-Escape
-
-  - name: (RHEL/Centos 7x) Get/download amanda-server (community) from Zmanda (URL)
-    ansible.builtin.get_url:
-     url: "{{ item.url }}"
-     dest: "{{ item.dest }}"
-     mode: '0700'
-     owner: root
-     group: root
-     checksum: "{{ item.checksum }}"
-    loop:
-     - "{{ server_rpm }}"
-
-  - name: (RHEL/Centos 7x) install amanda-server (community) from Zmanda, local saved RPM
-    ansible.builtin.yum:
-     name: "{{ item.dest }}{{ item.url | basename }}"
-     state: present
-    loop:
-     - "{{ server_rpm }}"
+  - name: (RHEL/Centos 8x) install amanda-server from repos
+    ansible.builtin.dnf:
+     name: amanda-server
+     update_cache: yes
+    when:
+     - ansible_os_family == "RedHat"
+     - ansible_distribution_major_version|int >= 8
 
   become: "True"
 ...

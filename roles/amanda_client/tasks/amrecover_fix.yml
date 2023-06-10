@@ -74,24 +74,18 @@
        - no_serverpkg is defined
        - no_serverpkg|bool
 
-   - name: Set_fact if ambind is not found
+   - name: Create var ambind_result for location of ambind if found
      ansible.builtin.set_fact:
-       server_pkg_needed: 'true'
-     loop: "{{ findres.results }}"
-     ignore_errors: 'true'
-     when:
-       - '"amanda_server" not in group_names'
-       - item.stat.exists is defined
-       - item.stat.exists != true
-       - no_serverpkg is defined
-       - no_serverpkg|bool
+       ambind_result: "{{ item }}"
+     loop: "{{ findres.results | selectattr('stat.exists') | map(attribute='item') | list }}"
 
-   - name: RedHat family - install amanda-server to fix missing ambind
+   - name: Install amanda-server to fix missing ambind
      ansible.builtin.dnf:
       name: 'amanda-server'
      when:
        - '"amanda_server" not in group_names'
-       - ansible_os_family == "RedHat"
+       - ambind_result | default('', true) | trim != ''
+       #- ansible_os_family == "RedHat"
        - server_pkg_needed is defined
        - server_pkg_needed|bool
 
@@ -100,6 +94,7 @@
       name: 'amanda-server'
      when:
        - '"amanda_server" not in group_names'
+       - ambind_result | default('', true) | trim != ''
        - ansible_os_family == "Debian"
        - server_pkg_needed is defined
        - server_pkg_needed|bool

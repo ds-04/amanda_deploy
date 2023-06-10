@@ -40,6 +40,7 @@
       state: link
       owner: "{{ server_user_var }}"
       group: "{{ server_group }}"
+     ignore_errors: 'true'
      when: ansible_os_family == "Debian" or ansible_os_family == "RedHat"
 
    - name: Create .ssh for "{{ server_user_var }}"

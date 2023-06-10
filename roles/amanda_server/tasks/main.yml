@@ -1,28 +1,44 @@
 ---
 
-- ansible.builtin.include: debian_server.yml
+- ansible.builtin.include: repo_debian_server.yml
   ignore_errors: "{{ ansible_check_mode }}"
   when:
+    - install_amanda|bool
+    - not use_zmanda_package|bool
     - ansible_os_family == "Debian"
     - (ansible_distribution == "Debian" and ansible_distribution_major_version|int >= 10) or (ansible_distribution == "Ubuntu")
   tags:
     - debian_server
 
-- ansible.builtin.include: rhel7_centos7_server.yml
+- ansible.builtin.include: repo_rhel7_centos7_server.yml
   ignore_errors: "{{ ansible_check_mode }}"
   when:
+    - install_amanda|bool
+    - not use_zmanda_package|bool
     - ansible_os_family == "RedHat"
     - ansible_distribution_major_version|int == 7
   tags:
     - rhel7_centos7_server
 
-- ansible.builtin.include: rhel8_centos8_server.yml
+- ansible.builtin.include: repo_rhel8_centos8_server.yml
   ignore_errors: "{{ ansible_check_mode }}"
   when:
+    - install_amanda|bool
+    - not use_zmanda_package|bool
     - ansible_os_family == "RedHat"
     - ansible_distribution_major_version|int == 8
   tags:
     - rhel8_centos8_server
+
+# zmanda package install
+- ansible.builtin.include: zmanda_package_server.yml
+  ignore_errors: "{{ ansible_check_mode }}"
+  when:
+   - install_amanda|bool
+   - use_zmanda_package|bool
+   - (ansible_os_family == "RedHat" and ansible_distribution_major_version|int >= 7) or (ansible_distribution == "Debian" and ansible_distribution_major_version|int >= 10) or (ansible_distribution == "Ubuntu")
+  tags:
+   - zmanada_server
 
 - ansible.builtin.include: disable_xinetd.yml
   ignore_errors: "{{ ansible_check_mode }}"

@@ -1,12 +1,15 @@
 ---
 # Amanda version is from repo, unless RHEL7 family which is download from zmanda
 
+
+#-----------SELF BACKUP AND RESTORE---------------
 # should the server be able to backup itself etc.
 server_also_client: 'True'
 # can the client connect to the server for restore
 client_can_restore: 'True'
+#-----------END-SELF BACKUP AND RESTORE-----------
 
-#-----------SSH--------------
+#-----------SSH-----------------------------------
 # enable the update of known hosts on the server, using the following vars
 update_server_known_hosts: 'True'
 update_client_restore_known_hosts: 'True'
@@ -16,20 +19,48 @@ ssh_key_algo: 'ed25519' # prefer ed25519 to rsa, also see NOTES bottom
 # the name of the server and client_restore keypair
 server_ssh_keypair: amdump_id_{{ ssh_key_algo|default('ed25519') }} # default name from RPM is id_rsa_amdump
 client_restore_ssh_keypair: amrecover_id_{{ ssh_key_algo|default('ed25519') }} # default name from RPM is id_rsa_amrecover
-#--------END-SSH-------------
+#--------END-SSH----------------------------------
 
-#----------PACKAGES----------
-# RHEL7 family pacakges, main repos are older, here from zmanda:
-client_rpm:
- - { url: "https://cdn.zmanda.com/downloads/community/Amanda/3.5.3/RHEL-7/amanda-backup_client-3.5.3.git.18189a34-1.rhel7.x86_64.rpm", checksum: "sha256:67035dcc42a363761a207b94a9fa8c7d72ba7fa17ad097160e5f38c2b83557f6", dest: "/root/" }
-server_rpm:
- - { url: "https://cdn.zmanda.com/downloads/community/Amanda/3.5.3/RHEL-7/amanda-backup_server-3.5.3.git.18189a34-1.rhel7.x86_64.rpm", checksum: "sha256:5e151b42e9f8c479541aec5a1fbbf83693433c57326f22653d1ddb965b93b567", dest: "/root/" }
+#----------PACKAGES-------------------------------
 
-# RHEL8 family packages come from repos
-# Debian/Ubuntu packages come from repos
-#-----END--PACKAGES---------
+#global toggle, disable to stop installation and just configure
+install_amanda: 'True'
+#choose repo install or zmanda download url
+use_zmanda_package: 'True'
 
-#-----OS--VARS--------------
+#v3.5.3
+zmanda_packages:
+  RedHat_7:
+    client:
+      url: "https://cdn.zmanda.com/downloads/community/Amanda/3.5.3/RHEL-7/amanda-backup_client-3.5.3.git.18189a34-1.rhel7.x86_64.rpm"
+      checksum: "sha256:67035dcc42a363761a207b94a9fa8c7d72ba7fa17ad097160e5f38c2b83557f6"
+      dest: "/root/"
+    server:
+      url: "https://cdn.zmanda.com/downloads/community/Amanda/3.5.3/RHEL-7/amanda-backup_server-3.5.3.git.18189a34-1.rhel7.x86_64.rpm"
+      checksum: "sha256:5e151b42e9f8c479541aec5a1fbbf83693433c57326f22653d1ddb965b93b567"
+      dest: "/root/"
+  Debian_11:
+    client:
+      url: "https://cdn.zmanda.com/downloads/community/Amanda/3.5.3/Debian-11/amanda-backup-client_3.5.3.git.18189a34-1Debian11_amd64.deb"
+      checksum: "sha256:"
+      dest: "/root/"
+    server:
+      url: "https://cdn.zmanda.com/downloads/community/Amanda/3.5.3/Debian-11/amanda-backup-server_3.5.3.git.18189a34-1Debian11_amd64.deb"
+      checksum: "sha256:"
+      dest: "/root/"
+  Ubuntu_22.04:
+    client:
+      url: "https://cdn.zmanda.com/downloads/community/Amanda/3.5.3/Ubuntu-22.04/amanda-backup-client_3.5.3.git.d77fa906-1Ubuntu2204_amd64.deb"
+      checksum: "sha256:e1ab7ea0babb04cd780cad9dc8dc902e7cfda8802c0532c9751d2c29e7a87294"
+      dest: "/root/"
+    server:
+      url: "https://cdn.zmanda.com/downloads/community/Amanda/3.5.3/Ubuntu-22.04/amanda-backup-server_3.5.3.git.d77fa906-1Ubuntu2204_amd64.deb"
+      checksum: "sha256:4136cb05775cf6a119d39a128879869343f2ba51336ac6c38411e31fb212cebd"
+      dest: "/root/"
+
+#-----END--PACKAGES-------------------------------
+
+#-----OS--VARS------------------------------------
 
 #security prefix - also note NO trailing comma here
 #N.B. server ending like command="/usr/lib/amanda/amandad -auth=ssh amdump"
@@ -46,6 +77,7 @@ redhat_user_home: '/var/lib/amanda'
 
 # list of known locations to search for amandad (depending on distro/package etc.)
 amandad_search_paths:
+  - /lib/x86_64-linux-gnu/amanda/amandad
   - /usr/lib64/amanda/amandad
   - /usr/libexec/amanda/amandad
   - /usr/lib/amanda/amandad
@@ -64,14 +96,15 @@ ambind_server_provide: 'True'
 
 # list of known locations to search for ambind (depending on distro/package etc.)
 ambind_search_paths:
+  - /lib/x86_64-linux-gnu/amanda/ambind
   - /usr/lib64/amanda/ambind
   - /usr/lib/amanda/ambind
 
-#-END-OS--VARS-------------
+#-END-OS--VARS------------------------------------
 
-#-----VAGRANT--VARS--------------
+#-----VAGRANT--VARS-------------------------------
 #vagrant_net_regex: '192.168.[0-9]*.[0-9]*'
-#-END-VAGRANT--VARS-------------
+#-END-VAGRANT--VARS-------------------------------
 
 #--------------------------------------------------------------------------------
 # NOTES

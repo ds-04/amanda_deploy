@@ -1,0 +1,74 @@
+---
+
+# D Simpson 2021,2023 ds-04
+
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+- block:
+
+  - name: Set facts for Zmanda packages (RHEL family or Debian)
+    ansible.builtin.set_fact:
+        zmanda_client_url: "{{ item.value.client.url }}"
+        zmanda_client_checksum: "{{ item.value.client.checksum }}"
+        zmanda_client_dest: "{{ item.value.client.dest }}"
+    loop: "{{ lookup('dict', zmanda_packages ) }}"
+    when: 
+      - ansible_os_family+'_'+ansible_distribution_major_version in item.key
+      - (ansible_os_family == 'RedHat') or (ansible_os_family == 'Debian' and ansible_distribution == 'Debian')
+
+  - name: Set facts for Zmanda packages (Ubuntu)
+    ansible.builtin.set_fact:
+        zmanda_client_url: "{{ item.value.client.url }}"
+        zmanda_client_checksum: "{{ item.value.client.checksum }}"
+        zmanda_client_dest: "{{ item.value.client.dest }}"
+    loop: "{{ lookup('dict', zmanda_packages ) }}"
+    when: 
+      - ansible_distribution+'_'+ansible_distribution_major_version in item.key
+      - ansible_os_family == 'Debian' 
+      - ansible_distribution == 'Ubuntu'
+
+  - name: Get/download amanda-client from Zmanda
+    ansible.builtin.get_url:
+     url: "{{ zmanda_client_url }}"
+     dest: "{{ zmanda_client_dest }}"
+     mode: '0700'
+     owner: root
+     group: root
+     checksum: "{{ zmanda_client_checksum }}"
+
+  - name: YUM - RHEL 7 family distros - install amanda-client (community) from Zmanda, local saved package
+    ansible.builtin.yum:
+     name: "{{ zmanda_client_dest }}{{ zmanda_client_url | basename }}"
+     state: present
+    when: 
+      - ansible_os_family == 'RedHat' 
+      - ansible_distribution_major_version|int == 7
+  
+  - name: DNF - RHEL 8,9 family distros - install amanda-client (community) from Zmanda, local saved package
+    ansible.builtin.dnf:
+     name: "{{ zmanda_client_dest }}{{ zmanda_client_url | basename }}"
+     state: present
+    when: 
+      - ansible_os_family == 'RedHat' 
+      - ansible_distribution_major_version|int >= 8
+
+  - name: APT - Debian family distros - install amanda-client (community) from Zmanda, local saved package
+    ansible.builtin.apt:
+     deb: "{{ zmanda_client_dest }}{{ zmanda_client_url | basename }}"
+    when: 
+      - ansible_os_family == 'Debian' 
+
+  become: "True"
+...
