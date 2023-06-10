@@ -38,6 +38,14 @@ See https://en.wikipedia.org/wiki/Amanda_(software) for some information on Aman
 |  SUSE distros | &cross; | no provision for SUSE right now
 <br>
 
+## Versions
+
+The versions of amanda backup you can expect this code to find and install can be seen here:
+
+- [default] **distro install**, various - https://repology.org/project/amanda/versions
+- [optional] **zmanda install** v3.5.3 (as of June 2023) - https://www.zmanda.com/downloads/
+
+
 ## Future development:
 <br>
 <li>For enhancments and TODOs see this repo's issues</li>
