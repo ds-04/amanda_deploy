@@ -26,7 +26,7 @@ client_restore_ssh_keypair: amrecover_id_{{ ssh_key_algo|default('ed25519') }} #
 #global toggle, disable to stop installation and just configure
 install_amanda: 'True'
 #choose repo install or zmanda download url
-use_zmanda_package: 'True'
+use_zmanda_package: 'False'
 
 #v3.5.3
 zmanda_packages:
