@@ -85,7 +85,7 @@
      when:
        - '"amanda_server" not in group_names'
        - ambind_result | default('', true) | trim != ''
-       #- ansible_os_family == "RedHat"
+       - ansible_os_family == "RedHat"
        - server_pkg_needed is defined
        - server_pkg_needed|bool
 
