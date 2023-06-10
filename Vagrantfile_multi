@@ -3,7 +3,9 @@
 
 #VIMAGE = "almalinux/8"
 #VIMAGE = "centos/7"
-VIMAGE = "debian/bullseye64"
+#VIMAGE = "debian/bullseye64"
+VIMAGE = "generic/ubuntu2204"
+#VIMAGE = "generic/rocky8"
 NODES = 2
 
 Vagrant.configure(2) do |config|
