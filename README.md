@@ -30,11 +30,11 @@ See https://en.wikipedia.org/wiki/Amanda_(software) for some information on Aman
 
 |  Distro |  Tested |  Comment |
 |---	|---	|---	|
-|  Centos 7.9 | &check;  | direct install from zmanda URL
-|  Almalinux 8x | &check;  | OS repo install
-|  Debian 11x | &check;  | OS repo install
+|  Centos 7.9 | &check;  | advise zmanda package if you must use this OS
+|  Almalinux 8x | &check;  | OS repo install or Zmanda
+|  Debian 11x | &check;  | OS repo install or Zmanda
 |  Rocky 8x | &check; | Works with ansible core 2.15.0, older versions may not
-|  Ubuntu 22.04 | &check;  | OS repo install
+|  Ubuntu 22.04 | &check;  | OS repo install or Zmanda
 |  SUSE distros | &cross; | no provision for SUSE right now
 <br>
 
