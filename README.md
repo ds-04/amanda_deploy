@@ -94,8 +94,9 @@ Playbooks:
 - **amanda_client_restore.yml** (playbook; append root public key from client restore systems to server, use ansible to add host-key of server to the client restore systemts - these tasks enable *amrecover* to work)
 - **amanda_server_vagrant_hostname.yml** (playbook: set hostname, edit /etc/hosts - intended for use with vagrant testing setup)
 
-<sup>1</sup> Install is direct from OS repos, except RHEL/Centos 7x via Zmanda RPM url/download this server package also provides client capability. Centos8 (Almalinux tested) will come from stream repo of OS<br>
-<sup>2</sup> it is assumed the server will also be a client of itself, this can be disabled/overriden if desired
+<sup>1</sup> By default install is direct from OS repos, but if desired via overrides the Zmanda community package can be fetched and installed. 
+<br>
+<sup>2</sup> It is assumed the server will also be a client of itself, though this can be disabled/overriden if desired.
 
 
 ## Inventory
@@ -121,9 +122,9 @@ amanda_client
 ```
 ## Amanda Debian and RHEL/Centos differences
 
-- On RHEL/Centos the server RPM also provides the client functionality
-- Users and groups provided by the packages are slightly different
-- This code accounts for such differences
+- On RHEL/Centos the server RPM also provides the client functionality - though recently an issue where ambind is provided via the server package only has arised, a workaround is present in this role...
+- Users and groups provided by the packages are slightly different...
+- ...This code accounts for such differences.
 
 ## Structure as seen from playbook dir
 
@@ -150,7 +151,9 @@ roles/
 │   │   ├── client_sshd_user.yml -> ../../amanda_server/tasks/server_sshd_user.yml
 │   │   ├── client.yml
 │   │   ├── disable_xinetd.yml -> ../../amanda_server/tasks/disable_xinetd.yml
-│   │   └── main.yml
+│   │   ├── main.yml
+│   │   ├── repo_package_client.yml
+│   │   └── zmanda_package_client.yml
 │   ├── templates
 │   │   ├── amanda-client.conf.j2
 │   │   ├── amanda-security.conf.j2
@@ -162,14 +165,15 @@ roles/
 │   │   └── main.yml
 │   ├── tasks
 │   │   ├── client_security.yml -> ../../amanda_client/tasks/client_security.yml
-│   │   ├── debian_server.yml
 │   │   ├── disable_xinetd.yml
 │   │   ├── DORMANT_systemd.yml
 │   │   ├── main.yml
-│   │   ├── rhel7_centos7_server.yml
-│   │   ├── rhel8_centos8_server.yml
+│   │   ├── repo_debian_server.yml
+│   │   ├── repo_rhel7_centos7_server.yml
+│   │   ├── repo_rhel8_centos8_server.yml
 │   │   ├── server_sshd_user.yml
-│   │   └── server_ssh_keys.yml
+│   │   ├── server_ssh_keys.yml
+│   │   └── zmanda_package_server.yml
 │   └── templates
 │       ├── amanda-client.conf.j2 -> ../../amanda_client/templates/amanda-client.conf.j2
 │       ├── amanda-security.conf.j2 -> ../../amanda_client/templates/amanda-security.conf.j2
@@ -200,15 +204,13 @@ roles/
 │   └── vars
 │       └── server_role_defaults.yml -> ../../amanda_server/defaults/main.yml
 └── amanda_server_vagrant_hostname
-    ├── defaults
     ├── tasks
     │   ├── main.yml
     │   └── vagrant_hostname.yml
     └── templates
         └── hosts.j2
 
-22 directories, 43 files
-
+21 directories, 46 files
 ```
 
 
@@ -310,4 +312,4 @@ amrecover> setdisk /etc/
 
 # Future work
 
-- See issues...
+- See issues, if there are any...
