@@ -16,10 +16,43 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-- ansible.builtin.import_playbook: amanda_server_vagrant_hostname.yml
-- ansible.builtin.import_playbook: amanda_server.yml
-- ansible.builtin.import_playbook: amanda_client.yml
-- ansible.builtin.import_playbook: amanda_copy_keys.yml
-- ansible.builtin.import_playbook: amanda_server_cfg.yml # to deploy test vtape config use: -e deploy_test_vtape_cfg=True
-- ansible.builtin.import_playbook: amanda_client_restore.yml
+
+
+# VAGRANT---------------------------------------------------------------------------------
+# 1 - setup hostname and etc for vagrant (if vagrant)
+- ansible.builtin.import_playbook: playbook_amanda_server_vagrant_hostname.yml
+
+
+# INSTALL PKG-----------------------------------------------------------------------------
+# 2 - install server pkg
+- ansible.builtin.import_playbook: playbook_amanda_server_pkg.yml
+# 3 - install client pkg
+- ansible.builtin.import_playbook: playbook_amanda_client_pkg.yml
+
+
+# MAIN CONFIG-----------------------------------------------------------------------------
+# 4 - main server config (ssh etc)
+- ansible.builtin.import_playbook: playbook_amanda_server.yml
+# 5 - main client config (ssh etc)
+- ansible.builtin.import_playbook: playbook_amanda_client.yml
+
+
+# ZMANDA FIXES----------------------------------------------------------------------------
+# 6 -zmanda pkg install specific fixes
+- ansible.builtin.import_playbook: playbook_zmanda_fixes.yml
+
+
+# SSH KEYS--------------------------------------------------------------------------------
+# 7 - copy keys for ssh
+- ansible.builtin.import_playbook: playbook_amanda_copy_keys.yml
+
+
+# BACKUP CONFIG---------------------------------------------------------------------------
+# 8 - write backup configuration on server, NOTE to deploy test vtape config use: -e deploy_test_vtape_cfg=True
+- ansible.builtin.import_playbook: playbook_amanda_server_cfg.yml
+
+
+# CLIENT RESTORE--------------------------------------------------------------------------
+# 9 configure clients for restore
+- ansible.builtin.import_playbook: playbook_amanda_client_restore.yml
 ...
