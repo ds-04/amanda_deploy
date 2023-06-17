@@ -4,7 +4,8 @@
 #VIMAGE = "almalinux/8"
 #VIMAGE = "centos/7"
 #VIMAGE = "debian/bullseye64"
-VIMAGE = "generic/ubuntu2204"
+VIMAGE = "generic/fedora37"
+#VIMAGE = "generic/ubuntu2204"
 #VIMAGE = "generic/rocky8"
 NODES = 2
 
@@ -24,7 +25,7 @@ Vagrant.configure(2) do |config|
           ansible.playbook = "amanda_master_playbook.yml"
           ansible.limit = "amanda_server,amanda_client"
           ansible.inventory_path  = "hosts.ini"
-          ansible.extra_vars = { vagrant_hostname: "true", deploy_test_vtape_cfg: "true" }      
+          ansible.extra_vars = { deploy_test_vtape_cfg: true }      
         end
       end
 

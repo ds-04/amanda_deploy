@@ -40,6 +40,6 @@ vagrant global-status;
 echo "-------------------------------------"
 echo "Setup is done!..."
 echo "Ansible playbook that was run:"
-echo "ansible-playbook amanda_master_playbook.yml -e vagrant_hostname=True -e deploy_test_vtape_cfg=True"
+echo "ansible-playbook amanda_master_playbook.yml -e deploy_test_vtape_cfg=true"
 echo "-------------------------------------"
-echo "as the backup user test with: amcheck DailySet1, amdump DailySet1 etc..."
+echo "as the backup (backup/amandabackup) user test with: amcheck DailySet1, amdump DailySet1 etc..."
