@@ -1,0 +1,37 @@
+---
+
+- block:
+
+  - name: Set facts for Zmanda packages (RHEL family or Debian distribution)
+    ansible.builtin.set_fact:
+        zmanda_server_dir_perms: "{{ item.value.server.dir_perms }}"
+    loop: "{{ lookup('dict', zmanda_packages ) }}"
+    when:
+      - use_zmanda_package | bool
+      - ansible_os_family+'_'+ansible_distribution_major_version in item.key
+      - (ansible_os_family == 'RedHat') or (ansible_os_family == 'Debian' and ansible_distribution == 'Debian')
+
+  - name: Set facts for Zmanda packages (Ubuntu distribution)
+    ansible.builtin.set_fact:
+        zmanda_server_dir_perms: "{{ item.value.server.dir_perms }}"
+    loop: "{{ lookup('dict', zmanda_packages ) }}"
+    when:
+      - use_zmanda_package | bool
+      - ansible_distribution+'_'+ansible_distribution_major_version in item.key
+      - ansible_os_family == 'Debian' 
+      - ansible_distribution == 'Ubuntu'
+
+  - name: Fix Zmanda v3.5.3 /var/log/amanda ownership issue
+    ansible.builtin.file:
+     state: directory
+     path: "{{ item }}"
+     recurse: true
+     owner: "{{ server_user_discovered }}"
+     group: "{{ server_user_discovered_group }}"
+    loop: "{{ zmanda_server_dir_perms }}"
+    when:
+      - use_zmanda_package | bool
+
+  become: true
+
+...
