@@ -23,35 +23,16 @@
       dir: vars/
       files_matching: server_role_defaults.yml # this target is a symbolic link
 
-   - name: Set fact for Debian
-     ansible.builtin.set_fact:
-      server_user_var: "{{ debian_user }}"
-      server_user_home: "{{ debian_user_home }}"
-      server_group: "{{ debian_group }}"
-     when: ansible_os_family == "Debian"
-
-   - name: Set fact for RedHat/Centos
-     ansible.builtin.set_fact:
-      server_user_var: "{{ redhat_user }}"
-      server_user_home: "{{ redhat_user_home }}"
-      server_group: "{{ redhat_group }}"
-     when: ansible_os_family == "RedHat"
-
    - name: Debug Loop - cfg_dirs
      ansible.builtin.debug:
       msg: "{{ item.1 }}"
      loop: "{{ tape_configs|subelements('cfg_dirs') }}"
 
-#   - name: Debug Loop - cfg_templates
-#     debug:
-#      msg: "{{ item.1 }}"
-#     loop: "{{ tape_configs|subelements('cfg_templates') }}"
-
    - name: Create directories for the configuration
      ansible.builtin.file:
       state: directory
-      owner: "{{ server_user_var }}"
-      group: "{{ server_group }}"
+      owner: "{{ server_user_discovered }}"
+      group: "{{ server_user_discovered_group }}"
       mode: '0750'
       path: "{{ item.1 }}"
      loop: "{{ tape_configs|subelements('cfg_dirs') }}"
@@ -73,16 +54,16 @@
       src: "{{ item[1] }}"
       dest: "{{ item[0].cfg_area }}/{{ item[1] | basename | regex_replace('.j2', '') }}"
       mode: 0644
-      owner: "{{ server_user_var }}"
-      group: "{{ server_group }}"
+      owner: "{{ server_user_discovered }}"
+      group: "{{ server_user_discovered_group }}"
      loop: "{{ lookup('subelements', tape_configs, 'cfg_templates') }}"
 
    - name: "Create a temporary template to generate vtape definitions"
      ansible.builtin.template:
       dest: "/tmp/vtape_var_content"
       src: "vtape_tmp.j2"
-      owner: "{{ server_user_var }}"
-      group: "{{ server_group }}"
+      owner: "{{ server_user_discovered }}"
+      group: "{{ server_user_discovered_group }}"
       mode: '0700'
 
    - name: Read the template back, via slurp
@@ -104,8 +85,8 @@
      ansible.builtin.file:
       state: directory
       path: "{{ item }}"
-      owner: "{{ server_user_var }}"
-      group: "{{ server_group }}"
+      owner: "{{ server_user_discovered }}"
+      group: "{{ server_user_discovered_group }}"
       mode: '0750'
       recurse: 'yes'
      loop: "{{ vtape_dir_list_final }}"
@@ -135,16 +116,16 @@
       backup: 'yes'
       dest: "{{ item.cfg_area }}/disklist"
       src: "{{ item.name }}_disklist.j2" #./cfgX_disklist.j2 in templates dir
-      owner: "{{ server_user_var }}"
-      group: "{{ server_group }}"
+      owner: "{{ server_user_discovered }}"
+      group: "{{ server_user_discovered_group }}"
       mode: '0644'
      loop: "{{ tape_configs }}"
 
    - name: Config completed, note the following actions
      ansible.builtin.debug:
       msg:
-       - If no actions were performed, did you mean this (check if you set deploy_test_vtape_cfg='True')
-       - Otherwise, run amcheck CONFIGNAME as the {{ server_user_var }} user to check a configuration
+       - If no actions were performed, did you mean this (check if you set deploy_test_vtape_cfg=true)
+       - Otherwise, run amcheck CONFIGNAME (e.g. DailySet1) as the {{ server_user_discovered }} user to check a configuration
        - you may need to review your sshd or security settings to allow ssh - also refer to other roles
 
   become: 'True'

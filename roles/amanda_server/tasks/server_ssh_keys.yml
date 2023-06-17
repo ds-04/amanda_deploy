@@ -18,46 +18,32 @@
 
 - block:
 
-   - name: Set fact for Debian
-     ansible.builtin.set_fact:
-      server_user_var: "{{ debian_user }}"
-      server_user_home: "{{ debian_user_home }}"
-      server_group: "{{ debian_group }}"
-     when: ansible_os_family == "Debian"
-
-   - name: Set fact for RedHat/Centos
-     ansible.builtin.set_fact:
-      server_user_var: "{{ redhat_user }}"
-      server_user_home: "{{ redhat_user_home }}"
-      server_group: "{{ redhat_group }}"
-     when: ansible_os_family == "RedHat"
-
    # Make a symlink in /home to make life easier
-   - name: Home symlink from "/home/{{ server_user_var }}" to "{{ server_user_home }}"
+   - name: Home symlink from "/home/{{ server_user_discovered }}" to "{{ server_user_discovered_home }}"
      ansible.builtin.file:
-      dest: "/home/{{ server_user_var }}"
-      src: "{{ server_user_home }}"
+      dest: "/home/{{ server_user_discovered }}"
+      src: "{{ server_user_discovered_home }}"
       state: link
-      owner: "{{ server_user_var }}"
-      group: "{{ server_group }}"
+      owner: "{{ server_user_discovered }}"
+      group: "{{ server_user_discovered_group }}"
      ignore_errors: 'true'
      when: ansible_os_family == "Debian" or ansible_os_family == "RedHat"
 
-   - name: Create .ssh for "{{ server_user_var }}"
+   - name: Create .ssh for "{{ server_user_discovered }}"
      ansible.builtin.file:
       state: directory
-      owner: "{{ server_user_var }}"
-      group: "{{ server_group }}"
+      owner: "{{ server_user_discovered }}"
+      group: "{{ server_user_discovered_group }}"
       mode: '0700'
-      path: "{{ server_user_home }}/.ssh"
+      path: "{{ server_user_discovered_home }}/.ssh"
 
    - name: "Generate ssh keys for server user"
      ansible.builtin.openssh_keypair:
       force: 'no'
       type: "{{ ssh_key_algo }}"
-      owner: "{{ server_user_var }}"
-      group: "{{ server_group }}"
-      path: "{{ server_user_home }}/.ssh/{{ server_ssh_keypair }}"
+      owner: "{{ server_user_discovered }}"
+      group: "{{ server_user_discovered_group }}"
+      path: "{{ server_user_discovered_home }}/.ssh/{{ server_ssh_keypair }}"
 
   become: 'True'
 

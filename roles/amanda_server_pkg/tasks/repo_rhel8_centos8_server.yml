@@ -16,36 +16,36 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+
+# FEDORA and RHEL >= 8x
+
 - block:
 
   - name: amanda server dependencies
     ansible.builtin.dnf:
-     name:
-      # needed for lto tapes
-      - mt-st
-      - mtx
-      # needed for default amanda server email /bin/Mail -> /bin/mailx
-      - mailx
-      - glib*
-      #- xinetd kept for reference
-      - perl-Data-Dumper
-      - perl-Encode-Locale
-      - perl-JSON
-      #- perl-URI-Escape use CPAN
-      - perl-XML-Simple
-      - perl
-      - perl-CPAN
-      - lsscsi
-      - tar #just to be sure
-     state: installed
+      name:
+        # needed for lto tapes
+        - mt-st
+        - mtx
+        # needed for default amanda server email /bin/Mail -> /bin/mailx
+        - mailx
+        - glib*
+        #- xinetd kept for reference
+        - perl-Data-Dumper
+        - perl-Encode-Locale
+        - perl-JSON
+        #- perl-URI-Escape use CPAN
+        - perl-XML-Simple
+        - perl
+        - perl-CPAN
+        - lsscsi
+        - tar #just to be sure
+      state: installed
 
-  - name: (RHEL/Centos 8x) install amanda-server from repos
+  - name: (Fedora and RHEL/Centos >= 8x) install amanda-server from repos
     ansible.builtin.dnf:
-     name: amanda-server
-     update_cache: yes
-    when:
-     - ansible_os_family == "RedHat"
-     - ansible_distribution_major_version|int >= 8
+      name: amanda-server
+      update_cache: 'true'
 
   become: "True"
 ...

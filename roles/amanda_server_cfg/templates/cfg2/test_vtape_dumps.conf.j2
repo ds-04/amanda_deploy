@@ -3,18 +3,10 @@ auth "local"
 program "GNUTAR"
 }
 
-#Debian
-define dumptype simple-gnutar-ssh-{{ debian_user }}-user {
-global
-ssh_keys "{{ server_user_home }}/.ssh/{{ server_ssh_keypair }}"
-client_username "{{ debian_user }}"
-program "GNUTAR"
-}
 
-#RHEL/CENTOS
-define dumptype simple-gnutar-ssh-{{ redhat_user}}-user {
+define dumptype simple-gnutar-ssh-{{ server_user_discovered }}-user {
 global
-ssh_keys "{{ server_user_home }}/.ssh/{{ server_ssh_keypair }}"
-client_username "{{ redhat_user }}"
+ssh_keys "{{ server_user_discovered_home }}/.ssh/{{ server_ssh_keypair }}"
+client_username "{{ server_user_discovered }}"
 program "GNUTAR"
 }

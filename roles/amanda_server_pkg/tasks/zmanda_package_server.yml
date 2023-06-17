@@ -23,6 +23,8 @@
         zmanda_server_url: "{{ item.value.server.url }}"
         zmanda_server_checksum: "{{ item.value.server.checksum }}"
         zmanda_server_dest: "{{ item.value.server.dest }}"
+        zmanda_server_depends: "{{ item.value.server.depends }}"
+        zmanda_server_dir_perms: "{{ item.value.server.dir_perms }}"
     loop: "{{ lookup('dict', zmanda_packages ) }}"
     when: 
       - ansible_os_family+'_'+ansible_distribution_major_version in item.key
@@ -33,6 +35,8 @@
         zmanda_server_url: "{{ item.value.server.url }}"
         zmanda_server_checksum: "{{ item.value.server.checksum }}"
         zmanda_server_dest: "{{ item.value.server.dest }}"
+        zmanda_server_depends: "{{ item.value.server.depends }}"
+        zmanda_server_dir_perms: "{{ item.value.server.dir_perms }}"
     loop: "{{ lookup('dict', zmanda_packages ) }}"
     when: 
       - ansible_distribution+'_'+ansible_distribution_major_version in item.key
@@ -48,27 +52,47 @@
      group: root
      checksum: "{{ zmanda_server_checksum }}"
 
+  #---RHEL---
+
+  # yum local package 7
   - name: YUM - RHEL 7 family distros - install amanda-server (community) from Zmanda, local saved package
     ansible.builtin.yum:
      name: "{{ zmanda_server_dest }}{{ zmanda_server_url | basename }}"
      state: present
     when: 
-      - ansible_os_family == 'RedHat' 
+      - ansible_os_family == 'RedHat'
+      - ansible_distribution != 'Fedora' # for good measure
       - ansible_distribution_major_version|int == 7
   
+  # dnf local package >= 8 - not fedora
   - name: DNF - RHEL 8,9 family distros - install amanda-server (community) from Zmanda, local saved package
     ansible.builtin.dnf:
      name: "{{ zmanda_server_dest }}{{ zmanda_server_url | basename }}"
      state: present
     when: 
-      - ansible_os_family == 'RedHat' 
+      - ansible_os_family == 'RedHat'
+      - ansible_distribution != 'Fedora'
       - ansible_distribution_major_version|int >= 8
 
+
+
+  #---Debian/Ubuntu---
+  
+  # depends
+  - name: APT - Debian family distros - install dependencies for amanda-server (community) from Zmanda
+    ansible.builtin.apt:
+     name: "{{ zmanda_server_depends }}"
+     update_cache: true
+    when: 
+      - ansible_os_family == 'Debian'
+      - zmanda_server_depends | length > 0
+
+  # apt local package
   - name: APT - Debian family distros - install amanda-server (community) from Zmanda, local saved package
     ansible.builtin.apt:
      deb: "{{ zmanda_server_dest }}{{ zmanda_server_url | basename }}"
     when: 
       - ansible_os_family == 'Debian' 
 
-  become: "True"
+  become: true
 ...

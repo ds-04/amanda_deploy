@@ -1,62 +1,94 @@
 ---
-# Amanda version is from repo, unless RHEL7 family which is download from zmanda
+# NOTES
+# 1) Version - default Amanda version is from repo, unless zmanda chosen (see var)
+# 
+# 2) SSH - standard rsa keys will be removed if rsa is not chosen as ssh_key_algo
+# on a RHEL Centos host these come from the RPM:
+# id_rsa_amdump,id_rsa_amdump.pub,id_rsa_amrecover,id_rsa_amrecover.pub
 
+#----------INSTALL TYPE---------------------------
 
-#-----------SELF BACKUP AND RESTORE---------------
+#global toggle, disable to stop installation and just configure
+install_amanda: true
+#choose zmanda install via download url OR not (use default repos and amanda package)
+use_zmanda_package: false
+
+#----------END INSTALL TYPE-----------------------
+
+#-----------SELF, BACKUP AND RESTORE--------------
 # should the server be able to backup itself etc.
-server_also_client: 'True'
+server_also_client: true
 # can the client connect to the server for restore
-client_can_restore: 'True'
+client_can_restore: true
+
+# remove DailySet1 dir from clients (comes from package)
+# /etc/amanda/DailySet1 -> use /etc/amanda/amanda-client.conf
+always_remove_client_DailySet1: true
 #-----------END-SELF BACKUP AND RESTORE-----------
 
 #-----------SSH-----------------------------------
 # enable the update of known hosts on the server, using the following vars
-update_server_known_hosts: 'True'
-update_client_restore_known_hosts: 'True'
+update_server_known_hosts: true
+update_client_restore_known_hosts: true
 known_hosts_key_type: 'ed25519'
 ssh_key_algo: 'ed25519' # prefer ed25519 to rsa, also see NOTES bottom
 
 # the name of the server and client_restore keypair
-server_ssh_keypair: amdump_id_{{ ssh_key_algo|default('ed25519') }} # default name from RPM is id_rsa_amdump
-client_restore_ssh_keypair: amrecover_id_{{ ssh_key_algo|default('ed25519') }} # default name from RPM is id_rsa_amrecover
+server_ssh_keypair: amdump_id_{{ ssh_key_algo | default('ed25519') }} # default name from RPM is id_rsa_amdump
+client_restore_ssh_keypair: amrecover_id_{{ ssh_key_algo | default('ed25519') }} # default name from RPM is id_rsa_amrecover
 #--------END-SSH----------------------------------
 
 #----------PACKAGES-------------------------------
 
-#global toggle, disable to stop installation and just configure
-install_amanda: 'True'
-#choose repo install or zmanda download url
-use_zmanda_package: 'False'
+# 3.5.3 dictionary, debian11 requires fixes which roles perform
 
-#v3.5.3
+#amandad: must be executed as the "amandabackup" user instead of the "backup" user
+#amandad: critical (fatal): create debug directory "/var/log/amanda/amandad/": Permission denied
+
 zmanda_packages:
-  RedHat_7:
+  RedHat_7: # is also centos7
     client:
       url: "https://cdn.zmanda.com/downloads/community/Amanda/3.5.3/RHEL-7/amanda-backup_client-3.5.3.git.18189a34-1.rhel7.x86_64.rpm"
       checksum: "sha256:67035dcc42a363761a207b94a9fa8c7d72ba7fa17ad097160e5f38c2b83557f6"
       dest: "/root/"
+      depends: []
+      dir_perms: []
     server:
       url: "https://cdn.zmanda.com/downloads/community/Amanda/3.5.3/RHEL-7/amanda-backup_server-3.5.3.git.18189a34-1.rhel7.x86_64.rpm"
       checksum: "sha256:5e151b42e9f8c479541aec5a1fbbf83693433c57326f22653d1ddb965b93b567"
       dest: "/root/"
+      depends: []
+      dir_perms: []
   Debian_11:
     client:
       url: "https://cdn.zmanda.com/downloads/community/Amanda/3.5.3/Debian-11/amanda-backup-client_3.5.3.git.18189a34-1Debian11_amd64.deb"
-      checksum: "sha256:"
+      checksum: "sha256:f93ea340ddc13eebae02dc22218b987ff1e3c3a4c94d7f508438c584dbfbd205"
       dest: "/root/"
+      depends: ["libxml-simple-perl"]
+      dir_perms: []
     server:
       url: "https://cdn.zmanda.com/downloads/community/Amanda/3.5.3/Debian-11/amanda-backup-server_3.5.3.git.18189a34-1Debian11_amd64.deb"
-      checksum: "sha256:"
+      checksum: "sha256:1e2394ffafdc23254174f25288adb5fc926c514849ca4c0ceeb77790384d9c0a"
       dest: "/root/"
+      depends: ["libencode-locale-perl","libjson-perl","libxml-simple-perl","xinetd"]
+      dir_perms: ["/var/log/amanda","/var/log/amanda/client","/var/log/amanda/server","/tmp/amanda"] # inclusion of /tmp/amanda as pkg is broken
   Ubuntu_22.04:
     client:
       url: "https://cdn.zmanda.com/downloads/community/Amanda/3.5.3/Ubuntu-22.04/amanda-backup-client_3.5.3.git.d77fa906-1Ubuntu2204_amd64.deb"
       checksum: "sha256:e1ab7ea0babb04cd780cad9dc8dc902e7cfda8802c0532c9751d2c29e7a87294"
       dest: "/root/"
+      depends: ["libxml-simple-perl"]
+      dir_perms: []
     server:
       url: "https://cdn.zmanda.com/downloads/community/Amanda/3.5.3/Ubuntu-22.04/amanda-backup-server_3.5.3.git.d77fa906-1Ubuntu2204_amd64.deb"
       checksum: "sha256:4136cb05775cf6a119d39a128879869343f2ba51336ac6c38411e31fb212cebd"
       dest: "/root/"
+      depends: ["libencode-locale-perl","libjson-perl","libxml-simple-perl"]
+      dir_perms: ["/var/log/amanda","/var/log/amanda/client","/var/log/amanda/server","/tmp/amanda"] # inclusion of /tmp/amanda as pkg is broken
+
+# These versions will not be defined here, but you could define the dictionaries in vars dir
+# 3.5.2_zmanda_packages
+# 3.5_zmanda_packages
 
 #-----END--PACKAGES-------------------------------
 
@@ -67,10 +99,11 @@ zmanda_packages:
 #N.B. client ending like command="/usr/lib/amanda/amandad -auth=ssh amindexd amidxtaped"
 std_ssh_key_opts: 'no-port-forwarding,no-X11-forwarding,no-agent-forwarding'
 
+# also used for source build
 debian_user: 'backup'
 debian_group: 'backup'
 debian_user_home: '/var/backups'
-
+# also used for source build
 redhat_user: 'amandabackup'
 redhat_group: 'disk'
 redhat_user_home: '/var/lib/amanda'
@@ -83,9 +116,6 @@ amandad_search_paths:
   - /usr/lib/amanda/amandad
   - /usr/local/libexec/amanda/amandad
   - /usr/local/libexec/amandad
-
-# compensate for packaging issue if ambind not found, by installing server package
-ambind_server_provide: 'True'
 
 #These go in vars local to role, to avoid a problem with other imports
 #ambind_fix_alias1: >
@@ -107,9 +137,5 @@ ambind_search_paths:
 #-END-VAGRANT--VARS-------------------------------
 
 #--------------------------------------------------------------------------------
-# NOTES
-# standard rsa keys will be removed if rsa is not chosen as ssh_key_algo
-# on a RHEL Centos host these come from the RPM:
-# id_rsa_amdump,id_rsa_amdump.pub,id_rsa_amrecover,id_rsa_amrecover.pub
 
 ...

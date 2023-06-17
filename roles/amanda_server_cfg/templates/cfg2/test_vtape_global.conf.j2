@@ -3,10 +3,6 @@ define dumptype global {
   index yes
   record yes
   auth "ssh"
-  {% if (ansible_os_family == "RedHat") %}
-  ssh_keys "{{ server_user_home }}/{{ redhat_user }}/.ssh/id_rsa_amdump"
-  {% elif (ansible_os_family == "Debian") %}
-  ssh_keys "{{ server_user_home }}/{{ debian_user}}/.ssh/id_rsa_amdump"
-  {% endif %}
-
+  ssh_keys "{{ server_user_discovered_home }}/{{ server_user_discovered }}/.ssh/id_rsa_amdump"
+  
 }

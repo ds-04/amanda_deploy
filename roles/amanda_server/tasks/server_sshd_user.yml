@@ -18,30 +18,18 @@
 
 - block:
 
-   - name: Set fact for Debian
-     ansible.builtin.set_fact:
-      server_user_var: "{{ debian_user }}"
-      server_user_home: "{{ debian_user_home }}"
-     when: ansible_os_family == "Debian"
-
-   - name: Set fact for RedHat/Centos
-     ansible.builtin.set_fact:
-      server_user_var: "{{ redhat_user }}"
-      server_user_home: "{{ redhat_user_home }}"
-     when: ansible_os_family == "RedHat"
-
-   - name: add sshd block to disable password ssh for "{{ server_user_var }}"
+   - name: add sshd block to disable password ssh for "{{ server_user_discovered }}"
      ansible.builtin.blockinfile:
       backup: 'yes'
       dest: /etc/ssh/sshd_config
       state: present
-      block: "Match User {{ server_user_var }}
+      block: "Match User {{ server_user_discovered }}
              \nPasswordAuthentication no
              \nAuthenticationMethods publickey"
-      marker: "# {mark} ANSIBLE MANAGED BLOCK user {{ server_user_var }}"
+      marker: "# {mark} ANSIBLE MANAGED BLOCK user {{ server_user_discovered }}"
      register: sshd_changed
 
-   - name: add pam.d sshd line to allow "{{ server_user_var }}"
+   - name: add pam.d sshd line to allow "{{ server_user_discovered }}"
      ansible.builtin.lineinfile:
       backup: 'yes'
       dest: /etc/pam.d/sshd
@@ -57,9 +45,9 @@
       enabled: "yes"
      when: sshd_changed|bool
 
-   - name: set "{{ server_user_var }}" shell and password lock
+   - name: set "{{ server_user_discovered }}" shell and password lock
      ansible.builtin.user:
-      name: "{{ server_user_var }}"
+      name: "{{ server_user_discovered }}"
       # using instead of ansible module's password_lock
       password: '!'
       shell: /bin/bash

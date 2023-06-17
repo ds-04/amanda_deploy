@@ -15,7 +15,7 @@
 #- name: Run amcheck on config -  {{ test_vtape_cfg_name }}
 #  ansible.builtin.command: "/sbin/amcheck  {{ test_vtape_cfg_name }}"
 #  become: 'yes'
-#  become_user: "{{ server_user_var }}" #requires "acl" package
+#  become_user: "{{ server_user_discovered }}" #requires "acl" package
 #  register: amcheck_res
 #  ignore_errors: 'yes'
 #

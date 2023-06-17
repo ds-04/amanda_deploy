@@ -4,12 +4,7 @@ Description=Amanda Backup System
 After=local-fs.target
 
 [Service]
-{% if (ansible_os_family == "Debian") %}
-User={{ debian_user }}
-Group={{ debian_group }}
-{% elif (ansible_os_family == "RedHat") %}
-User={{ redhat_user }}
-Group={{ redhat_group }}
-{% endif %}
+User={{ server_user_discovered }}
+Group={{ server_user_discovered_group }}
 ExecStart=/usr/lib/amanda/amandad -auth=bsdtcp amdump amindexd amidxtaped
 StandardInput=socket

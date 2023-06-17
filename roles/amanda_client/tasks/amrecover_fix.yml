@@ -16,141 +16,114 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-- block:
+- name: BLOCK for amrecover_fix.yml
+  block:
 
-   - name: include roles/amanda_server/defaults
+   - name: TASK include roles/amanda_server/defaults
      ansible.builtin.include_vars:
       file: roles/amanda_server/defaults/main.yml
       name: amanda_include_vars
-     when:
-       - '"amanda_server" not in group_names'
 
-   - name: Set fact for Debian family user/home/group
-     ansible.builtin.set_fact:
-      server_user_var: "{{ amanda_include_vars.debian_user }}"
-      server_user_home: "{{ amanda_include_vars.debian_user_home }}"
-      server_group: "{{ amanda_include_vars.debian_group }}"
-     when:
-       - '"amanda_server" not in group_names' 
-       - ansible_os_family == "Debian"
-
-   - name: Set fact for RedHat family user/home/group
-     ansible.builtin.set_fact:
-      server_user_var: "{{ amanda_include_vars.redhat_user }}"
-      server_user_home: "{{ amanda_include_vars.redhat_user_home }}"
-      server_group: "{{ amanda_include_vars.redhat_group }}"
-     when:
-       - '"amanda_server" not in group_names'
-       - ansible_os_family == "RedHat"
-
-   - name: Gather installed package facts
+   - name: TASK Gather installed package facts
      ansible.builtin.package_facts:
-       manager: auto
-     when:
-       - '"amanda_server" not in group_names'
+      manager: auto
 
-   - name: Set_fact no_serverpkg TRUE - if we don't find amanda-server package
+   - name: TASK set_fact no_serverpkg TRUE - if we don't find amanda-server package
      ansible.builtin.set_fact:
-       no_serverpkg: 'true'
-     when:
-       - '"amanda_server" not in group_names'
-       - "'amanda-server' not in ansible_facts.packages"
+      no_serverpkg: 'true'
+     when: "'amanda-server' not in ansible_facts.packages"
 
-   - name: Set_fact for ambind_search_paths
+   - name: TASK set_fact for ambind_search_paths
      ansible.builtin.set_fact:
       local_ambind_search_paths: "{{ amanda_include_vars.ambind_search_paths }}"
      when:
-       - '"amanda_server" not in group_names'
-       - no_serverpkg is defined
-       - no_serverpkg|bool
+      - no_serverpkg is defined
+      - no_serverpkg | bool
 
-   - name: Find ambind binary (from known supplied paths) using stat
+   - name: TASK Find ambind binary (from known supplied paths) using stat
      ansible.builtin.stat:
       path: "{{ item }}"
      register: findres
      loop: "{{ local_ambind_search_paths }}"
      when:
-       - '"amanda_server" not in group_names'
-       - no_serverpkg is defined
-       - no_serverpkg|bool
+      - no_serverpkg is defined
+      - no_serverpkg | bool
 
-   - name: Create var ambind_result for location of ambind if found
+   - name: TASK Create var ambind_result for location of ambind if found
      ansible.builtin.set_fact:
-       ambind_result: "{{ item }}"
+      ambind_result: "{{ item }}"
      loop: "{{ findres.results | selectattr('stat.exists') | map(attribute='item') | list }}"
 
-   - name: Install amanda-server to fix missing ambind
+   - name: TASK Install amanda-server to fix missing ambind
      ansible.builtin.dnf:
       name: 'amanda-server'
      when:
-       - '"amanda_server" not in group_names'
-       - ambind_result | default('', true) | trim != ''
-       - ansible_os_family == "RedHat"
-       - server_pkg_needed is defined
-       - server_pkg_needed|bool
+      - ambind_result | default('', true) | trim != ''
+      - ansible_os_family == "RedHat"
+      - server_pkg_needed is defined
+      - server_pkg_needed | bool
 
-   - name: Debian family - install amanda-server to fix missing ambind
+   - name: TASK Debian family - install amanda-server to fix missing ambind
      ansible.builtin.apt:
       name: 'amanda-server'
      when:
-       - '"amanda_server" not in group_names'
-       - ambind_result | default('', true) | trim != ''
-       - ansible_os_family == "Debian"
-       - server_pkg_needed is defined
-       - server_pkg_needed|bool
+      - ambind_result | default('', true) | trim != ''
+      - ansible_os_family == "Debian"
+      - server_pkg_needed is defined
+      - server_pkg_needed | bool
 
    # we now have the package
-   - name: Gather installed package facts - we now expect amanda-server
+   - name: TASK Gather installed package facts - we now expect amanda-server
      ansible.builtin.package_facts:
-       manager: auto
-     when:
-       - '"amanda_server" not in group_names'
+      manager: auto
 
    # set var accordingly
-   - name: Set_fact no_serverpkg FALSE - confirming amanda-server installed
+   - name: TASK set_fact no_serverpkg FALSE - confirming amanda-server installed
      ansible.builtin.set_fact:
-       no_serverpkg: 'false'
-     when: 
-      - '"amanda_server" not in group_names'
-      - "'amanda-server' in ansible_facts.packages"
+      no_serverpkg: 'false'
+     when: "'amanda-server' in ansible_facts.packages"
 
-   - name: Stat /etc/amanda/DailySet1 - we don't want this default server config on a client
+   - name: TASK stat /etc/amanda/DailySet1 - we don't want this default server config on a client
      ansible.builtin.stat:
       path: /etc/amanda/DailySet1
      register: found_default_svr_cfg
      when:
-       - '"amanda_server" not in group_names'
-       - no_serverpkg is defined
-       - not no_serverpkg|bool 
+      - no_serverpkg is defined
+      - not no_serverpkg | bool
 
-   - name: Delete /etc/amanda/DailySet1 config (which came from the server package, due to ambind fix)
+   - name: TASK Delete /etc/amanda/DailySet1 config (which came from the server package, due to ambind fix)
      ansible.builtin.file:
       path: /etc/amanda/DailySet1
       state: absent
      when:
-      - '"amanda_server" not in group_names'
       - no_serverpkg is defined
-      - not no_serverpkg|bool 
+      - not no_serverpkg | bool
       - found_default_svr_cfg is defined
-      - found_default_svr_cfg.stat.exists|bool
+      - found_default_svr_cfg.stat.exists | bool
 
-   - name: Make sure aliases in .bash_profile to remind of ambind fix (and to block amdump/amcheck usage on a client)
+   - name: TASK Delete /etc/amanda/DailySet1 config on clients not servers (if always_remove_client_DailySet1)
+     ansible.builtin.file:
+      path: /etc/amanda/DailySet1
+      state: absent
+     when:
+      - always_remove_client_DailySet1 | bool
+      - '"amanda_server" not in group_names'
+
+   - name: TASK Make sure aliases in .bash_profile to remind of ambind fix (and to block amdump/amcheck usage on a client)
      ansible.builtin.lineinfile:
-      path: "{{ server_user_home }}/.bash_profile"
+      path: "{{ server_user_discovered_home }}/.bash_profile"
       line: "{{ item.value }}"
       regex: "^{{ item.key }}"
       state: present
       create: 'true'
       backup: 'true'
-      owner: "{{ server_user_var }}"
-      group: "{{ server_group }}"
+      owner: "{{ server_user_discovered }}"
+      group: "{{ server_user_discovered_group }}"
       mode: '0600'
      loop: "{{ lookup('dict', ambind_bash_profile_dict) }}"
-
      when:
-      - '"amanda_server" not in group_names'
       - no_serverpkg is defined
-      - not no_serverpkg|bool 
+      - not no_serverpkg | bool
 
   become: "True"
 ...

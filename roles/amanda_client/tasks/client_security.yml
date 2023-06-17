@@ -16,33 +16,16 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-- block:
-
-   # OS defs only needed for the copy of amanda-client.conf
-
-   - name: Set fact for Debian
-     ansible.builtin.set_fact:
-      server_user_var: "{{ debian_user }}"
-      server_group: "{{ debian_group }}"
-     when:
-      - ansible_os_family == "Debian"
-      - client_can_restore|bool
-
-   - name: Set fact for RedHat/Centos
-     ansible.builtin.set_fact:
-      server_user_var: "{{ redhat_user }}"
-      server_group: "{{ redhat_group }}"
-     when:
-      - ansible_os_family == "RedHat"
-      - client_can_restore|bool
+- name: BLOCK for client_security.yml
+  block:
 
    - name: Ensure /etc/amanda exists
      ansible.builtin.file:
       state: directory
       path: /etc/amanda
       mode: '0770'
-      owner: "{{ server_user_var }}"
-      group: "{{ server_group }}"
+      owner: "{{ server_user_discovered }}"
+      group: "{{ server_user_discovered_group }}"
 
    - name: Copy amanda-security.conf (always)
      ansible.builtin.template:
@@ -59,9 +42,9 @@
       src: amanda-client.conf.j2
       dest: /etc/amanda/amanda-client.conf
       mode: '0600'
-      owner: "{{ server_user_var }}"
-      group: "{{ server_group }}"
-     when: client_can_restore|bool
+      owner: "{{ server_user_discovered }}"
+      group: "{{ server_user_discovered_group }}"
+     when: client_can_restore | bool
 
   become: 'True'
 ...

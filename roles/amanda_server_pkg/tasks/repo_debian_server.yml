@@ -20,8 +20,8 @@
 
    - name: apt install acl, amanda-{server,common}, mtx
      ansible.builtin.apt:
-      name: "{{ item }}"
-      update_cache: yes
+       name: "{{ item }}"
+       update_cache: true
      loop:
       # acl needed by this role
       - acl
@@ -36,9 +36,9 @@
 
    - name: apt install amanda-client
      ansible.builtin.apt:
-      name: amanda-client
+       name: amanda-client
      when: server_also_client|bool
 
-  become: 'True'
+  become: true
 
 ...
