@@ -80,7 +80,7 @@
       group: root
       mode: '0700'
       path: "/root/.ssh"
-     become: 'True'
+     become: true
 
    - name: 'TASK Generate ssh keys on client system "{{ local_client_restore_ssh_keypair }}"'
      community.crypto.openssh_keypair:
@@ -89,7 +89,7 @@
       owner: root
       group: root
       path: "/root/.ssh/{{ local_client_restore_ssh_keypair }}"
-     become: 'True'
+     become: true
 
 # Get the client's public key
 - hosts: amanda_client_restore
@@ -100,7 +100,7 @@
      ansible.builtin.slurp:
       src: "/root/.ssh/{{ local_client_restore_ssh_keypair }}.pub"
      register: amanda_client_restore_pub
-     become: 'True'
+     become: true
 
 # kept for debug
 - hosts: TASK amanda_client_restore
@@ -121,7 +121,7 @@
       key_options: "from=\"{{ local_server_ip }}\",{{ local_std_ssh_key_opts }},command=\"{{ hostvars[item]['amandad_path'] }} -auth=ssh amindexd amidxtaped\"" # N.B. these are the key options relating to the amanda backup server
      delegate_to: "{{ item }}"
      loop: "{{ groups['amanda_server'] }}"
-     become: 'True'
+     become: true
 
 - hosts: amanda_server
   name: 'PLAY amanda_client_restore server slurp client pub key'
@@ -131,7 +131,7 @@
      ansible.builtin.slurp:
       src: "/etc/ssh/ssh_host_{{ local_known_hosts_key_type }}_key.pub"
      register: client_restore_host_pub
-     become: 'True'
+     become: true
 
 - hosts: amanda_server
   name: 'PLAY amanda_client_restore server manipulate client pub key'
@@ -162,7 +162,7 @@
       owner: root
       group: root
       mode: '0644'
-     become: 'True'
+     become: true
      when: local_update_server_known_hosts | bool
 
 - hosts: amanda_client_restore
@@ -175,9 +175,9 @@
       name: "{{ item }}"
       key: "{{ item }} {{ hostvars[item].client_restore_host_pub2[0] }} {{ hostvars[item].client_restore_host_pub2[1] }}" # dns name line
       state: present
-      hash_host: 'yes'
+      hash_host: true
      loop: "{{ groups['amanda_server'] }}"
-     become: 'True'
+     become: true
      when: local_update_server_known_hosts | bool
 
    - name: 'TASK Update roots ssh known_hosts file on client restore hosts (ii)'
@@ -186,9 +186,9 @@
       name: "{{ hostvars[item].ansible_default_ipv4.address }}"
       key: "{{ hostvars[item].ansible_default_ipv4.address }} {{ hostvars[item].client_restore_host_pub2[0] }} {{ hostvars[item].client_restore_host_pub2[1] }}" # ip line
       state: present
-      hash_host: 'yes'
+      hash_host: true
      loop: "{{ groups['amanda_server'] }}"
-     become: 'True'
+     become: true
      when: local_update_server_known_hosts | bool
 
 ...

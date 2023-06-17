@@ -125,5 +125,5 @@
       - no_serverpkg is defined
       - not no_serverpkg | bool
 
-  become: "True"
+  become: true
 ...

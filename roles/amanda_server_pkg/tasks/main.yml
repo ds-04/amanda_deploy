@@ -1,5 +1,5 @@
 ---
-  # debian and ubuntu
+# Debian and Ubuntu
 - ansible.builtin.include: repo_debian_server.yml
   ignore_errors: "{{ ansible_check_mode }}"
   when:
@@ -10,7 +10,7 @@
   tags:
     - debian_server
 
-  # rhel7x family not fedora
+# RHEL7x family not Fedora
 - ansible.builtin.include: repo_rhel7_centos7_server.yml
   ignore_errors: "{{ ansible_check_mode }}"
   when:
@@ -22,7 +22,7 @@
   tags:
     - rhel7_centos7_server
 
-  # rhel8x family not fedora
+# RHEL8x family not Fedora
 - ansible.builtin.include: repo_rhel8_centos8_server.yml
   ignore_errors: "{{ ansible_check_mode }}"
   when:
@@ -34,7 +34,7 @@
   tags:
     - rhel8_centos8_server
 
-  # fedora
+# Fedora
 - ansible.builtin.include: repo_fedora_server.yml
   ignore_errors: "{{ ansible_check_mode }}"
   when:
@@ -46,14 +46,14 @@
     - fedora_server
 
 
- # ---ZMANDA---
+# ---ZMANDA---
 
 # zmanda package install
 - ansible.builtin.include: zmanda_package_server.yml
   ignore_errors: "{{ ansible_check_mode }}"
   when:
-   - install_amanda|bool
-   - use_zmanda_package|bool
-   - ansible_os_family == 'Debian' or ansible_os_family == 'RedHat'
+    - install_amanda|bool
+    - use_zmanda_package|bool
+    - ansible_os_family == 'Debian' or ansible_os_family == 'RedHat'
 
 ...

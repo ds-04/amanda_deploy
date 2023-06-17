@@ -20,23 +20,25 @@
 
    - name: apt install acl, amanda-{server,common}, mtx
      ansible.builtin.apt:
-       name: "{{ item }}"
-       update_cache: true
+      name: "{{ item }}"
+      update_cache: true
      loop:
       # acl needed by this role
       - acl
       - amanda-server
       - amanda-common
-      # needed for lto tapes
+      # for LTO tapes
       - mt-st
       - mtx
       - lsscsi
-      - tar #just to be sure
-      #- xinetd is kept for reference needed for bsdtcp auth, in this role we want to use SSH though
+      # just to be sure
+      - tar
+      # is kept for reference needed for bsdtcp auth, in this role we want to use SSH though
+    # - xinetd
 
    - name: apt install amanda-client
      ansible.builtin.apt:
-       name: amanda-client
+      name: amanda-client
      when: server_also_client|bool
 
   become: true

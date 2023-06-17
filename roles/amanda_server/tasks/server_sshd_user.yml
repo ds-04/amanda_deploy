@@ -20,7 +20,7 @@
 
    - name: add sshd block to disable password ssh for "{{ server_user_discovered }}"
      ansible.builtin.blockinfile:
-      backup: 'yes'
+      backup: true
       dest: /etc/ssh/sshd_config
       state: present
       block: "Match User {{ server_user_discovered }}
@@ -31,7 +31,7 @@
 
    - name: add pam.d sshd line to allow "{{ server_user_discovered }}"
      ansible.builtin.lineinfile:
-      backup: 'yes'
+      backup: true
       dest: /etc/pam.d/sshd
       state: present
       insertbefore: "^account.*required.*pam_nologin.so"
@@ -42,8 +42,8 @@
      ansible.builtin.service:
       name: sshd
       state: reloaded
-      enabled: "yes"
-     when: sshd_changed|bool
+      enabled: true
+     when: sshd_changed | bool
 
    - name: set "{{ server_user_discovered }}" shell and password lock
      ansible.builtin.user:
@@ -52,5 +52,5 @@
       password: '!'
       shell: /bin/bash
 
-  become: 'True'
+  become: true
 ...

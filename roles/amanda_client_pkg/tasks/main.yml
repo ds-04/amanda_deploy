@@ -16,7 +16,7 @@
   when:
    - install_amanda|bool
    - use_zmanda_package|bool
-   - '"amanda_server" not in group_names' #package conflict between server/client in rhel7
+   - '"amanda_server" not in group_names' # package conflict between server/client in rhel7
    - ansible_distribution != 'Fedora'
    - (ansible_os_family == "RedHat" and ansible_distribution_major_version|int >= 7) or (ansible_distribution == "Debian" and ansible_distribution_major_version|int >= 10) or (ansible_distribution == "Ubuntu")
   tags:

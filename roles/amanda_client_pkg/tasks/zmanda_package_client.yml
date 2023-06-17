@@ -18,77 +18,77 @@
 
 - block:
 
-  - name: Set facts for Zmanda packages (RHEL family or Debian)
-    ansible.builtin.set_fact:
-        zmanda_client_url: "{{ item.value.client.url }}"
-        zmanda_client_checksum: "{{ item.value.client.checksum }}"
-        zmanda_client_dest: "{{ item.value.client.dest }}"
-        zmanda_client_depends: "{{ item.value.server.depends }}"
-    loop: "{{ lookup('dict', zmanda_packages ) }}"
-    when: 
+   - name: Set facts for Zmanda packages (RHEL family or Debian)
+     ansible.builtin.set_fact:
+      zmanda_client_url: "{{ item.value.client.url }}"
+      zmanda_client_checksum: "{{ item.value.client.checksum }}"
+      zmanda_client_dest: "{{ item.value.client.dest }}"
+      zmanda_client_depends: "{{ item.value.server.depends }}"
+     loop: "{{ lookup('dict', zmanda_packages ) }}"
+     when:
       - ansible_os_family+'_'+ansible_distribution_major_version in item.key
       - (ansible_os_family == 'RedHat') or (ansible_os_family == 'Debian' and ansible_distribution == 'Debian')
 
-  - name: Set facts for Zmanda packages (Ubuntu)
-    ansible.builtin.set_fact:
-        zmanda_client_url: "{{ item.value.client.url }}"
-        zmanda_client_checksum: "{{ item.value.client.checksum }}"
-        zmanda_client_dest: "{{ item.value.client.dest }}"
-        zmanda_client_depends: "{{ item.value.server.depends }}"
-    loop: "{{ lookup('dict', zmanda_packages ) }}"
-    when: 
+   - name: Set facts for Zmanda packages (Ubuntu)
+     ansible.builtin.set_fact:
+      zmanda_client_url: "{{ item.value.client.url }}"
+      zmanda_client_checksum: "{{ item.value.client.checksum }}"
+      zmanda_client_dest: "{{ item.value.client.dest }}"
+      zmanda_client_depends: "{{ item.value.server.depends }}"
+     loop: "{{ lookup('dict', zmanda_packages ) }}"
+     when:
       - ansible_distribution+'_'+ansible_distribution_major_version in item.key
-      - ansible_os_family == 'Debian' 
+      - ansible_os_family == 'Debian'
       - ansible_distribution == 'Ubuntu'
 
-  - name: Get/download amanda-client from Zmanda
-    ansible.builtin.get_url:
-     url: "{{ zmanda_client_url }}"
-     dest: "{{ zmanda_client_dest }}"
-     mode: '0700'
-     owner: root
-     group: root
-     checksum: "{{ zmanda_client_checksum }}"
+   - name: Get/download amanda-client from Zmanda
+     ansible.builtin.get_url:
+      url: "{{ zmanda_client_url }}"
+      dest: "{{ zmanda_client_dest }}"
+      mode: '0700'
+      owner: root
+      group: root
+      checksum: "{{ zmanda_client_checksum }}"
 
 
-  #---RHEL---
+   # ---RHEL family (not Fedora)---
 
-  # yum local package 7
-  - name: YUM - RHEL 7 family distros - install amanda-client (community) from Zmanda, local saved package
-    ansible.builtin.yum:
-     name: "{{ zmanda_client_dest }}{{ zmanda_client_url | basename }}"
-     state: present
-    when:
-      - ansible_os_family == 'RedHat' 
+   # yum local package 7
+   - name: YUM - RHEL 7 family distros - install amanda-client (community) from Zmanda, local saved package
+     ansible.builtin.yum:
+      name: "{{ zmanda_client_dest }}{{ zmanda_client_url | basename }}"
+      state: present
+     when:
+      - ansible_os_family == 'RedHat'
       - ansible_distribution_major_version|int == 7
 
-  # dnf local package >= 8 - not fedora
-  - name: DNF - RHEL 8,9 family distros - install amanda-client (community) from Zmanda, local saved package
-    ansible.builtin.dnf:
-     name: "{{ zmanda_client_dest }}{{ zmanda_client_url | basename }}"
-     state: present
-    when: 
+   # dnf local package >= 8 - not fedora
+   - name: DNF - RHEL 8,9 family distros - install amanda-client (community) from Zmanda, local saved package
+     ansible.builtin.dnf:
+      name: "{{ zmanda_client_dest }}{{ zmanda_client_url | basename }}"
+      state: present
+     when:
       - ansible_os_family == 'RedHat'
       - ansible_distribution != 'Fedora'
       - ansible_distribution_major_version|int >= 8
 
 
-  #---Debian/Ubuntu---
-  
-  # depends
-  - name: APT - Debian family distros - install dependencies for amanda-client (community) from Zmanda
-    ansible.builtin.apt:
-     name: "{{ zmanda_client_depends }}"
-     update_cache: true
-    when:
+   # ---Debian family (inc Ubuntu)---
+
+   # depends
+   - name: APT - Debian family distros - install dependencies for amanda-client (community) from Zmanda
+     ansible.builtin.apt:
+      name: "{{ zmanda_client_depends }}"
+      update_cache: true
+     when:
       - ansible_os_family == 'Debian'
 
-  # apt local package
-  - name: APT - Debian family distros - install amanda-client (community) from Zmanda, local saved package
-    ansible.builtin.apt:
-     deb: "{{ zmanda_client_dest }}{{ zmanda_client_url | basename }}"
-    when:
-      - ansible_os_family == 'Debian' 
+   # apt local package
+   - name: APT - Debian family distros - install amanda-client (community) from Zmanda, local saved package
+     ansible.builtin.apt:
+      deb: "{{ zmanda_client_dest }}{{ zmanda_client_url | basename }}"
+     when:
+      - ansible_os_family == 'Debian'
 
   become: true
 ...

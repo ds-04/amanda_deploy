@@ -26,7 +26,7 @@
       state: link
       owner: "{{ server_user_discovered }}"
       group: "{{ server_user_discovered_group }}"
-     ignore_errors: 'true'
+     ignore_errors: true
      when: ansible_os_family == "Debian" or ansible_os_family == "RedHat"
 
    - name: Create .ssh for "{{ server_user_discovered }}"
@@ -39,12 +39,12 @@
 
    - name: "Generate ssh keys for server user"
      ansible.builtin.openssh_keypair:
-      force: 'no'
+      force: false
       type: "{{ ssh_key_algo }}"
       owner: "{{ server_user_discovered }}"
       group: "{{ server_user_discovered_group }}"
       path: "{{ server_user_discovered_home }}/.ssh/{{ server_ssh_keypair }}"
 
-  become: 'True'
+  become: true
 
 ...

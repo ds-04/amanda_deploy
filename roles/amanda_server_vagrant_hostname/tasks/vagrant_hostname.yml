@@ -2,49 +2,52 @@
 # This task sets the hostname and writes default IP+host entry to /etc/hosts
 - block:
 
-  # get all users
-  - name: Get all users from passwd db
-    ansible.builtin.getent:
-     database: passwd
-     split: ':'
+   # get all users
+   - name: Get all users from passwd db
+     ansible.builtin.getent:
+      database: passwd
+      split: ':'
 
-  # set var for vagrant user
-  - name: "set_fact for vagrant user"
-    ansible.builtin.set_fact:
-     server_user_vagrant: 'vagrant'
+   # set var for vagrant user
+   - name: "set_fact for vagrant user"
+     ansible.builtin.set_fact:
+      server_user_vagrant: 'vagrant'
 
-  # if the user vagrant present, set global var
-  - name: "set_fact vagrant_hostname true - for vagrant instances"
-    ansible.builtin.set_fact:
-     vagrant_hostname: true
-    when:
-     - server_user_vagrant is defined
+   # if the user vagrant present, set global var
+   - name: "set_fact vagrant_hostname true - for vagrant instances"
+     ansible.builtin.set_fact:
+      vagrant_hostname: true
+     when:
+      - server_user_vagrant is defined
 
-  # set hostname std
-  - name: Set a hostname via ansible module (Debian family)
-    ansible.builtin.hostname:
+   # set hostname std
+   - name: Set a hostname via ansible module (Debian family)
+     ansible.builtin.hostname:
       name: "{{ inventory_hostname }}"
       use: systemd
-    when:
+     when:
       - vagrant_hostname is defined and vagrant_hostname|bool
       - ansible_os_family == 'Debian' or ansible_os_family == 'RedHat'
 
-  # set hostname other
-  - name: Set a hostname via ansible module (Other family)
-    ansible.builtin.hostname:
+   # set hostname other
+   - name: Set a hostname via ansible module (Other family)
+     ansible.builtin.hostname:
       name: "{{ inventory_hostname }}"
-    when:
-      - vagrant_hostname is defined and vagrant_hostname|bool
+     when:
+      - vagrant_hostname is defined
+      - vagrant_hostname | bool
       - ansible_os_family != 'Debian'
       - ansible_os_family != 'RedHat'
 
-  # hosts file
-  - name: "Update /etc/hosts"
-    ansible.builtin.template:
+   # hosts file
+   - name: "Update /etc/hosts"
+     ansible.builtin.template:
       backup: 'true'
       src: hosts.j2
       dest: /etc/hosts
-    when: vagrant_hostname is defined and vagrant_hostname|bool  
+     when:
+      - vagrant_hostname is defined
+      - vagrant_hostname | bool
 
-  become: 'True'
+  become: true
 ...

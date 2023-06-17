@@ -18,16 +18,16 @@
 
 - block:
 
-  - name: get service facts
-    ansible.builtin.service_facts:
+   - name: get service facts
+     ansible.builtin.service_facts:
 
-  - name: Disable/Stop service xinetd (not needed for SSH)
-    ansible.builtin.service:
-     name: xinetd
-     state: stopped
-     enabled: 'no'
-    when: ansible_facts.services["xinetd.service"] is defined
+   - name: Disable/Stop service xinetd (not needed for SSH)
+     ansible.builtin.service:
+      name: xinetd
+      state: stopped
+      enabled: false
+     when: ansible_facts.services["xinetd.service"] is defined
 
-  become: 'True'
+  become: true
 
 ...

@@ -18,58 +18,61 @@
 
 - block:
 
-  - name: amanda server dependencies
-    ansible.builtin.yum:
+   - name: amanda server dependencies
+     ansible.builtin.yum:
       name:
-        # needed for lto tapes
-        - mt-st
-        - mtx
-        # needed for default amanda server email /bin/Mail -> /bin/mailx
-        - mailx
-        - glib*
-        #- xinetd kept for reference
-        - perl-Data-Dumper
-        - perl-Encode-Locale
-        - perl-JSON
-        #- perl-URI-Escape use CPAN
-        - perl-XML-Simple
-        - perl
-        - perl-CPAN
-        - lsscsi
-        - tar # just to be sure
+       # needed for lto tapes
+       - mt-st
+       - mtx
+       # needed for default amanda server email /bin/Mail -> /bin/mailx
+       - mailx
+       - glib*
+      # kept for reference
+     # - xinetd
+       - perl-Data-Dumper
+       - perl-Encode-Locale
+       - perl-JSON
+      # use CPAN
+     # - perl-URI-Escape
+       - perl-XML-Simple
+       - perl
+       - perl-CPAN
+       - lsscsi
+       # just to be sure
+       - tar
       state: installed
 
-  - name: download cpanm
-    ansible.builtin.get_url:
+   - name: download cpanm
+     ansible.builtin.get_url:
       url: https://fastapi.metacpan.org/source/MIYAGAWA/App-cpanminus-1.7044/bin/cpanm
       dest: /tmp/cpanm.pl
       mode: '0755'
 
-  - name: install cpanm for ansible module
-    ansible.builtin.command: perl cpanm.pl App::cpanminus
-    args:
+   - name: install cpanm for ansible module
+     ansible.builtin.command: perl cpanm.pl App::cpanminus
+     args:
       chdir: /tmp/
       creates: /usr/local/bin/cpanm
 
-  - name: add cpanm symlink to /usr/bin
-    ansible.builtin.file:
+   - name: add cpanm symlink to /usr/bin
+     ansible.builtin.file:
       src: /usr/local/bin/cpanm
       dest: /usr/bin/cpanm
       state: link
 
-  - name: install perl modules
-    ansible.builtin.cpanm:
+   - name: install perl modules
+     ansible.builtin.cpanm:
       name: "{{ item }}"
-    loop:
-     - URI-Escape
+     loop:
+      - URI-Escape
 
-  - name: (RHEL/Centos 7x) install amanda-server from repos
-    ansible.builtin.yum:
+   - name: (RHEL/Centos 7x) install amanda-server from repos
+     ansible.builtin.yum:
       name: amanda-server
       update_cache: 'true'
-    when:
-     - ansible_os_family == "RedHat"
-     - ansible_distribution_major_version|int == 7
+     when:
+      - ansible_os_family == "RedHat"
+      - ansible_distribution_major_version|int == 7
 
-  become: "True"
+  become: true
 ...

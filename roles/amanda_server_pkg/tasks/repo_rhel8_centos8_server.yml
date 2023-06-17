@@ -21,31 +21,33 @@
 
 - block:
 
-  - name: amanda server dependencies
-    ansible.builtin.dnf:
+   - name: amanda server dependencies
+     ansible.builtin.dnf:
+      update_cache: true
       name:
-        # needed for lto tapes
-        - mt-st
-        - mtx
-        # needed for default amanda server email /bin/Mail -> /bin/mailx
-        - mailx
-        - glib*
-        #- xinetd kept for reference
-        - perl-Data-Dumper
-        - perl-Encode-Locale
-        - perl-JSON
-        #- perl-URI-Escape use CPAN
-        - perl-XML-Simple
-        - perl
-        - perl-CPAN
-        - lsscsi
-        - tar #just to be sure
+       # needed for LTO tapes
+       - mt-st
+       - mtx
+       # needed for default amanda server email /bin/Mail -> /bin/mailx
+       - mailx
+       - glib*
+       #- xinetd kept for reference
+       - perl-Data-Dumper
+       - perl-Encode-Locale
+       - perl-JSON
+       #- perl-URI-Escape use CPAN
+       - perl-XML-Simple
+       - perl
+       - perl-CPAN
+       - lsscsi
+       # just to be sure
+       - tar
       state: installed
 
-  - name: (Fedora and RHEL/Centos >= 8x) install amanda-server from repos
-    ansible.builtin.dnf:
+   - name: (Fedora and RHEL/Centos >= 8x) install amanda-server from repos
+     ansible.builtin.dnf:
       name: amanda-server
-      update_cache: 'true'
+      update_cache: true
 
-  become: "True"
+  become: true
 ...

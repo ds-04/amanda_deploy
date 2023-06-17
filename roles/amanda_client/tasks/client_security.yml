@@ -29,16 +29,16 @@
 
    - name: Copy amanda-security.conf (always)
      ansible.builtin.template:
-      backup: 'yes'
+      backup: true
       src: amanda-security.conf.j2
       dest: /etc/amanda-security.conf
       mode: '0644'
-      owner: root # should be root
-      group: root # should be root
+      owner: root
+      group: root
 
    - name: Copy amanda-client.conf
      ansible.builtin.template:
-      backup: 'yes'
+      backup: true
       src: amanda-client.conf.j2
       dest: /etc/amanda/amanda-client.conf
       mode: '0600'
@@ -46,5 +46,5 @@
       group: "{{ server_user_discovered_group }}"
      when: client_can_restore | bool
 
-  become: 'True'
+  become: true
 ...

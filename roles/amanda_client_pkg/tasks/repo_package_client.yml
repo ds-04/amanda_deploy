@@ -18,38 +18,38 @@
 
 - block:
 
-  - name: (RHEL/Centos 7x) install amanda-client from repos
-    ansible.builtin.yum:
-     name: amanda-client
-     update_cache: true
-    when:
-     - ansible_os_family == "RedHat"
-     - ansible_distribution_major_version|int == 7
+   - name: (RHEL/Centos 7x) install amanda-client from repos
+     ansible.builtin.yum:
+      name: amanda-client
+      update_cache: true
+     when:
+      - ansible_os_family == "RedHat"
+      - ansible_distribution_major_version|int == 7
 
-  - name: (RHEL/Centos >= 8x) install amanda-client from repos
-    ansible.builtin.dnf:
-     name: amanda-client
-     update_cache: true
-    when: 
+   - name: (RHEL/Centos >= 8x) install amanda-client from repos
+     ansible.builtin.dnf:
+      name: amanda-client
+      update_cache: true
+     when:
       - ansible_os_family == 'RedHat'
       - ansible_distribution != 'Fedora'
       - ansible_distribution_major_version|int >= 8
 
-  - name: (Fedora >= 35) install amanda-client from repos
-    ansible.builtin.dnf:
-     name: amanda-client
-     update_cache: true
-    when: 
+   - name: (Fedora >= 35) install amanda-client from repos
+     ansible.builtin.dnf:
+      name: amanda-client
+      update_cache: true
+     when:
       - ansible_distribution == 'Fedora'
       - ansible_distribution_major_version|int >= 35
 
-  - name: (Debian family) install amanda-client from repos
-    ansible.builtin.apt:
-     name: amanda-client
-     update_cache: true
-    when:
-     - ansible_os_family == "Debian"
-     - (ansible_distribution == "Debian" and ansible_distribution_major_version|int >= 10) or (ansible_distribution == "Ubuntu")
+   - name: (Debian family) install amanda-client from repos
+     ansible.builtin.apt:
+      name: amanda-client
+      update_cache: true
+     when:
+      - ansible_os_family == "Debian"
+      - (ansible_distribution == "Debian" and ansible_distribution_major_version|int >= 10) or (ansible_distribution == "Ubuntu")
 
-  become: "True"
+  become: true
 ...

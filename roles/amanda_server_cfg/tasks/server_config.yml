@@ -18,10 +18,11 @@
 
 - block:
 
+   # this target is a symbolic link
    - name: Include vars from amanda_server (OS defs, ssh-key name)
      ansible.builtin.include_vars:
       dir: vars/
-      files_matching: server_role_defaults.yml # this target is a symbolic link
+      files_matching: server_role_defaults.yml
 
    - name: Debug Loop - cfg_dirs
      ansible.builtin.debug:
@@ -39,7 +40,6 @@
 
    - name: Set fact to initialse localvar_templates for next task
      ansible.builtin.set_fact:
-      # initialise
       localvar_templates: []
 
    # append to a list, local variable of template files
@@ -50,7 +50,7 @@
 
    - name: Template out amanda conf files for the configuration
      ansible.builtin.template:
-      backup: 'yes'
+      backup: true
       src: "{{ item[1] }}"
       dest: "{{ item[0].cfg_area }}/{{ item[1] | basename | regex_replace('.j2', '') }}"
       mode: 0644
@@ -74,12 +74,12 @@
    # deal with newlines
    - name: set variable for list
      ansible.builtin.set_fact:
-       vtape_dir_list: "{{ (file_contents['content'] | b64decode).split('\n') }}"
+      vtape_dir_list: "{{ (file_contents['content'] | b64decode).split('\n') }}"
 
    # remove empty elements
    - name: set variable for final list
      ansible.builtin.set_fact:
-       vtape_dir_list_final: "{{ vtape_dir_list | select() }}"
+      vtape_dir_list_final: "{{ vtape_dir_list | select() }}"
 
    - name: Create directories for vtapes for each config
      ansible.builtin.file:
@@ -88,7 +88,7 @@
       owner: "{{ server_user_discovered }}"
       group: "{{ server_user_discovered_group }}"
       mode: '0750'
-      recurse: 'yes'
+      recurse: true
      loop: "{{ vtape_dir_list_final }}"
 
    - name: Check tape changer initialised
@@ -111,11 +111,12 @@
      when:
       - sym.stat.islnk is defined
 
+   # ./cfgX_disklist.j2 in templates
    - name: "Copy disklist for each configuration"
      ansible.builtin.template:
-      backup: 'yes'
+      backup: true
       dest: "{{ item.cfg_area }}/disklist"
-      src: "{{ item.name }}_disklist.j2" #./cfgX_disklist.j2 in templates dir
+      src: "{{ item.name }}_disklist.j2"
       owner: "{{ server_user_discovered }}"
       group: "{{ server_user_discovered_group }}"
       mode: '0644'
@@ -128,6 +129,6 @@
        - Otherwise, run amcheck CONFIGNAME (e.g. DailySet1) as the {{ server_user_discovered }} user to check a configuration
        - you may need to review your sshd or security settings to allow ssh - also refer to other roles
 
-  become: 'True'
+  become: true
 
 ...
