@@ -141,13 +141,16 @@ amanda_client
 It is advised that you clone to another location or use a git submodule within your ansible configuration. The structure of what is provided by this repository is seen below. Note the relative symlinks for defaults and certain task yml files. This is to avoid duplication where a client role task can be performed by something which is the same in a server role or vice versa.
 
 ```
-amanda_client_restore.yml
-amanda_client.yml
-amanda_copy_keys.yml
 amanda_master_playbook.yml
-amanda_server_cfg.yml
-amanda_server_vagrant_hostname.yml
-amanda_server.yml
+playbook_amanda_client_pkg.yml
+playbook_amanda_client_restore.yml
+playbook_amanda_client.yml
+playbook_amanda_copy_keys.yml
+playbook_amanda_server_cfg.yml
+playbook_amanda_server_pkg.yml
+playbook_amanda_server_vagrant_hostname.yml
+playbook_amanda_server.yml
+playbook_zmanda_fixes.yml
 ```
 ...
 ```
@@ -155,35 +158,44 @@ roles/
 ├── amanda_client
 │   ├── defaults
 │   │   └── main.yml -> ../../amanda_server/defaults/main.yml
+│   ├── meta
+│   │   └── main.yml
 │   ├── tasks
 │   │   ├── amrecover_fix.yml
 │   │   ├── client_security.yml
 │   │   ├── client_sshd_user.yml -> ../../amanda_server/tasks/server_sshd_user.yml
-│   │   ├── client.yml
 │   │   ├── disable_xinetd.yml -> ../../amanda_server/tasks/disable_xinetd.yml
-│   │   ├── main.yml
-│   │   ├── repo_package_client.yml
-│   │   └── zmanda_package_client.yml
+│   │   └── main.yml
 │   ├── templates
 │   │   ├── amanda-client.conf.j2
 │   │   ├── amanda-security.conf.j2
 │   │   └── systemd -> ../../amanda_server/templates/systemd
 │   └── vars
 │       └── main.yml
+├── amanda_client_pkg
+│   ├── defaults
+│   │   └── main.yml -> ../../amanda_server/defaults/main.yml
+│   └── tasks
+│       ├── main.yml
+│       ├── repo_package_client.yml
+│       └── zmanda_package_client.yml
+├── amanda_discover_env
+│   ├── defaults
+│   │   └── main.yml -> ../../amanda_server/defaults/main.yml
+│   └── tasks
+│       └── main.yml
 ├── amanda_server
 │   ├── defaults
+│   │   └── main.yml
+│   ├── meta
 │   │   └── main.yml
 │   ├── tasks
 │   │   ├── client_security.yml -> ../../amanda_client/tasks/client_security.yml
 │   │   ├── disable_xinetd.yml
 │   │   ├── DORMANT_systemd.yml
 │   │   ├── main.yml
-│   │   ├── repo_debian_server.yml
-│   │   ├── repo_rhel7_centos7_server.yml
-│   │   ├── repo_rhel8_centos8_server.yml
 │   │   ├── server_sshd_user.yml
-│   │   ├── server_ssh_keys.yml
-│   │   └── zmanda_package_server.yml
+│   │   └── server_ssh_keys.yml
 │   └── templates
 │       ├── amanda-client.conf.j2 -> ../../amanda_client/templates/amanda-client.conf.j2
 │       ├── amanda-security.conf.j2 -> ../../amanda_client/templates/amanda-security.conf.j2
@@ -192,6 +204,8 @@ roles/
 │           └── DORMANT_amanda.socket
 ├── amanda_server_cfg
 │   ├── defaults
+│   │   └── main.yml
+│   ├── meta
 │   │   └── main.yml
 │   ├── tasks
 │   │   ├── DORMANT_amcheck.yml
@@ -213,14 +227,31 @@ roles/
 │   │   └── vtape_tmp.j2
 │   └── vars
 │       └── server_role_defaults.yml -> ../../amanda_server/defaults/main.yml
-└── amanda_server_vagrant_hostname
-    ├── tasks
-    │   ├── main.yml
-    │   └── vagrant_hostname.yml
-    └── templates
-        └── hosts.j2
+├── amanda_server_pkg
+│   ├── defaults
+│   │   └── main.yml -> ../../amanda_server/defaults/main.yml
+│   └── tasks
+│       ├── main.yml
+│       ├── repo_debian_server.yml
+│       ├── repo_fedora_server.yml -> repo_rhel8_centos8_server.yml
+│       ├── repo_rhel7_centos7_server.yml
+│       ├── repo_rhel8_centos8_server.yml
+│       └── zmanda_package_server.yml
+├── amanda_server_vagrant_hostname
+│   ├── tasks
+│   │   ├── main.yml
+│   │   └── vagrant_hostname.yml
+│   └── templates
+│       └── hosts.j2
+└── zmanda_fixes
+    ├── defaults
+    │   └── main.yml -> ../../amanda_server/defaults/main.yml
+    ├── meta
+    │   └── main.yml
+    └── tasks
+        └── main.yml
 
-21 directories, 46 files
+37 directories, 58 files
 ```
 
 
@@ -234,12 +265,15 @@ Firstly, decide if you are deploying the test vtape setup. If so, you probably w
 
 The expected order (on first setup) is:
 
-- ```amanda_server_vagrant_hostname.yml``` In the case of vagrant we need to ensure host looks work, so this is run first
-- ```ansible-playbook amanda_server.yml```
-- ```ansible-playbook amanda_client.yml```
-- ```ansible-playbook amanda_copy_keys.yml``` (N.B. you will also need to run this, to enable the server to access itself as a client)
-- ```ansible-playbook amanda_server_cfg.yml``` (remember by default the test vtape config won't be deployed, you need to enable that if/when you want it)
-- ```ansible-playbook amanda_client_restore.yml``` (if you want to do restores from client *amrecover*<br><br>
+```playbook_amanda_server_vagrant_hostname.yml``` In the case of vagrant we need to ensure host looks work, so this is run first
+```playbook_amanda_server_pkg.yml```
+```playbook_amanda_client_pkg.yml```
+```playbook_amanda_server.yml```
+```playbook_amanda_client.yml```
+```playbook_zmanda_fixes.yml```
+```playbook_amanda_copy_keys.yml``` (N.B. you will also need to run this, to enable the server to access itself as a client)
+```playbook_amanda_server_cfg.yml``` (remember by default the test vtape config won't be deployed, you need to enable that if/when you want it)
+```playbook_amanda_client_restore.yml``` (if you want to do restores from client *amrecover*<br><br>
 Then (if not deploying the test vtape configuration):<br>
 - ***your amanda_production_server_cfg.yml (you need to create this playbook and corresponding role)***
 
