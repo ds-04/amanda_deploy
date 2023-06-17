@@ -265,15 +265,15 @@ Firstly, decide if you are deploying the test vtape setup. If so, you probably w
 
 The expected order (on first setup) is:
 
-```playbook_amanda_server_vagrant_hostname.yml``` In the case of vagrant we need to ensure host looks work, so this is run first
-```playbook_amanda_server_pkg.yml```
-```playbook_amanda_client_pkg.yml```
-```playbook_amanda_server.yml```
-```playbook_amanda_client.yml```
-```playbook_zmanda_fixes.yml```
-```playbook_amanda_copy_keys.yml``` (N.B. you will also need to run this, to enable the server to access itself as a client)
-```playbook_amanda_server_cfg.yml``` (remember by default the test vtape config won't be deployed, you need to enable that if/when you want it)
-```playbook_amanda_client_restore.yml``` (if you want to do restores from client *amrecover*<br><br>
+- ```playbook_amanda_server_vagrant_hostname.yml``` In the case of vagrant we need to ensure host looks work, so this is run first
+- ```playbook_amanda_server_pkg.yml```
+- ```playbook_amanda_client_pkg.yml```
+- ```playbook_amanda_server.yml```
+- ```playbook_amanda_client.yml```
+- ```playbook_zmanda_fixes.yml```
+- ```playbook_amanda_copy_keys.yml``` (N.B. you will also need to run this, to enable the server to access itself as a client)
+- ```playbook_amanda_server_cfg.yml``` (remember by default the test vtape config won't be deployed, you need to enable that if/when you want it)
+- ```playbook_amanda_client_restore.yml``` (if you want to do restores from client *amrecover*<br><br>
 Then (if not deploying the test vtape configuration):<br>
 - ***your amanda_production_server_cfg.yml (you need to create this playbook and corresponding role)***
 
