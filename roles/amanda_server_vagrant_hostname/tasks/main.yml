@@ -1,9 +1,9 @@
 ---
 
+# this is always run, detection of vagrant is within
 - ansible.builtin.include: vagrant_hostname.yml
   ignore_errors: "{{ ansible_check_mode }}"
   tags:
     - vagrant_hostname
-  when: vagrant_hostname is defined and vagrant_hostname|bool
 
 ...
