@@ -1,0 +1,83 @@
+---
+
+#DISCOVER LOGIC
+
+  # users
+  - name: Get all users from passwd db
+    ansible.builtin.getent:
+     database: passwd
+     split: ':'
+  #- ansible.builtin.debug:
+  #   var: ansible_facts.getent_passwd
+
+  - name: "set_fact for {{ debian_user }} amanda user"
+    ansible.builtin.set_fact:
+     server_user1: "{{ item }}"
+    loop: 
+     - "{{ debian_user }}"
+    when: debian_user in ansible_facts.getent_passwd
+
+  - name: "set_fact for {{ redhat_user }} amanda user"
+    ansible.builtin.set_fact:
+     server_user2: "{{ item }}"
+    loop:
+     - "{{ redhat_user }}"
+    when: redhat_user in ansible_facts.getent_passwd
+
+  # is the user from RHEL distro
+  - name: "set_fact for FINAL {{ redhat_user }} user"
+    ansible.builtin.set_fact:
+     server_user_discovered: "{{ redhat_user }}"
+    when:
+     - server_user2 is defined
+
+  # ...if not, then we expect standard/Debian user
+  - name: "set_fact for FINAL {{ debian_user }} user"
+    ansible.builtin.set_fact:
+     server_user_discovered: "{{ debian_user }}"
+    when:
+     - server_user2 is not defined
+     - server_user1 is defined
+
+  # set var for vagrant user
+  - name: "set_fact for vagrant user"
+    ansible.builtin.set_fact:
+     server_user_vagrant: 'vagrant'
+
+  # if the user vagrant present, set global var
+  - name: "set_fact vagrant_hostname true - for vagrant instances"
+    ansible.builtin.set_fact:
+     vagrant_hostname: true
+    when:
+     - server_user_vagrant is defined
+
+  - name: "Get {{ server_user_discovered }} user info"
+    ansible.builtin.getent:
+     database: passwd
+     key: "{{ server_user_discovered }}"
+  #- ansible.builtin.debug:
+  #   var: ansible_facts.getent_passwd
+
+  - name: "set_fact for user_attributes"
+    ansible.builtin.set_fact:
+     user_attributes: "{{ item.value }}"
+    loop: "{{ ansible_facts.getent_passwd | dict2items }}"
+
+  - name: "set_fact server_user_discovered_home"
+    ansible.builtin.set_fact:
+     server_user_discovered_home: "{{ item }}" 
+    loop:
+     - "{{ debian_user_home }}"
+     - "{{ redhat_user_home }}"
+    when: item in user_attributes
+
+  - name: "Shell find primary group of {{ server_user_discovered }}"
+    ansible.builtin.shell:
+     cmd: "id -gn {{ server_user_discovered }}"
+    register: id_group
+
+  - name: "set_fact for primary group"
+    ansible.builtin.set_fact:
+     server_user_discovered_group: "{{ id_group.stdout }}"
+
+...

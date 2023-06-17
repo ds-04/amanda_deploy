@@ -1,0 +1,4 @@
+---
+dependencies:
+  - role: amanda_discover_env
+...
