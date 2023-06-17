@@ -3,9 +3,9 @@
 ```diff
 - various syntax improvements
 - docs updated
-- now with Vagrant capability
-- Ubuntu 2204 now working
-- ambind fix/workaround
+- new role for amanda backup user detection
+- zmanda package install via global var
+- zmanda fix using user detection
 ```
 
 # amanda_deploy
@@ -28,14 +28,16 @@ See https://en.wikipedia.org/wiki/Amanda_(software) for some information on Aman
 <li>Tested with ansible 2.10.8</li>
 <br>
 
-|  Distro |  Tested |  Comment |
-|---	|---	|---	|
-|  Centos 7.9 | &check;  | advise zmanda package if you must use this OS
-|  Almalinux 8x | &check;  | OS repo install or Zmanda
-|  Debian 11x | &check;  | OS repo install or Zmanda
-|  Rocky 8x | &check; | Works with ansible core 2.15.0, older versions may not
-|  Ubuntu 22.04 | &check;  | OS repo install or Zmanda
-|  SUSE distros | &cross; | no provision for SUSE right now
+| Distro  | Supported | Native repo install | Zmanda rpm/deb | Comment |
+| :------------- | :---: | :---: | :---: | :------------- |
+| Almalinux 8x | &check;  | &check; | &cross; | |
+| Centos 7.9 | &check;  | &check; | &check; | advise zmanda package if you must use this OS |
+| Debian 11x | &check;  | &check; | &check; | |
+| Fedora 35+ | &cross; | &check; | &cross; | WIP |
+| Rocky 8x | &check;  | &check; | &cross; | Works with ansible core 2.15.0, older versions may not |
+| Ubuntu 22.04  | &check;  | &check; | &check; | |
+| SUSE distros | &cross; | &check; | &cross; | future work |
+
 <br>
 
 ## Versions
