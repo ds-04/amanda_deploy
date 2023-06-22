@@ -95,6 +95,7 @@
      ansible.builtin.file:
       path: /etc/amanda/DailySet1
       state: absent
+      register: DailySet1_deleted
      when:
       - no_serverpkg is defined
       - not no_serverpkg | bool
