@@ -6,12 +6,36 @@
 # on a RHEL Centos host these come from the RPM:
 # id_rsa_amdump,id_rsa_amdump.pub,id_rsa_amrecover,id_rsa_amrecover.pub
 
+#----------OS SUPPORT--------------------------
+
+supported_family_version_combination: >
+  (ansible_os_family == 'RedHat' and ansible_distribution_major_version|int >= 7)
+  or (ansible_os_family == 'Debian' and ansible_distribution == 'Debian' and ansible_distribution_major_version|int >= 10)
+  or (ansible_os_family == 'Suse')
+supported_distro_version_combination: >
+  ((ansible_distribution == 'Fedora' and ansible_distribution_major_version|int >= 35)
+  or (ansible_distribution == 'Ubuntu' and ansible_distribution_major_version|int >= 22))
+
+# FOR REFERENCE - These vars are not called, but the values are used in the server packages role
+uses_apt_package_manager: >
+ (ansible_os_family == 'Debian' and ansible_distribution == 'Debian' and ansible_distribution_major_version|int >= 10)
+  or (ansible_os_family == 'Debian' and ansible_distribution == 'Ubuntu' and ansible_distribution_major_version|int >= 22)
+uses_dnf_package_manager: >
+  (ansible_distribution != 'Fedora' and 'ansible_os_family == ''RedHat'' and ansible_distribution_major_version|int >= 8')
+  or (ansible_distribution == 'Fedora' and ansible_distribution_major_version|int >= 35 ))
+uses_yum_package_manager: >
+  'ansible_os_family == ''RedHat'' and ansible_distribution_major_version|int == 7'
+uses_zypper_package_manager: >
+  'ansible_os_family == ''Suse'''
+
+#----------OS SUPPORT---------------------------
+
 #----------INSTALL TYPE---------------------------
 
 #global toggle, disable to stop installation and just configure
 install_amanda: true
 #choose zmanda install via download url OR not (use default repos and amanda package)
-use_zmanda_package: false
+use_zmanda_package: true
 
 #----------END INSTALL TYPE-----------------------
 
@@ -45,6 +69,96 @@ client_restore_ssh_keypair: amrecover_id_{{ ssh_key_algo | default('ed25519') }}
 #amandad: must be executed as the "amandabackup" user instead of the "backup" user
 #amandad: critical (fatal): create debug directory "/var/log/amanda/amandad/": Permission denied
 
+# Amanda packages direct from OS repos - apt/dnf/yum/zypper installation
+
+family_only_detection: ['Suse']
+family_and_version_detection: ['RedHat']
+distro_and_version_detection: ['Debian','Fedora','Ubuntu']
+
+#apt_pkg_mgr:
+# - Debian
+#dnf_pkg_mgr:
+# - Fedora
+# - RedHat
+#yum_pkg_mgr:
+# - RedHat
+#zypper_pkg_mgr:
+# - Suse
+
+
+
+
+
+amanda_packages:
+  # usage is distro + major ver
+  Debian_11_client_name:    { 'amanda-client': 'latest' }
+  Debian_11_server_name:    { 'amanda-server': 'latest' }
+  Debian_11_server_depends: {}
+  Debian_11_extras:         { 'acl':                'present',
+                              'tar':                'present' }
+  Debian_11_lto:            { 'lsscsi':             'present',
+                              'mtx':                'present', 
+                              'mt-st':              'present' }
+  # usage is distro + major ver
+  Fedora_37_client_name:      { 'amanda-client': 'latest' }
+  Fedora_37_server_name:      { 'amanda-server': 'latest' }
+  Fedora_37_server_depends:   { 'perl':               'present',
+                                'perl-Data-Dumper':   'present',
+                                'perl-Encode-Locale': 'present',
+                                'perl-JSON':          'present',
+                                'perl-XML-Simple':    'present' }
+  Fedora_37_extras:           { 'acl':                'present',
+                                'tar':                'present' }
+  Fedora_37_lto:              { 'lsscsi':             'present',
+                                'mtx':                'present' }
+  # usage is family + major ver
+  RedHat_7_client_name:    { 'amanda-client': 'latest' }
+  RedHat_7_server_name:    { 'amanda-server': 'latest' }
+  RedHat_7_server_depends: { 'perl':               'present',
+                             'perl-CPAN':          'present',
+                             'perl-Data-Dumper':   'present',
+                             'perl-Encode-Locale': 'present',
+                             'perl-JSON':          'present',
+                             'perl-XML-Simple':    'present' }
+  RedHat_7_extras:         { 'acl':                'present',
+                             'tar':                'present' }
+  RedHat_7_lto:            { 'lsscsi':             'present',
+                             'mtx':                'present', 
+                             'mt-st':              'present' }
+  # usage is family + major ver
+  RedHat_8_client_name:    { 'amanda-client': 'latest' }
+  RedHat_8_server_name:    { 'amanda-server': 'latest' }
+  RedHat_8_server_depends: { 'perl':               'present',
+                             'perl-Data-Dumper':   'present',
+                             'perl-Encode-Locale': 'present',
+                             'perl-JSON':          'present',
+                             'perl-XML-Simple':    'present' }
+  RedHat_8_extras:         { 'acl':                'present',
+                             'tar':                'present' }
+  RedHat_8_lto:            { 'lsscsi':             'present',
+                             'mtx':                'present', 
+                             'mt-st':              'present' }
+  # usage is family
+  Suse_client_name:        { 'amanda':             'latest' }
+  Suse_server_name:        { 'amanda':             'latest' }
+  Suse_server_depends:     { 'perl':               'present',
+                             'perl-Encode-Locale': 'present',
+                             'perl-JSON':          'present' }
+  Suse_extras:             { 'acl':                'present',
+                             'tar':                'present' }
+  Suse_lto:                { 'lsscsi':             'present',
+                             'mtx':                'present' }
+  # usage is distro + major ver
+  Ubuntu_22_client_name:    { 'amanda-client': 'latest' }
+  Ubuntu_22_server_name:    { 'amanda-server': 'latest' }
+  Ubuntu_22_server_depends: {}
+  Ubuntu_22_extras:         { 'acl':                'present',
+                                 'tar':                'present' }
+  Ubuntu_22_lto:            { 'lsscsi':             'present',
+                                 'mtx':                'present', 
+                                 'mt-st':              'present' }
+
+# Alternative option, packages direct from Zmanda
 zmanda_packages:
   RedHat_7: # is also centos7
     client:
@@ -99,14 +213,18 @@ zmanda_packages:
 #N.B. client ending like command="/usr/lib/amanda/amandad -auth=ssh amindexd amidxtaped"
 std_ssh_key_opts: 'no-port-forwarding,no-X11-forwarding,no-agent-forwarding'
 
-# also used for source build
+# 
 debian_user: 'backup'
 debian_group: 'backup'
 debian_user_home: '/var/backups'
-# also used for source build
+#  ------- AND is also zmanda name
 redhat_user: 'amandabackup'
 redhat_group: 'disk'
 redhat_user_home: '/var/lib/amanda'
+# 
+suse_user: 'amanda'
+suse_group: 'amanda'
+suse_user_home: '/var/lib/amanda'
 
 # list of known locations to search for amandad (depending on distro/package etc.)
 amandad_search_paths:
