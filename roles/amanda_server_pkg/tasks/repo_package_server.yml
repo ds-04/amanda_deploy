@@ -1,0 +1,212 @@
+---
+
+# D Simpson 2021,2023 ds-04
+
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+- block:
+
+ # SET FACTS ********************************************************************************************
+
+   - name: Initiliase empty dicts to hold package key/value
+     ansible.builtin.set_fact:
+       local_server_name: {}
+       local_server_depends: {}
+       local_extras: {}
+       local_lto: {}
+
+   #--------- overall order is important in this section
+
+   # OS FAMILY BASED - server NAME
+   - name: "OS FAMILY BASED - server name"
+     ansible.builtin.set_fact:
+      local_server_name: "{{ item.value }}"
+     loop: "{{ lookup('dict', amanda_packages ) }}"
+     when:
+      - ansible_os_family+'_server_name' in item.key
+      - ansible_os_family in family_only_detection
+   # OS FAMILY BASED - server DEPENDENCIES
+   - name: "OS FAMILY BASED - server depends"
+     ansible.builtin.set_fact:
+      local_server_depends: "{{ item.value }}"
+     loop: "{{ lookup('dict', amanda_packages ) }}"
+     when:
+      - ansible_os_family+'_server_depends' in item.key
+      - ansible_os_family in family_only_detection
+   # OS FAMILY BASED - server EXTRAS
+   - name: "OS FAMILY BASED - extras"
+     ansible.builtin.set_fact:
+      local_extras: "{{ item.value }}"
+     loop: "{{ lookup('dict', amanda_packages ) }}"
+     when:
+      - ansible_os_family+'_extras' in item.key
+      - ansible_os_family in family_only_detection
+   # OS FAMILY BASED - server LTO
+   - name: "OS FAMILY BASED - lto"
+     ansible.builtin.set_fact:
+      local_lto: "{{ item.value }}"
+     loop: "{{ lookup('dict', amanda_packages ) }}"
+     when:
+      - ansible_os_family+'_lto' in item.key
+      - ansible_os_family in family_only_detection
+
+   #---------
+
+   # OS FAMILY + VERSION BASED - server NAME
+   - name: SET FACT server_name
+     ansible.builtin.set_fact:
+      local_server_name: "{{ item.value }}"
+     loop: "{{ lookup('dict', amanda_packages ) }}"
+     when:
+      - ansible_os_family+'_'+ansible_distribution_major_version+'_server_name' in item.key
+      - ansible_os_family in family_and_version_detection
+      - ansible_distribution not in distro_and_version_detection
+
+   # OS FAMILY + VERSION BASED - server DEPENDENCIES
+   - name: SET FACT server_depends
+     ansible.builtin.set_fact:
+      local_server_depends: "{{ item.value }}"
+     loop: "{{ lookup('dict', amanda_packages ) }}"
+     when:
+      - ansible_os_family+'_'+ansible_distribution_major_version+'_server_depends' in item.key
+      - ansible_os_family in family_and_version_detection
+      - ansible_distribution not in distro_and_version_detection
+   # OS FAMILY + VERSION BASED - server EXTRAS
+   - name: SET FACT extras
+     ansible.builtin.set_fact:
+      local_extras: "{{ item.value }}"
+     loop: "{{ lookup('dict', amanda_packages ) }}"
+     when:
+      - ansible_os_family+'_'+ansible_distribution_major_version+'_extras' in item.key
+      - ansible_os_family in family_and_version_detection
+      - ansible_distribution not in distro_and_version_detection
+   # OS FAMILY + VERSION BASED - server LTO
+   - name: SET FACT lto
+     ansible.builtin.set_fact:
+      local_lto: "{{ item.value }}"
+     loop: "{{ lookup('dict', amanda_packages ) }}"
+     when:
+      - ansible_os_family+'_'+ansible_distribution_major_version+'_lto' in item.key
+      - ansible_os_family in family_and_version_detection
+      - ansible_distribution not in distro_and_version_detection
+
+   #---------
+
+   # DISTRO + VERSION BASED - server NAME
+   - name: SET FACT server_name
+     ansible.builtin.set_fact:
+      local_server_name: "{{ item.value }}"
+     loop: "{{ lookup('dict', amanda_packages ) }}"
+     when:
+      - ansible_distribution+'_'+ansible_distribution_major_version+'_server_name' in item.key
+      - ansible_distribution in distro_and_version_detection
+   # DISTRO + VERSION BASED - server DEPENDENCIES
+   - name: SET FACT server_depends
+     ansible.builtin.set_fact:
+      local_server_depends: "{{ item.value }}"
+     loop: "{{ lookup('dict', amanda_packages ) }}"
+     when:
+      - ansible_distribution+'_'+ansible_distribution_major_version+'_server_depends' in item.key
+      - ansible_distribution in distro_and_version_detection
+   # DISTRO + VERSION BASED - server EXTRAS
+   - name: SET FACT extras
+     ansible.builtin.set_fact:
+      local_extras: "{{ item.value }}"
+     loop: "{{ lookup('dict', amanda_packages ) }}"
+     when:
+      - ansible_distribution+'_'+ansible_distribution_major_version+'_extras' in item.key
+      - ansible_distribution in distro_and_version_detection
+   # DISTRO + VERSION BASED -  server LTO
+   - name: SET FACT lto
+     ansible.builtin.set_fact:
+      local_lto: "{{ item.value }}"
+     loop: "{{ lookup('dict', amanda_packages ) }}"
+     when:
+      - ansible_distribution+'_'+ansible_distribution_major_version+'_lto' in item.key
+      - ansible_distribution in distro_and_version_detection
+
+ # END SET FACTS *****************************************************************************************
+
+   - name: Combine the package dicitonaries
+     ansible.builtin.set_fact:
+      combined_server_dict: "{{ local_server_depends | ansible.builtin.combine(local_server_name, local_extras, local_lto) }}"
+
+ # APT Debian/Ubuntu 
+
+   - name: APT - Debian/Ubuntu - Update apt cache
+     ansible.builtin.apt:
+      update_cache: true
+     when: ansible_pkg_mgr == 'apt'
+
+   - name: APT - Debian/Ubuntu - Server repo install
+     ansible.builtin.apt:
+      name: "{{ item.key }}"
+      state: "{{ item.value }}"
+     loop: "{{ lookup('dict', combined_server_dict) }}"
+     when: ansible_pkg_mgr == 'apt'
+
+ # DNF RHEL => 8
+ 
+   - name: DNF - RHEL-like 8 onwards - Update DNF cache
+     ansible.builtin.dnf:
+      update_cache: true
+     when: 
+      - ansible_pkg_mgr == 'dnf'
+      - ansible_distribution_major_version|int >= 8
+
+   - name: DNF - RHEL-like 8 onwards - Server repo install
+     ansible.builtin.dnf:
+      name: "{{ item.key }}"
+      state: "{{ item.value }}"
+     loop: "{{ lookup('dict', combined_server_dict) }}"
+     when: 
+      - ansible_pkg_mgr == 'dnf'
+      - ansible_distribution_major_version|int >= 8
+
+ # YUM RHEL 7
+
+   - name: YUM - RHEL-like 7 - Update YUM cache
+     ansible.builtin.yum:
+      update_cache: true
+     when:
+      - ansible_pkg_mgr == 'yum'
+      - ansible_distribution_major_version|int == 7
+
+   - name: YUM - RHEL-like 7 - Server repo install
+     ansible.builtin.yum:
+      name: "{{ item.key }}"
+      state: "{{ item.value }}"
+     loop: "{{ lookup('dict', combined_server_dict) }}"
+     when:
+      - ansible_pkg_mgr == 'yum'
+      - ansible_distribution_major_version|int == 7
+
+ # ZYPPER SUSE
+
+   - name: ZYPPER - Suse family - Update ZYPPER cache
+     ansible.builtin.zypper:
+      name: '' #requires name
+      update_cache: true
+     when: ansible_pkg_mgr == 'zypper'
+
+   - name: ZYPPER - Suse family - Server repo install
+     ansible.builtin.zypper:
+      name: "{{ item.key }}"
+      state: "{{ item.value }}"
+     loop: "{{ lookup('dict', combined_server_dict) }}"
+     when: ansible_pkg_mgr == 'zypper'
+
+  become: true
+...
