@@ -122,13 +122,6 @@
       mode: '0644'
      loop: "{{ tape_configs }}"
 
-   - name: Config completed, note the following actions
-     ansible.builtin.debug:
-      msg:
-       - If no actions were performed, did you mean this (check if you set deploy_test_vtape_cfg=true)
-       - Otherwise, run amcheck CONFIGNAME (e.g. DailySet1) as the {{ server_user_discovered }} user to check a configuration
-       - you may need to review your sshd or security settings to allow ssh - also refer to other roles
-
   become: true
 
 ...
