@@ -19,40 +19,38 @@
 
 
 # VAGRANT---------------------------------------------------------------------------------
-# 1 - setup hostname and etc for vagrant (if vagrant)
+# (1) - setup hostname and /etc/hosts for vagrant (if vagrant)
 - ansible.builtin.import_playbook: playbook_amanda_server_vagrant_hostname.yml
 
-
-# INSTALL PKG-----------------------------------------------------------------------------
-# 2 - install server pkg
+# INSTALL PACKAGES FOR CLIENT AND SERVER--------------------------------------------------
+# (2) - install server packages including dependencies
 - ansible.builtin.import_playbook: playbook_amanda_server_pkg.yml
-# 3 - install client pkg
+# (3) - install client package
 - ansible.builtin.import_playbook: playbook_amanda_client_pkg.yml
 
-
 # MAIN CONFIG-----------------------------------------------------------------------------
-# 4 - main server config (ssh etc)
+# (4) - main server config (ssh etc)
 - ansible.builtin.import_playbook: playbook_amanda_server.yml
-# 5 - main client config (ssh etc)
+# (5) - main client config (ssh etc)
 - ansible.builtin.import_playbook: playbook_amanda_client.yml
 
-
 # ZMANDA FIXES----------------------------------------------------------------------------
-# 6 -zmanda pkg install specific fixes
+# (6) - zmanda package install specific fixes (if applicable)
 - ansible.builtin.import_playbook: playbook_zmanda_fixes.yml
 
-
 # SSH KEYS--------------------------------------------------------------------------------
-# 7 - copy keys for ssh
+# (7) - copy keys for ssh
 - ansible.builtin.import_playbook: playbook_amanda_copy_keys.yml
 
+# CLIENT RESTORE--------------------------------------------------------------------------
+# (8) configure clients for restore
+- ansible.builtin.import_playbook: playbook_amanda_client_restore.yml
 
-# BACKUP CONFIG---------------------------------------------------------------------------
-# 8 - write backup configuration on server, NOTE to deploy test vtape config use: -e deploy_test_vtape_cfg=True
+# DUMP/BACKUP CONFIGURATION---------------------------------------------------------------
+# (9) - write backup configuration on server, NOTE to deploy test vtape config use: -e deploy_test_vtape_cfg=True
 - ansible.builtin.import_playbook: playbook_amanda_server_cfg.yml
 
-
-# CLIENT RESTORE--------------------------------------------------------------------------
-# 9 configure clients for restore
-- ansible.builtin.import_playbook: playbook_amanda_client_restore.yml
+# SUMMARY/HINTS---------------------------------------------------------------------------
+# (10) - summary and hints
+- ansible.builtin.import_playbook: playbook_amanda_deploy_helper.yml
 ...

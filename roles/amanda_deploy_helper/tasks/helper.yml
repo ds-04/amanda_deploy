@@ -1,0 +1,55 @@
+---
+
+# D Simpson 2021,2023 ds-04
+
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+- block:
+
+   - name: Hint - zmanda_dir_perms_fix
+     ansible.builtin.debug:
+      msg: 
+        - >-
+          {% if zmanda_dir_perms_fix.results is defined %}
+          'zmanda_dir_perms_fix was applied on this run!'
+          {% else %}
+          'zmanda_dir_perms_fix not applied on this run'
+          {%- endif %}
+     when: use_zmanda_package | bool
+
+   - name: Hints - DailySet1_deleted - part of ambind fix
+     ansible.builtin.debug:
+        msg:
+          - >-
+           {% if DailySet1_deleted.results is defined %}
+           'DailySet1_deleted was applied on this run! (/etc/amanda/DailySet1 removed)'
+           {% else %}
+           'DailySet1_deleted not applied on this run'
+           {%- endif %}
+
+   - name: Hints
+     run_once: true
+     ansible.builtin.debug:
+      msg:
+       - On the server - Run amcheck CONFIGNAME (e.g. DailySet1) as the {{ server_user_discovered }} user to check a backup configuration
+       - On the server - Run amdump CONFIGNAME (e.g. DailySet1) as the {{ server_user_discovered }} user to run a backup
+       - On the server - Run amreport CONFIGNAME (e.g. DailySet1) as the {{ server_user_discovered }} user to run a backup report
+       - On the client - Run amrecover as root user to run an interactive recovery
+       - NOTE you may need to review your sshd or security settings to allow ssh - also refer to code and roles
+     when: server_user_discovered is defined
+
+  become: true
+
+...
