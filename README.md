@@ -1,11 +1,15 @@
 ## Latest
 
 ```diff
+
 - various syntax improvements
 - docs updated
 - new role for amanda backup user detection
 - zmanda package install via global var
 - zmanda fix using user detection
+- started on Fedora 35+
+- SUSE now supported but issue present with amdump in 3.5.1 (OS - zypper repo package)
+
 ```
 
 # amanda_deploy
@@ -28,15 +32,16 @@ See https://en.wikipedia.org/wiki/Amanda_(software) for some information on Aman
 <li>Tested with ansible 2.10.8</li>
 <br>
 
-| Distro  | Supported | Native repo install | Zmanda rpm/deb | Comment |
-| :------------- | :---: | :---: | :---: | :------------- |
-| Almalinux 8x | &check;  | &check; | &cross; | |
-| Centos 7.9 | &check;  | &check; | &check; | advise zmanda package if you must use this OS |
-| Debian 11x | &check;  | &check; | &check; | |
-| Fedora 35+ | &cross; | &check; | &cross; | WIP |
-| Rocky 8x | &check;  | &check; | &cross; | Works with ansible core 2.15.0, older versions may not |
-| Ubuntu 22.04  | &check;  | &check; | &check; | |
-| SUSE distros | &cross; | &check; | &cross; | future work |
+| Distro  | Supported | Native repo install | Zmanda rpm/deb | Comment | Known issues |
+| :------------- | :---: | :---: | :---: | :------------- | :------------- |
+| Almalinux 8x | &check;  | &check; | &cross; |  |  |
+| Centos 7.9 | &check;  | &check; | &check; | advise zmanda package if you must use this OS | |
+| Debian 11x | &check;  | &check; | &check; |  |  | 
+| Fedora 35+ | &cross; | &check; | &cross; | WIP | vagrant private network initialisation issue |
+| Rocky 8x | &check;  | &check; | &cross; | Works with ansible core 2.15.0, older versions may not | |
+| Ubuntu 22.04  | &check;  | &check; | &check; |  |  |
+| SUSE Leap 15.4 | &check; | &check; | &cross; | WIP, not finished | Leap 15.4 + zypper repo Version 3.5.1-bp154.3.3.1 is giving amdump error ```? runtar: error [runtar invalid option: -]``` which is similar to https://bugs.launchpad.net/ubuntu/+source/amanda/+bug/2012536 |
+| SUSE Tumbleweed 20230504 | &check; | &check; | &cross; | WIP, not finished | Tumbleweed ```amdump: GLib version too old (micro mismatch): Amanda was compiled with glib-2.76.3, but linking with 2.76.2``` |
 
 <br>
 
