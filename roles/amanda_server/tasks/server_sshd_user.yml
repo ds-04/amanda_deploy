@@ -20,14 +20,29 @@
 
    - name: add sshd block to disable password ssh for "{{ server_user_discovered }}"
      ansible.builtin.blockinfile:
-      backup: true
       dest: /etc/ssh/sshd_config
+      backup: true
       state: present
       block: "Match User {{ server_user_discovered }}
              \nPasswordAuthentication no
              \nAuthenticationMethods publickey"
       marker: "# {mark} ANSIBLE MANAGED BLOCK user {{ server_user_discovered }}"
      register: sshd_changed
+     when: ansible_os_family != "Suse"
+
+   # suse tumbleweed
+   - name: SUSE distro - add sshd block to disable password ssh for "{{ server_user_discovered }}"
+     ansible.builtin.blockinfile:
+      dest: /etc/ssh/sshd_config.d/10-amanda_suse.conf
+      backup: true
+      create: true
+      state: present
+      block: "Match User {{ server_user_discovered }}
+             \nPasswordAuthentication no
+             \nAuthenticationMethods publickey"
+      marker: "# {mark} ANSIBLE MANAGED BLOCK user {{ server_user_discovered }}"
+     register: sshd_changed
+     when: ansible_os_family == "Suse"
 
    - name: add pam.d sshd line to allow "{{ server_user_discovered }}"
      ansible.builtin.lineinfile:
@@ -36,7 +51,7 @@
       state: present
       insertbefore: "^account.*required.*pam_nologin.so"
       line: "account    optional     pam_localuser.so"
-     register: sshd_changed
+     when: ansible_os_family != "Suse"
 
    - name: reload sshd service
      ansible.builtin.service:
