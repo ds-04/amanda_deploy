@@ -18,38 +18,77 @@
 
 - block:
 
-   - name: (RHEL/Centos 7x) install amanda-client from repos
-     ansible.builtin.yum:
-      name: amanda-client
-      update_cache: true
-     when:
-      - ansible_os_family == "RedHat"
-      - ansible_distribution_major_version|int == 7
+ # SET FACTS ********************************************************************************************
 
-   - name: (RHEL/Centos >= 8x) install amanda-client from repos
-     ansible.builtin.dnf:
-      name: amanda-client
-      update_cache: true
+   - name: Initiliase empty dict to hold client package key/value
+     ansible.builtin.set_fact:
+       local_client_name: {}
+
+   # OS FAMILY BASED - client name
+   - name: "SET FACT DEPENDENCIES {{ ansible_os_family }} - client name"
+     ansible.builtin.set_fact:
+      local_client_name: "{{ item.value }}"
+     loop: "{{ lookup('dict', amanda_packages ) }}"
      when:
-      - ansible_os_family == 'RedHat'
-      - ansible_distribution != 'Fedora'
+      - ansible_os_family+'_client_name' in item.key
+      - ansible_os_family in family_only_detection
+
+   # OS FAMILY + VERSION BASED - client name
+   - name: SET FACT DEPENDENCIES - client name
+     ansible.builtin.set_fact:
+      local_client_name: "{{ item.value }}"
+     loop: "{{ lookup('dict', amanda_packages ) }}"
+     when:
+      - ansible_os_family+'_'+ansible_distribution_major_version+'_client_name' in item.key
+      - ansible_os_family in family_and_version_detection
+      - ansible_distribution not in distro_and_version_detection
+
+   # DISTRO + VERSION BASED - client name
+   - name: SET FACT DEPENDENCIES - client name
+     ansible.builtin.set_fact:
+      local_client_name: "{{ item.value }}"
+     loop: "{{ lookup('dict', amanda_packages ) }}"
+     when:
+      - ansible_distribution+'_'+ansible_distribution_major_version+'_client_name' in item.key
+      - ansible_distribution in distro_and_version_detection
+
+ # END SET FACTS *****************************************************************************************
+
+   - name: APT - Debian/Ubuntu - Client repo install
+     ansible.builtin.apt:
+      name: "{{ item.key }}"
+      state: "{{ item.value }}"
+      update_cache: true
+     loop: "{{ lookup('dict', local_client_name, wantlist=true) }}"
+     when: ansible_pkg_mgr == 'apt'
+
+   - name: DNF - RHEL-like => 8 - Client repo install
+     ansible.builtin.dnf:
+      name: "{{ item.key }}"
+      state: "{{ item.value }}"
+      update_cache: true
+     loop: "{{ lookup('dict', local_client_name, wantlist=true) }}"
+     when: 
+      - ansible_pkg_mgr == 'dnf'
       - ansible_distribution_major_version|int >= 8
 
-   - name: (Fedora >= 35) install amanda-client from repos
-     ansible.builtin.dnf:
-      name: amanda-client
+   - name: YUM - RHEL-like 7 - Client repo install
+     ansible.builtin.yum:
+      name: "{{ item.key }}"
+      state: "{{ item.value }}"
       update_cache: true
+     loop: "{{ lookup('dict', local_client_name, wantlist=true) }}"
      when:
-      - ansible_distribution == 'Fedora'
-      - ansible_distribution_major_version|int >= 35
+      - ansible_pkg_mgr == 'yum'
+      - ansible_distribution_major_version|int == 7
 
-   - name: (Debian family) install amanda-client from repos
-     ansible.builtin.apt:
-      name: amanda-client
+   - name: ZYPPER - Suse family - Client repo install
+     ansible.builtin.zypper:
+      name: "{{ item.key }}"
+      state: "{{ item.value }}"
       update_cache: true
-     when:
-      - ansible_os_family == "Debian"
-      - (ansible_distribution == "Debian" and ansible_distribution_major_version|int >= 10) or (ansible_distribution == "Ubuntu")
+     loop: "{{ lookup('dict', local_client_name, wantlist=true) }}"
+     when: ansible_pkg_mgr == 'zypper'
 
   become: true
 ...
