@@ -10,42 +10,77 @@
       database: passwd
       split: ':'
 
-   - name: "set_fact for {{ debian_user }} amanda user"
+   # debian user naming
+   - name: "set_fact for {{ debian_user }} - amanda user"
      ansible.builtin.set_fact:
       server_user1: "{{ item }}"
      loop:
       - "{{ debian_user }}"
      when: debian_user in ansible_facts.getent_passwd
 
-   - name: "set_fact for {{ redhat_user }} amanda user"
+   # redhat user naming
+   - name: "set_fact for {{ redhat_user }} - amanda user"
      ansible.builtin.set_fact:
       server_user2: "{{ item }}"
      loop:
       - "{{ redhat_user }}"
      when: redhat_user in ansible_facts.getent_passwd
 
-   # is the user from RHEL distro
+   # suse user naming
+   - name: "set_fact for {{ suse_user }} - amanda user"
+     ansible.builtin.set_fact:
+      server_user3: "{{ item }}"
+     loop:
+      - "{{ suse_user }}"
+     when: suse_user in ansible_facts.getent_passwd
+
+   # detect redhat naming - most common username
    - name: "set_fact for FINAL {{ redhat_user }} user"
      ansible.builtin.set_fact:
       server_user_discovered: "{{ redhat_user }}"
      when:
       - server_user2 is defined
+      - server_user1 is not defined
+      - server_user3 is not defined
 
-   # ...if not, then we expect standard/Debian user
+   # ...if not, then we expect Debian user?
    - name: "set_fact for FINAL {{ debian_user }} user"
      ansible.builtin.set_fact:
       server_user_discovered: "{{ debian_user }}"
      when:
-      - server_user2 is not defined
       - server_user1 is defined
-
-   # and if neither found its a fail
-   - name: "FAIL to find amanda user"
-     ansible.builtin.fail:
-      msg: "FAILED to find amanda user"
-     when:
       - server_user2 is not defined
+      - server_user3 is not defined
+
+   # ...if not, then we expect Suse user?
+   - name: "set_fact for FINAL {{ suse_user }} user"
+     ansible.builtin.set_fact:
+      server_user_discovered: "{{ suse_user }}"
+     when:
+      - server_user3 is defined
       - server_user1 is not defined
+      - server_user2 is not defined
+
+   # if both the debian named and redhat named exist
+   # this could be a zmanda install on a system
+   # where the other users exists (which is valid)
+   - name: "set_fact for FINAL {{ redhat_user }} user"
+     ansible.builtin.set_fact:
+      server_user_discovered: "{{ redhat_user }}"
+     when:
+      - use_zmanda_package | bool
+      - server_user1 is defined
+      - server_user2 is defined
+      - server_user3 is not defined
+
+   # and if none are found its a fail
+   - name: "FAIL to find a valid amanda user"
+     ansible.builtin.fail:
+      msg: "FAILED to find a valid amanda user"
+     when:
+      - server_user1 is not defined
+      - server_user2 is not defined
+      - server_user3 is not defined
 
    # set var for vagrant user
    - name: "set_fact for vagrant user"
