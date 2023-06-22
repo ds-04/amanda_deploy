@@ -28,6 +28,7 @@
       recurse: true
       owner: "{{ server_user_discovered }}"
       group: "{{ server_user_discovered_group }}"
+     register: zmanda_dir_perms_fix
      loop: "{{ zmanda_server_dir_perms }}"
      when:
       - use_zmanda_package | bool
